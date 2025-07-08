@@ -28,6 +28,8 @@ router.beforeEach((to, from, next) => {
     } else if (isWhiteList(to.path)) {
       next()
     } else {
+
+
       if (useUserStore().roles.length === 0) {
         isRelogin.show = true
         // 判断当前用户是否已拉取完user_info信息
@@ -42,6 +44,7 @@ router.beforeEach((to, from, next) => {
             })
             next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
           })
+          
         }).catch(err => {
           useUserStore().logOut().then(() => {
             ElMessage.error(err)
@@ -51,6 +54,7 @@ router.beforeEach((to, from, next) => {
       } else {
         next()
       }
+      
     }
   } else {
     // 没有token

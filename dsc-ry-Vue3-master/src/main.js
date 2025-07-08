@@ -81,4 +81,8 @@ app.use(ElementPlus, {
   size: Cookies.get('size') || 'default'
 })
 
+// 全局引用
+// import print from 'vue3-print-nb'
+// app.use(print)
+
 app.mount('#app')

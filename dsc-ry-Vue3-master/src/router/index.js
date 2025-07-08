@@ -71,6 +71,18 @@ export const constantRoutes = [
     ]
   },
   {
+  path: '/user-home',
+  component: Layout,
+  children: [
+    {
+      path: '',
+      name: 'UserHome',
+      component: () => import('@/views/user/Home.vue'),
+      meta: { title: '用户首页', icon: 'user', roles: ['common'] }
+    }
+  ]
+},
+  {
     path: '/user',
     component: Layout,
     hidden: true,
@@ -83,11 +95,13 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
-  }
+  },
+  
 ]
 
 // 动态路由，基于用户权限动态去加载
 export const dynamicRoutes = [
+  
   {
     path: '/system/user-auth',
     component: Layout,
@@ -157,7 +171,13 @@ export const dynamicRoutes = [
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
       }
     ]
-  }
+  },
+  {
+    path: '/user-home',
+    component: () => import('@/views/user/Home.vue'),
+    name: 'UserHome',
+    meta: { title: '用户首页', icon: 'user', affix: true }
+  },
 ]
 
 const router = createRouter({

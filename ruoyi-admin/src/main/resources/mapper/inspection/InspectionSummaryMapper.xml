@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.inspection.mapper.InspectionSummaryMapper">
+    
+    <resultMap type="InspectionSummary" id="InspectionSummaryResult">
+        <result property="id"    column="id"    />
+        <result property="workOrderCode"    column="work_order_code"    />
+        <result property="totalQuantity"    column="total_quantity"    />
+        <result property="defectiveTotal"    column="defective_total"    />
+        <result property="defect1"    column="defect_1"    />
+        <result property="defect2"    column="defect_2"    />
+        <result property="defect3"    column="defect_3"    />
+        <result property="defect4"    column="defect_4"    />
+        <result property="defect5"    column="defect_5"    />
+        <result property="defect6"    column="defect_6"    />
+        <result property="defect7"    column="defect_7"    />
+        <result property="defect8"    column="defect_8"    />
+        <result property="defect9"    column="defect_9"    />
+        <result property="defect10"    column="defect_10"    />
+        <result property="defect11"    column="defect_11"    />
+        <result property="defect12"    column="defect_12"    />
+        <result property="defect13"    column="defect_13"    />
+        <result property="defect14"    column="defect_14"    />
+        <result property="defect15"    column="defect_15"    />
+        <result property="defect16"    column="defect_16"    />
+        <result property="defect17"    column="defect_17"    />
+        <result property="defect18"    column="defect_18"    />
+        <result property="defect19"    column="defect_19"    />
+        <result property="defect20"    column="defect_20"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <resultMap id="InspectionSummaryInspectionReportResult" type="InspectionSummary" extends="InspectionSummaryResult">
+        <collection property="inspectionReportList" ofType="InspectionReport" column="id" select="selectInspectionReportList" />
+    </resultMap>
+
+    <resultMap type="InspectionReport" id="InspectionReportResult">
+        <result property="id"    column="id"    />
+        <result property="summaryId"    column="summary_id"    />
+        <result property="workOrderCode"    column="work_order_code"    />
+        <result property="reportTime"    column="report_time"    />
+        <result property="reportType"    column="report_type"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="resultJson"    column="result_json"    />
+        <result property="successFlag"    column="success_flag"    />
+        <result property="defectRemark"    column="defect_remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectInspectionSummaryVo">
+        select id, work_order_code, total_quantity, defective_total, defect_1, defect_2, defect_3, defect_4, defect_5, defect_6, defect_7, defect_8, defect_9, defect_10, defect_11, defect_12, defect_13, defect_14, defect_15, defect_16, defect_17, defect_18, defect_19, defect_20, create_by, create_time, update_by, update_time from inspection_summary
+    </sql>
+
+    <select id="selectInspectionSummaryList" parameterType="InspectionSummary" resultMap="InspectionSummaryResult">
+        <include refid="selectInspectionSummaryVo"/>
+        <where>  
+            <if test="workOrderCode != null  and workOrderCode != ''"> and work_order_code like concat('%', #{workOrderCode}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectInspectionSummaryById" parameterType="Long" resultMap="InspectionSummaryInspectionReportResult">
+        select id, work_order_code, total_quantity, defective_total, defect_1, defect_2, defect_3, defect_4, defect_5, defect_6, defect_7, defect_8, defect_9, defect_10, defect_11, defect_12, defect_13, defect_14, defect_15, defect_16, defect_17, defect_18, defect_19, defect_20, create_by, create_time, update_by, update_time
+        from inspection_summary
+        where id = #{id}
+    </select>
+
+    <select id="selectInspectionReportList" resultMap="InspectionReportResult">
+        select id, summary_id, work_order_code, report_time, report_type, quantity, result_json, success_flag, defect_remark, create_by, create_time, update_by, update_time
+        from inspection_report
+        where summary_id = #{summary_id}
+    </select>
+
+    <insert id="insertInspectionSummary" parameterType="InspectionSummary" useGeneratedKeys="true" keyProperty="id">
+        insert into inspection_summary
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="workOrderCode != null and workOrderCode != ''">work_order_code,</if>
+            <if test="totalQuantity != null">total_quantity,</if>
+            <if test="defectiveTotal != null">defective_total,</if>
+            <if test="defect1 != null">defect_1,</if>
+            <if test="defect2 != null">defect_2,</if>
+            <if test="defect3 != null">defect_3,</if>
+            <if test="defect4 != null">defect_4,</if>
+            <if test="defect5 != null">defect_5,</if>
+            <if test="defect6 != null">defect_6,</if>
+            <if test="defect7 != null">defect_7,</if>
+            <if test="defect8 != null">defect_8,</if>
+            <if test="defect9 != null">defect_9,</if>
+            <if test="defect10 != null">defect_10,</if>
+            <if test="defect11 != null">defect_11,</if>
+            <if test="defect12 != null">defect_12,</if>
+            <if test="defect13 != null">defect_13,</if>
+            <if test="defect14 != null">defect_14,</if>
+            <if test="defect15 != null">defect_15,</if>
+            <if test="defect16 != null">defect_16,</if>
+            <if test="defect17 != null">defect_17,</if>
+            <if test="defect18 != null">defect_18,</if>
+            <if test="defect19 != null">defect_19,</if>
+            <if test="defect20 != null">defect_20,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="workOrderCode != null and workOrderCode != ''">#{workOrderCode},</if>
+            <if test="totalQuantity != null">#{totalQuantity},</if>
+            <if test="defectiveTotal != null">#{defectiveTotal},</if>
+            <if test="defect1 != null">#{defect1},</if>
+            <if test="defect2 != null">#{defect2},</if>
+            <if test="defect3 != null">#{defect3},</if>
+            <if test="defect4 != null">#{defect4},</if>
+            <if test="defect5 != null">#{defect5},</if>
+            <if test="defect6 != null">#{defect6},</if>
+            <if test="defect7 != null">#{defect7},</if>
+            <if test="defect8 != null">#{defect8},</if>
+            <if test="defect9 != null">#{defect9},</if>
+            <if test="defect10 != null">#{defect10},</if>
+            <if test="defect11 != null">#{defect11},</if>
+            <if test="defect12 != null">#{defect12},</if>
+            <if test="defect13 != null">#{defect13},</if>
+            <if test="defect14 != null">#{defect14},</if>
+            <if test="defect15 != null">#{defect15},</if>
+            <if test="defect16 != null">#{defect16},</if>
+            <if test="defect17 != null">#{defect17},</if>
+            <if test="defect18 != null">#{defect18},</if>
+            <if test="defect19 != null">#{defect19},</if>
+            <if test="defect20 != null">#{defect20},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateInspectionSummary" parameterType="InspectionSummary">
+        update inspection_summary
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="workOrderCode != null and workOrderCode != ''">work_order_code = #{workOrderCode},</if>
+            <if test="totalQuantity != null">total_quantity = #{totalQuantity},</if>
+            <if test="defectiveTotal != null">defective_total = #{defectiveTotal},</if>
+            <if test="defect1 != null">defect_1 = #{defect1},</if>
+            <if test="defect2 != null">defect_2 = #{defect2},</if>
+            <if test="defect3 != null">defect_3 = #{defect3},</if>
+            <if test="defect4 != null">defect_4 = #{defect4},</if>
+            <if test="defect5 != null">defect_5 = #{defect5},</if>
+            <if test="defect6 != null">defect_6 = #{defect6},</if>
+            <if test="defect7 != null">defect_7 = #{defect7},</if>
+            <if test="defect8 != null">defect_8 = #{defect8},</if>
+            <if test="defect9 != null">defect_9 = #{defect9},</if>
+            <if test="defect10 != null">defect_10 = #{defect10},</if>
+            <if test="defect11 != null">defect_11 = #{defect11},</if>
+            <if test="defect12 != null">defect_12 = #{defect12},</if>
+            <if test="defect13 != null">defect_13 = #{defect13},</if>
+            <if test="defect14 != null">defect_14 = #{defect14},</if>
+            <if test="defect15 != null">defect_15 = #{defect15},</if>
+            <if test="defect16 != null">defect_16 = #{defect16},</if>
+            <if test="defect17 != null">defect_17 = #{defect17},</if>
+            <if test="defect18 != null">defect_18 = #{defect18},</if>
+            <if test="defect19 != null">defect_19 = #{defect19},</if>
+            <if test="defect20 != null">defect_20 = #{defect20},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteInspectionSummaryById" parameterType="Long">
+        delete from inspection_summary where id = #{id}
+    </delete>
+
+    <delete id="deleteInspectionSummaryByIds" parameterType="String">
+        delete from inspection_summary where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteInspectionReportBySummaryIds" parameterType="String">
+        delete from inspection_report where summary_id in 
+        <foreach item="summaryId" collection="array" open="(" separator="," close=")">
+            #{summaryId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteInspectionReportBySummaryId" parameterType="Long">
+        delete from inspection_report where summary_id = #{summaryId}
+    </delete>
+
+    <insert id="batchInspectionReport">
+        insert into inspection_report( id, summary_id, work_order_code, report_time, report_type, quantity, result_json, success_flag, defect_remark, create_by, create_time, update_by, update_time) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.id}, #{item.summaryId}, #{item.workOrderCode}, #{item.reportTime}, #{item.reportType}, #{item.quantity}, #{item.resultJson}, #{item.successFlag}, #{item.defectRemark}, #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime})
+        </foreach>
+    </insert>
+</mapper>

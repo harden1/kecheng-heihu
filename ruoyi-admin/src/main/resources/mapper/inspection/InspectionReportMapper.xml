@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.inspection.mapper.InspectionReportMapper">
+    
+    <resultMap type="InspectionReport" id="InspectionReportResult">
+        <result property="id"    column="id"    />
+        <result property="summaryId"    column="summary_id"    />
+        <result property="workOrderCode"    column="work_order_code"    />
+        <result property="reportTime"    column="report_time"    />
+        <result property="reportType"    column="report_type"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="resultJson"    column="result_json"    />
+        <result property="successFlag"    column="success_flag"    />
+        <result property="defectRemark"    column="defect_remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectInspectionReportVo">
+        select id, summary_id, work_order_code, report_time, report_type, quantity, result_json, success_flag, defect_remark, create_by, create_time, update_by, update_time from inspection_report
+    </sql>
+
+    <select id="selectInspectionReportList" parameterType="InspectionReport" resultMap="InspectionReportResult">
+        <include refid="selectInspectionReportVo"/>
+        <where>  
+            <if test="summaryId != null "> and summary_id = #{summaryId}</if>
+            <if test="workOrderCode != null  and workOrderCode != ''"> and work_order_code = #{workOrderCode}</if>
+            <if test="reportTime != null "> and report_time = #{reportTime}</if>
+            <if test="reportType != null  and reportType != ''"> and report_type = #{reportType}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+            <if test="resultJson != null  and resultJson != ''"> and result_json = #{resultJson}</if>
+            <if test="successFlag != null "> and success_flag = #{successFlag}</if>
+            <if test="defectRemark != null  and defectRemark != ''"> and defect_remark = #{defectRemark}</if>
+        </where>
+    </select>
+    
+    <select id="selectInspectionReportById" parameterType="Long" resultMap="InspectionReportResult">
+        <include refid="selectInspectionReportVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertInspectionReport" parameterType="InspectionReport" useGeneratedKeys="true" keyProperty="id">
+        insert into inspection_report
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="summaryId != null">summary_id,</if>
+            <if test="workOrderCode != null and workOrderCode != ''">work_order_code,</if>
+            <if test="reportTime != null">report_time,</if>
+            <if test="reportType != null">report_type,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="resultJson != null">result_json,</if>
+            <if test="successFlag != null">success_flag,</if>
+            <if test="defectRemark != null">defect_remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="summaryId != null">#{summaryId},</if>
+            <if test="workOrderCode != null and workOrderCode != ''">#{workOrderCode},</if>
+            <if test="reportTime != null">#{reportTime},</if>
+            <if test="reportType != null">#{reportType},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="resultJson != null">#{resultJson},</if>
+            <if test="successFlag != null">#{successFlag},</if>
+            <if test="defectRemark != null">#{defectRemark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateInspectionReport" parameterType="InspectionReport">
+        update inspection_report
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="summaryId != null">summary_id = #{summaryId},</if>
+            <if test="workOrderCode != null and workOrderCode != ''">work_order_code = #{workOrderCode},</if>
+            <if test="reportTime != null">report_time = #{reportTime},</if>
+            <if test="reportType != null">report_type = #{reportType},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="resultJson != null">result_json = #{resultJson},</if>
+            <if test="successFlag != null">success_flag = #{successFlag},</if>
+            <if test="defectRemark != null">defect_remark = #{defectRemark},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteInspectionReportById" parameterType="Long">
+        delete from inspection_report where id = #{id}
+    </delete>
+
+    <delete id="deleteInspectionReportByIds" parameterType="String">
+        delete from inspection_report where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
