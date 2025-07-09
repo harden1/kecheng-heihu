@@ -1,7 +1,7 @@
 import { createWebHistory, createRouter } from 'vue-router'
 /* Layout */
 import Layout from '@/layout'
-
+import user from '@/user'
 /**
  * Note: 路由配置项
  *
@@ -57,9 +57,36 @@ export const constantRoutes = [
     component: () => import('@/views/error/401'),
     hidden: true
   },
+  // {
+  //   path: '',
+  //   component: Layout,
+  //   redirect: '/index',
+  //   children: [
+  //     {
+  //       path: '/index',
+  //       component: () => import('@/views/index'),
+  //       name: 'Index',
+  //       meta: { title: '首页', icon: 'dashboard', affix: true }
+  //     }
+  //   ]
+  // },
+  
+//   {
+//   path: '/background',
+//   component: Layout,
+//   redirect: '/background/index', // 改为相对路径
+//   children: [
+//     {
+//       path: 'index',  // 注意这里的 'index' 是相对于父路由的路径
+//       component: () => import('@/views/index'),
+//       name: 'Index',
+//       meta: { title: '首页', icon: 'dashboard', affix: true }
+//     }
+//   ]
+// },
   {
     path: '',
-    component: Layout,
+    component: user,
     redirect: '/index',
     children: [
       {
@@ -70,18 +97,6 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-  path: '/user-home',
-  component: Layout,
-  children: [
-    {
-      path: '',
-      name: 'UserHome',
-      component: () => import('@/views/user/Home.vue'),
-      meta: { title: '用户首页', icon: 'user', roles: ['common'] }
-    }
-  ]
-},
   {
     path: '/user',
     component: Layout,
@@ -173,10 +188,17 @@ export const dynamicRoutes = [
     ]
   },
   {
+    roles: ['common'],
     path: '/user-home',
     component: () => import('@/views/user/Home.vue'),
     name: 'UserHome',
     meta: { title: '用户首页', icon: 'user', affix: true }
+  },
+  {
+    roles: ['admin'],
+    path: '/background',
+    component: () => import('@/layout/index'),
+    hidden: true
   },
 ]
 

@@ -102,10 +102,13 @@ function handleLogin() {
           return acc
         }, {})
         //router.push({ path: redirect.value || "/", query: otherQueryParams })
-        
-        router.push({
-          path: redirect.value || (userStore.roles.includes('common') ? '/user-home' : '/index')
-        })
+        if (userStore.roles.includes('common')) {
+          router.push({ path: redirect.value || '/user-home', query: otherQueryParams  })
+        } else {
+          router.push({ path: redirect.value || "/", query: otherQueryParams })
+        }
+
+
       }).catch(() => {
         loading.value = false
         // 重新获取验证码

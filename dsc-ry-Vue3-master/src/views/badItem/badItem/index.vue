@@ -64,7 +64,7 @@
       @pagination="getList" />
 
     <!-- 添加或修改badItem对话框 -->
-    <el-dialog :title="title" v-model="open" width="500px" append-to-body>
+    <!-- <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="badItemRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="不良项名称" prop="badName">
           <el-input v-model="form.badName" placeholder="请输入不良项名称" />
@@ -85,8 +85,34 @@
           <el-button @click="cancel">取 消</el-button>
         </div>
       </template>
-    </el-dialog>
+    </el-dialog> -->
 
+    <el-dialog v-model="open" @open="onOpen" @close="onClose" :title="title">
+      <el-form ref="badItemRef" :model="form" :rules="rules" size="default" label-width="100px">
+        <el-form-item label="不良项名称" prop="field102">
+          <el-input v-model="form.badName" type="text" placeholder="请输入不良项名称" clearable
+            :style="{width: '100%'}"></el-input>
+        </el-form-item>
+        <el-form-item label="不良项颜色" prop="field101" required>
+          <el-color-picker v-model="form.badColor" size="large"></el-color-picker>
+        </el-form-item>
+        <el-form-item label="排序" prop="field104">
+          <el-select v-model="form.no" placeholder="请选择排序" clearable :style="{width: '100%'}">
+            <el-option v-for="(item, index) in field104Options" :key="index" :label="item.label"
+              :value="item.value" :disabled="item.disabled"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="启用状态" prop="field105" required>
+          <el-switch v-model="form.state" active-color="#148F12"></el-switch>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button @click="cancel">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
 
 
     <el-dialog :title="title" v-model="open1" width="500px" append-to-body>
@@ -118,7 +144,6 @@ const total = ref(0)
 const title = ref("")
 
 const data = reactive({
-  form: {},
   queryParams: {
     pageNum: 1,
     pageSize: 10,
@@ -128,9 +153,43 @@ const data = reactive({
     state: null,
   },
   rules: {
+  },
+  form: {
+    badColor: undefined,
+    badName: null,
+    no: undefined,
+    state: false,
+  },
+  rules: {
+    field102: [{
+      required: true,
+      message: '请输入不良项名称',
+      trigger: 'blur'
+    }],
+    field104: [{
+      required: true,
+      message: '请选择排序',
+      trigger: 'change'
+    }],
   }
+  
 })
-
+const field104Options = ref([{
+  "label": "1",
+  "value": 1
+}, {
+  "label": "2",
+  "value": 2
+}, {
+  "label": "3",
+  "value": 3
+}, {
+  "label": "4",
+  "value": 4
+}, {
+  "label": "5",
+  "value": 5
+}])
 const { queryParams, form, rules } = toRefs(data)
 
 /** 查询badItem列表 */
@@ -194,7 +253,7 @@ function heihuAPI() {
 function handleAdd() {
   reset()
   open.value = true
-  title.value = "添加badItem"
+  title.value = "添加不良项"
 }
 /** 修改按钮操作 */
 function handleUpdate(row) {
@@ -203,7 +262,7 @@ function handleUpdate(row) {
   getBadItem(_id).then(response => {
     form.value = response.data
     open.value = true
-    title.value = "修改badItem"
+    title.value = "修改不良项"
   })
 }
 
@@ -231,7 +290,7 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const _ids = row.id || ids.value
-  proxy.$modal.confirm('是否确认删除badItem编号为"' + _ids + '"的数据项？').then(function () {
+  proxy.$modal.confirm('是否确认删除不良项编号为"' + _ids + '"的数据项？').then(function () {
     return delBadItem(_ids)
   }).then(() => {
     getList()
