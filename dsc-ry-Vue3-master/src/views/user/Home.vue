@@ -96,11 +96,13 @@ onMounted(() => {
   padding: 20px;
   text-align: center;
 }
+
 .video-container {
   width: 100%;
   height: auto;
   margin: 20px 0;
 }
+
 .controls {
   margin: 20px 0;
 }
@@ -112,6 +114,7 @@ onMounted(() => {
   border-radius: 8px;
   text-align: left;
 }
+
 .result p {
   word-break: break-all;
   margin: 10px 0;
