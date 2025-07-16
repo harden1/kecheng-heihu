@@ -36,6 +36,7 @@
         <spring-security.version>5.7.12</spring-security.version>
         <spring-framework.version>5.3.39</spring-framework.version>
         <okhttp.version>4.12.0</okhttp.version>
+        <okhttp.version>5.1.0</okhttp.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -218,6 +219,7 @@
                 <artifactId>ruoyi-common</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>okhttp</artifactId>
