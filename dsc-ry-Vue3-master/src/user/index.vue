@@ -5,33 +5,64 @@
       <h1>二维码扫描</h1>
     </div>
     <!-- 扫描区域 -->
-    <div class="scanner-area" style="">
+    <div class="scanner-area" style="margin-left: auto; margin-right: auto;">
       <div class="" id="reader"></div>
       <div class="scan-line" style="" v-if="isScannerActive"></div>
     </div>
 
+   
     <!-- 操作按钮 -->
      <div class="action-buttons-area">
       <div class="action-buttons" >
       <button class="btn primary" @click="isScannerActive ? stopScanner() : startScanner()">
         {{ isScannerActive ? '停止扫描' : '开始扫描' }}
       </button>
-      <button class="btn secondary" @click="toggleFlash" v-if="hasFlash">
-        {{ flashOn ? '关闭闪光灯' : '打开闪光灯' }}
+      <button class="btn primary" @click="toggleFlash">
+        {{ isScannerActive ? '关闭闪光灯' : '打开闪光灯' }}
       </button>
+      <!-- <button class="btn secondary" @click="toggleFlash" v-if="hasFlash">
+        {{ flashOn ? '关闭闪光灯' : '打开闪光灯' }}
+      </button> -->
     </div>
      </div>
     
 
     <!-- 扫描结果 -->
-    <div class="result-area" v-if="scanResult">
-      <h2>扫描结果</h2>
-      <div class="result-content">
+    <div class="result-area" >
+      <h2 style=" text-align: center ;">扫描结果</h2>
+       <div class="result-content">
         <p>{{ scanResult }}</p>
       </div>
-      <div class="result-actions">
-        <button class="btn primary" @click="copyToClipboard">复制</button>
-        <button class="btn secondary" @click="openResult">打开</button>
+       <!-- 订单详情区域 -->
+    <div class="order-area" > 
+      <table  style="width: 50%;height: 100%; margin-left: auto; margin-right: auto;font-size: 20px;"  >
+        <head>
+        </head>
+        <body> 
+          <tr>
+            <td>当前用户：</td>
+            <td>1212</td>
+          </tr>
+           <tr>
+            <td>工单号：</td>
+            <td>1212</td>
+          </tr>
+           <tr>
+            <td>数量：</td>
+            <td>1212</td>
+          </tr>
+           <tr>
+            <td>颜色：</td>
+            <td>1212</td>
+          </tr>
+        </body>
+      </table>
+    </div>
+     
+
+      <div class="result-actions" style="">
+        <button class="btn primary" @click="copyToClipboard">开始报工</button>
+        <button class="btn secondary" @click="openResult">下线</button>
       </div>
     </div>
 
@@ -43,11 +74,11 @@
     <!-- 底部导航 -->
     <div class="footer">
       <button class="nav-btn" @click="goToBackground">
-        <i class="icon-setting"></i>
+        <span class="icon-setting"></span>
         <span>后台</span>
       </button>
       <button class="nav-btn active" @click="goToUser">
-        <i class="icon-scan"></i>
+        <span class="icon-scan"></span>
         <span>扫描</span>
       </button>
     </div>
@@ -122,7 +153,6 @@ const stopScanner = async () => {
 // 切换闪光灯
 const toggleFlash = async () => {
   if (!html5QrCode || !isScannerActive.value) return
-
   try {
     if (flashOn.value) {
       await html5QrCode.turnOffFlash()
@@ -208,7 +238,7 @@ onBeforeUnmount(() => {
 
 /* 扫描区域 */
 .scanner-area {
-  width: 100%;
+  width: 80%;
   height: 55%;
 }
 
@@ -239,10 +269,13 @@ onBeforeUnmount(() => {
     top: 100%;
   }
 }
-
+.order-area {
+  width: 100%;
+  height: 65%;
+}
 /* 按钮样式 */
 .action-buttons-area { 
-  height: 40%;
+  height: 10%;
 }
 .action-buttons {
   display: flex;
@@ -267,8 +300,8 @@ onBeforeUnmount(() => {
 }
 
 .btn.secondary {
-  background: #f5f5f5;
-  color: #333;
+  background: #ba3131cf;
+  color: #eee;
   border: 1px solid #ddd;
 }
 
@@ -278,6 +311,8 @@ onBeforeUnmount(() => {
 
 /* 结果区域 */
 .result-area {
+ 
+  height: 35%;
   margin: 0 15px 15px;
   padding: 15px;
   background: white;
@@ -296,7 +331,6 @@ onBeforeUnmount(() => {
 .result-actions {
   display: flex;
   gap: 10px;
-  margin-top: 10px;
 }
 
 .result-actions .btn {
@@ -315,6 +349,7 @@ onBeforeUnmount(() => {
 
 /* 底部导航 */
 .footer {
+  font-style: normal; /* 阻止图标变斜体 */
   display: flex;
   justify-content: space-around;
   padding: 10px 0;
@@ -326,11 +361,9 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 8px;
   background: none;
   border: none;
   color: #666;
-  font-size: 0.8rem;
 }
 
 .nav-btn.active {
