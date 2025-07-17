@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.apiTool.mapper.BlacklackUserMapper">
+    
+    <resultMap type="BlacklackUser" id="BlacklackUserResult">
+        <result property="id"    column="id"    />
+        <result property="username"    column="username"    />
+        <result property="name"    column="name"    />
+        <result property="roleName"    column="role_name"    />
+        <result property="departmentName"    column="department_name"    />
+        <result property="active"    column="active"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="updatedAt"    column="updated_at"    />
+    </resultMap>
+
+    <sql id="selectBlacklackUserVo">
+        select id, username, name, role_name, department_name, active, created_at, updated_at from blacklack_user
+    </sql>
+
+    <select id="selectBlacklackUserList" parameterType="BlacklackUser" resultMap="BlacklackUserResult">
+        <include refid="selectBlacklackUserVo"/>
+        <where>  
+            <if test="username != null  and username != ''"> and username like concat('%', #{username}, '%')</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="roleName != null  and roleName != ''"> and role_name like concat('%', #{roleName}, '%')</if>
+            <if test="departmentName != null  and departmentName != ''"> and department_name like concat('%', #{departmentName}, '%')</if>
+            <if test="active != null "> and active = #{active}</if>
+            <if test="createdAt != null "> and created_at = #{createdAt}</if>
+            <if test="updatedAt != null "> and updated_at = #{updatedAt}</if>
+        </where>
+    </select>
+    
+    <select id="selectBlacklackUserById" parameterType="Long" resultMap="BlacklackUserResult">
+        <include refid="selectBlacklackUserVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBlacklackUser" parameterType="BlacklackUser">
+        insert into blacklack_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="username != null">username,</if>
+            <if test="name != null">name,</if>
+            <if test="roleName != null">role_name,</if>
+            <if test="departmentName != null">department_name,</if>
+            <if test="active != null">active,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="updatedAt != null">updated_at,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="username != null">#{username},</if>
+            <if test="name != null">#{name},</if>
+            <if test="roleName != null">#{roleName},</if>
+            <if test="departmentName != null">#{departmentName},</if>
+            <if test="active != null">#{active},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="updatedAt != null">#{updatedAt},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBlacklackUser" parameterType="BlacklackUser">
+        update blacklack_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="username != null">username = #{username},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="roleName != null">role_name = #{roleName},</if>
+            <if test="departmentName != null">department_name = #{departmentName},</if>
+            <if test="active != null">active = #{active},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBlacklackUserById" parameterType="Long">
+        delete from blacklack_user where id = #{id}
+    </delete>
+
+    <delete id="deleteBlacklackUserByIds" parameterType="String">
+        delete from blacklack_user where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
