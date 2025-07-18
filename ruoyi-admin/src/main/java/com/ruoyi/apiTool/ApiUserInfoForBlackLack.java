@@ -141,9 +141,8 @@ public class ApiUserInfoForBlackLack {
             for (BlacklackUser user : blacklackUserList) {
                 System.out.println(user);
             }
-//        blacklackUserService.remove(new QueryWrapper<>());
-//        blacklackUserService.saveBatch(blacklackUserList);
         blacklackUserService.replaceAll(blacklackUserList);
+
 
         System.out.println("✅ 数据已插入 MySQL");
     }

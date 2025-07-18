@@ -85,4 +85,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <!-- 删除所有记录 -->
+    <delete id="deleteAll">
+        DELETE FROM blacklack_user
+    </delete>
+
+    <!-- 批量插入 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO blacklack_user
+        (id, username, name, role_name, department_name, active, created_at, updated_at)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id}, #{item.username}, #{item.name},
+            #{item.roleName}, #{item.departmentName},
+            #{item.active}, #{item.createdAt}, #{item.updatedAt})
+        </foreach>
+    </insert>
 </mapper>

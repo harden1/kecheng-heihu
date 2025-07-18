@@ -2,8 +2,6 @@ package com.ruoyi.apiTool.service.impl;
 
 import java.util.List;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.apiTool.mapper.BlacklackUserMapper;
@@ -18,25 +16,21 @@ import org.springframework.transaction.annotation.Transactional;
  * @date 2025-07-17
  */
 @Service
-public class BlacklackUserServiceImpl
-        extends ServiceImpl<BlacklackUserMapper, BlacklackUser>
-        implements IBlacklackUserService {
-    @Override
-    @Transactional
-    public void replaceAll(List<BlacklackUser> blacklackUserList) {
-        if (blacklackUserList == null || blacklackUserList.isEmpty()) {
-            // 空数据，直接返回
-            return;
-        }
-        // 删除所有旧数据
-        this.remove(new QueryWrapper<>());
+public class BlacklackUserServiceImpl  implements IBlacklackUserService {
 
-        // 批量插入新数据
-        this.saveBatch(blacklackUserList);
-    }
     @Autowired
     private BlacklackUserMapper blacklackUserMapper;
+    @Override
+    @Transactional // 添加事务保证原子性
+    public void replaceAll(List<BlacklackUser> list) {
+        // 1. 删除所有记录
+        blacklackUserMapper.deleteAll();
 
+        // 2. 批量插入新数据（如果列表非空）
+        if (!list.isEmpty()) {
+            blacklackUserMapper.batchInsert(list);
+        }
+    }
     /**
      * 查询黑湖用户信息
      * 

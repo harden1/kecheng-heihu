@@ -12,8 +12,8 @@ import com.ruoyi.apiTool.domain.BlacklackUser;
  * @date 2025-07-17
  */
 // 接口定义
-public interface IBlacklackUserService extends IService<BlacklackUser> {
-    void replaceAll(List<BlacklackUser> blacklackUserList);
+public interface IBlacklackUserService  {
+    public void replaceAll(List<BlacklackUser> list);
     /**
      * 查询黑湖用户信息
      * 

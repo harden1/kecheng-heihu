@@ -71,11 +71,17 @@ public interface BlacklackUserMapper extends BaseMapper<BlacklackUser> {
     @Override
     int insert(BlacklackUser entity);
 
-//    @Override
-//    int deleteById(BlacklackUser entity);
+      // 删除所有记录
+        int deleteAll();
 
-//    @Override
-//    int delete(Wrapper<BlacklackUser> queryWrapper);
+        // 批量插入
+        int batchInsert(List<BlacklackUser> list);
+
+    @Override
+    int deleteById(BlacklackUser entity);
+
+    @Override
+    int delete(Wrapper<BlacklackUser> queryWrapper);
 
     @Override
     int updateById(BlacklackUser entity);
