@@ -19,7 +19,7 @@ public class MyScheduledTask {
         String accessToken = accessTokenService.getAccessToken(true);
         System.out.println("accessToken: " + accessToken);
         //测试userinfo
-        apiUserInfoForBlackLack.getUserApiForBlacklack();
+//        apiUserInfoForBlackLack.getUserApiForBlacklack();
         //调用订单二维码数据，查询订单
 
     }
