@@ -26,10 +26,10 @@ public class ApiUserInfoForBlackLack {
     private IBlacklackUserService blacklackUserService;
     @Autowired
     private BlacklackUserMapper blacklackUserMapper;
-    public void getUserApiForBlacklack() {
+    public List<BlacklackUser> getUserApiForBlacklack() {
         if (accessTokenService == null) {
             System.err.println("❌ accessTokenService 未初始化");
-            return;
+            return  null;
         }
         // 请求地址
         String url = "https://v3-ali.blacklake.cn/api/openapi/domain/web/v1/route/user/open/v1/user/_list"; // 替换为真实接口地址
@@ -60,7 +60,7 @@ public class ApiUserInfoForBlackLack {
             if (response.isSuccessful()) {
                 responseStr = response.body().string();
                 System.out.println("✅ 请求成功，响应内容：");
-                System.out.println(responseStr);
+//                System.out.println(responseStr);
 
                 // 用 Jackson 解析为 JsonNode
                 ObjectMapper mapper = new ObjectMapper();
@@ -138,13 +138,14 @@ public class ApiUserInfoForBlackLack {
                 blacklackUserList.add(blacklackUser);
             }
             //打印数据
-            for (BlacklackUser user : blacklackUserList) {
-                System.out.println(user);
-            }
-        blacklackUserService.replaceAll(blacklackUserList);
+//            for (BlacklackUser user : blacklackUserList) {
+//                System.out.println(user);
+//            }
+        //blacklackUserService.replaceAll(blacklackUserList);
 
 
         System.out.println("✅ 数据已插入 MySQL");
+            return blacklackUserList;
     }
 }
 

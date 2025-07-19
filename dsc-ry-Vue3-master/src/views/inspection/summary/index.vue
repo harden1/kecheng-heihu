@@ -2,12 +2,7 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="工单号" prop="workOrderCode">
-        <el-input
-          v-model="queryParams.workOrderCode"
-          placeholder="请输入工单号"
-          clearable
-          @keyup.enter="handleQuery"
-        />
+        <el-input v-model="queryParams.workOrderCode" placeholder="请输入工单号" clearable @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -17,42 +12,20 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-          v-hasPermi="['inspection:summary:add']"
-        >新增</el-button>
+        <el-button type="primary" plain icon="Plus" @click="handleAdd"
+          v-hasPermi="['inspection:summary:add']">新增</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['inspection:summary:edit']"
-        >修改</el-button>
+        <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate"
+          v-hasPermi="['inspection:summary:edit']">修改</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['inspection:summary:remove']"
-        >删除</el-button>
+        <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete"
+          v-hasPermi="['inspection:summary:remove']">删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-          v-hasPermi="['inspection:summary:export']"
-        >导出</el-button>
+        <el-button type="warning" plain icon="Download" @click="handleExport"
+          v-hasPermi="['inspection:summary:export']">导出</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -85,19 +58,16 @@
       <el-table-column label="不良20" align="center" prop="defect20" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['inspection:summary:edit']">修改</el-button>
-          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['inspection:summary:remove']">删除</el-button>
+          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
+            v-hasPermi="['inspection:summary:edit']">修改</el-button>
+          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
+            v-hasPermi="['inspection:summary:remove']">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    
-    <pagination
-      v-show="total>0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
-    />
+
+    <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize" @pagination="getList" />
 
     <!-- 添加或修改镜检统计主对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
@@ -180,9 +150,10 @@
             <el-button type="danger" icon="Delete" @click="handleDeleteInspectionReport">删除</el-button>
           </el-col>
         </el-row>
-        <el-table :data="inspectionReportList" :row-class-name="rowInspectionReportIndex" @selection-change="handleInspectionReportSelectionChange" ref="inspectionReport">
+        <el-table :data="inspectionReportList" :row-class-name="rowInspectionReportIndex"
+          @selection-change="handleInspectionReportSelectionChange" ref="inspectionReport">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column label="序号" align="center" prop="index" width="50"/>
+          <el-table-column label="序号" align="center" prop="index" width="50" />
           <el-table-column label="工单号" prop="workOrderCode" width="150">
             <template #default="scope">
               <el-input v-model="scope.row.workOrderCode" placeholder="请输入工单号" />
@@ -190,10 +161,7 @@
           </el-table-column>
           <el-table-column label="报工时间" prop="reportTime" width="240">
             <template #default="scope">
-              <el-date-picker clearable
-                v-model="scope.row.reportTime"
-                type="date"
-                value-format="YYYY-MM-DD"
+              <el-date-picker clearable v-model="scope.row.reportTime" type="date" value-format="YYYY-MM-DD"
                 placeholder="请选择报工时间">
               </el-date-picker>
             </template>
@@ -226,6 +194,7 @@
         <div class="dialog-footer">
           <el-button type="primary" @click="submitForm">确 定</el-button>
           <el-button @click="cancel">取 消</el-button>
+
         </div>
       </template>
     </el-dialog>
@@ -341,6 +310,7 @@ function handleSelectionChange(selection) {
 
 /** 新增按钮操作 */
 function handleAdd() {
+
   reset()
   open.value = true
   title.value = "添加镜检统计主"
@@ -360,6 +330,7 @@ function handleUpdate(row) {
 
 /** 提交按钮 */
 function submitForm() {
+  console.log("handleAdd")
   proxy.$refs["summaryRef"].validate(valid => {
     if (valid) {
       form.value.inspectionReportList = inspectionReportList.value
@@ -383,12 +354,12 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const _ids = row.id || ids.value
-  proxy.$modal.confirm('是否确认删除镜检统计主编号为"' + _ids + '"的数据项？').then(function() {
+  proxy.$modal.confirm('是否确认删除镜检统计主编号为"' + _ids + '"的数据项？').then(function () {
     return delSummary(_ids)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess("删除成功")
-  }).catch(() => {})
+  }).catch(() => { })
 }
 
 /** 报工记录序号 */
@@ -416,7 +387,7 @@ function handleDeleteInspectionReport() {
   } else {
     const inspectionReports = inspectionReportList.value
     const checkedInspectionReports = checkedInspectionReport.value
-    inspectionReportList.value = inspectionReports.filter(function(item) {
+    inspectionReportList.value = inspectionReports.filter(function (item) {
       return checkedInspectionReports.indexOf(item.index) == -1
     })
   }
@@ -436,3 +407,4 @@ function handleExport() {
 
 getList()
 </script>
+<style scoped src="@/assets/styles/user.scss"></style>

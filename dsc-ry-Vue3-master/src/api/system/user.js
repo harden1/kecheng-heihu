@@ -1,5 +1,15 @@
 import request from '@/utils/request'
-import { parseStrEmpty } from "@/utils/ruoyi";
+import { parseStrEmpty } from '@/utils/ruoyi'
+//查询黑湖数据是否存在此用户：登陆时候验证，新注册的时候验证
+export function checkUserToBlackLack(username) {
+  let query = { username: username }
+  console.log('查询接口', query)
+  return request({
+    url: '/system/user/checkUserToBlackLack/',
+    method: 'get',
+    params: query
+  })
+}
 
 // 查询用户列表
 export function listUser(query) {

@@ -10,59 +10,61 @@
       <div class="scan-line" style="" v-if="isScannerActive"></div>
     </div>
 
-   
+
     <!-- 操作按钮 -->
-     <div class="action-buttons-area">
-      <div class="action-buttons" >
-      <button class="btn primary" @click="isScannerActive ? stopScanner() : startScanner()">
-        {{ isScannerActive ? '停止扫描' : '开始扫描' }}
-      </button>
-      <button class="btn primary" @click="toggleFlash">
-        {{ isScannerActive ? '关闭闪光灯' : '打开闪光灯' }}
-      </button>
-      <!-- <button class="btn secondary" @click="toggleFlash" v-if="hasFlash">
+    <div class="action-buttons-area">
+      <div class="action-buttons">
+        <button class="btn primary" @click="isScannerActive ? stopScanner() : startScanner()">
+          {{ isScannerActive ? '停止扫描' : '开始扫描' }}
+        </button>
+        <!-- <button class="btn primary" @click="toggleFlash">
+          {{ isScannerActive ? '关闭闪光灯' : '打开闪光灯' }}
+        </button> -->
+        <!-- <button class="btn secondary" @click="toggleFlash" v-if="hasFlash">
         {{ flashOn ? '关闭闪光灯' : '打开闪光灯' }}
       </button> -->
+      </div>
     </div>
-     </div>
-    
+
 
     <!-- 扫描结果 -->
-    <div class="result-area" >
+    <div class="result-area">
       <h2 style=" text-align: center ;">扫描结果</h2>
-       <div class="result-content">
+      <div class="result-content">
         <p>{{ scanResult }}</p>
       </div>
-       <!-- 订单详情区域 -->
-    <div class="order-area" > 
-      <table  style="width: 50%;height: 100%; margin-left: auto; margin-right: auto;font-size: 20px;"  >
-        <head>
-        </head>
-        <body> 
-          <tr>
-            <td>当前用户：</td>
-            <td>1212</td>
-          </tr>
-           <tr>
-            <td>工单号：</td>
-            <td>1212</td>
-          </tr>
-           <tr>
-            <td>数量：</td>
-            <td>1212</td>
-          </tr>
-           <tr>
-            <td>颜色：</td>
-            <td>1212</td>
-          </tr>
-        </body>
-      </table>
-    </div>
-     
+      <!-- 订单详情区域 -->
+      <div class="order-area">
+        <table style="width: 50%;height: 100%; margin-left: auto; margin-right: auto;font-size: 20px;">
+
+          <thead>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>当前用户：</td>
+              <td>123</td>
+            </tr>
+            <tr>
+              <td>工单号：</td>
+              <td>11232</td>
+            </tr>
+            <tr>
+              <td>数量：</td>
+              <td>333</td>
+            </tr>
+            <tr>
+              <td>颜色：</td>
+              <td>1444</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
 
       <div class="result-actions" style="">
-        <button class="btn primary" @click="copyToClipboard">开始报工</button>
-        <button class="btn secondary" @click="openResult">下线</button>
+        <button class="btn primary" @click="goToUser">开始报工</button>
+        <button class="btn secondary" @click="logout">下线</button>
       </div>
     </div>
 
@@ -89,12 +91,26 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { Html5Qrcode } from 'html5-qrcode'
 import { useRouter } from 'vue-router'
-
+import { ElMessage, ElMessageBox } from 'element-plus'
+import useUserStore from '../store/modules/user'
+const userStore = useUserStore()
 const router = useRouter()
 
+import { checkUserToBlackLack } from "../api/system/user"
+function logout() {
+  ElMessageBox.confirm('确定注销并退出系统吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    userStore.logOut().then(() => {
+      location.href = '/index'
+    })
+  }).catch(() => { })
+}
 // 路由跳转
 const goToBackground = () => router.push('/background')
-const goToUser = () => router.push('/user-home')
+const goToUser = () => router.push('/selectBadItems')
 
 // 扫描相关状态
 const scanResult = ref(null)
@@ -104,38 +120,69 @@ const hasFlash = ref(false)
 const flashOn = ref(false)
 let html5QrCode = null
 
-// 启动扫描
+// 启动扫描（强制后置摄像头）
 const startScanner = async () => {
+  const res = await userStore.getInfo()
+  const username = res.user.userName
+  console.log("启动扫描", username.username, username)
+  checkUserToBlackLack(username).then(res => {
+    console.log("查询用户接口返回数据", res)
+    if (res.code === 200 && res.msg === "0") {
+      // 清空token和用户信息
+      userStore.logOut().then(() => {
+        ElMessageBox.confirm(
+          '在MES中没有找到此用户，请联系管理员！',
+          '提示',
+          {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }
+        ).finally(() => {
+          location.href = '/index'
+        })
+      })
+    }
+  })
   try {
-    scanResult.value = null
-    scannerError.value = null
-    isScannerActive.value = true
+    scanResult.value = null;
+    scannerError.value = null;
+    isScannerActive.value = true;
 
     if (!html5QrCode) {
-      html5QrCode = new Html5Qrcode('reader')
+      html5QrCode = new Html5Qrcode('reader');
     }
 
     const config = {
       fps: 10,
-      qrbox: { width: 300, height: 300 }
-    }
+      qrbox: { width: 150, height: 150 }
+    };
 
     await html5QrCode.start(
-      { facingMode: 'environment' },
+      { facingMode: "environment" },
       config,
       (decodedText) => {
-        scanResult.value = decodedText
-        stopScanner()
+        // 成功扫描到二维码
+        scanResult.value = decodedText;
+        stopScanner();
       },
       (error) => {
-        // 可选：console.warn('扫描失败:', error)
+        // 关键修改：忽略"未检测到二维码"的常规错误
+        if (!error.message.includes('No barcode or QR code')) {
+          // 只处理其他真实错误（如摄像头权限问题）
+          console.error('扫描异常:', error);
+          scannerError.value = '扫描器异常';
+          stopScanner();
+        }
+        // 否则静默继续扫描
       }
-    )
+    );
   } catch (err) {
-    scannerError.value = err.message || '启动扫描器失败'
-    isScannerActive.value = false
+    // 处理启动失败（如无摄像头权限）
+    scannerError.value = err.message || '启动扫描器失败';
+    isScannerActive.value = false;
   }
-}
+};
 
 // 停止扫描
 const stopScanner = async () => {
@@ -206,181 +253,4 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style scoped>
-/* 基础样式 */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-.h5-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background: #f5f5f5;
-}
-
-/* 头部样式 */
-.header {
-  padding: 15px;
-  background: #02B980;
-  color: white;
-  text-align: center;
-  box-shadow: 0 2px 5px #02B980(0, 0, 0, 0.1);
-}
-
-.header h1 {
-  font-size: 1.2rem;
-  font-weight: 500;
-}
-
-/* 扫描区域 */
-.scanner-area {
-  width: 80%;
-  height: 55%;
-}
-
-.video-container {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.scan-line {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: #02B980;
-  box-shadow: 0 0 10px #006847;
-  animation: scan 3s linear infinite;
-  
-}
-
-@keyframes scan {
-  0% {
-    top: 0;
-  }
-
-  100% {
-    top: 100%;
-  }
-}
-.order-area {
-  width: 100%;
-  height: 65%;
-}
-/* 按钮样式 */
-.action-buttons-area { 
-  height: 10%;
-}
-.action-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  padding: 15px;
-}
-
-.btn {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 25px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn.primary {
-  background: #02B980;
-  color: white;
-}
-
-.btn.secondary {
-  background: #ba3131cf;
-  color: #eee;
-  border: 1px solid #ddd;
-}
-
-.btn:active {
-  transform: scale(0.98);
-}
-
-/* 结果区域 */
-.result-area {
- 
-  height: 35%;
-  margin: 0 15px 15px;
-  padding: 15px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.result-content {
-  margin: 10px 0;
-  padding: 10px;
-  background: #f9f9f9;
-  border-radius: 4px;
-  word-break: break-all;
-}
-
-.result-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.result-actions .btn {
-  flex: 1;
-}
-
-/* 错误提示 */
-.error-message {
-  margin: 0 15px 15px;
-  padding: 15px;
-  background: #ffebee;
-  color: #d32f2f;
-  border-radius: 8px;
-  text-align: center;
-}
-
-/* 底部导航 */
-.footer {
-  font-style: normal; /* 阻止图标变斜体 */
-  display: flex;
-  justify-content: space-around;
-  padding: 10px 0;
-  background: white;
-  border-top: 1px solid #eee;
-}
-
-.nav-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: none;
-  border: none;
-  color: #666;
-}
-
-.nav-btn.active {
-  color: #006847;
-}
-
-.nav-btn i {
-  font-size: 1.2rem;
-  margin-bottom: 4px;
-}
-
-/* 图标 (可以使用实际图标库) */
-.icon-setting::before {
-  content: "⚙️";
-}
-
-.icon-scan::before {
-  content: "📷";
-}
-</style>
+<style scoped src="../assets/styles/user.scss"></style>

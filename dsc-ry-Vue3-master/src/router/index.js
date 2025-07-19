@@ -48,7 +48,7 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: "/:pathMatch(.*)*",
+    path: '/:pathMatch(.*)*',
     component: () => import('@/views/error/404'),
     hidden: true
   },
@@ -70,20 +70,20 @@ export const constantRoutes = [
   //     }
   //   ]
   // },
-  
-//   {
-//   path: '/background',
-//   component: Layout,
-//   redirect: '/background/index', // 改为相对路径
-//   children: [
-//     {
-//       path: 'index',  // 注意这里的 'index' 是相对于父路由的路径
-//       component: () => import('@/views/index'),
-//       name: 'Index',
-//       meta: { title: '首页', icon: 'dashboard', affix: true }
-//     }
-//   ]
-// },
+
+  //   {
+  //   path: '/background',
+  //   component: Layout,
+  //   redirect: '/background/index', // 改为相对路径
+  //   children: [
+  //     {
+  //       path: 'index',  // 注意这里的 'index' 是相对于父路由的路径
+  //       component: () => import('@/views/index'),
+  //       name: 'Index',
+  //       meta: { title: '首页', icon: 'dashboard', affix: true }
+  //     }
+  //   ]
+  // },
   {
     path: '',
     component: user,
@@ -110,8 +110,7 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
-  },
-  
+  }
 ]
 
 // 动态路由，基于用户权限动态去加载
@@ -188,9 +187,9 @@ export const dynamicRoutes = [
   },
   {
     roles: ['common'],
-    path: '/user-home',
-    component: () => import('@/views/user/Home.vue'),
-    name: 'UserHome',
+    path: '/selectBadItems',
+    component: () => import('@/views/user/selectBadItems.vue'),
+    name: 'SelectBadItems',
     meta: { title: '用户首页', icon: 'user', affix: true }
   },
   {
@@ -198,7 +197,7 @@ export const dynamicRoutes = [
     path: '/background',
     component: () => import('@/layout/index'),
     hidden: true
-  },
+  }
 ]
 
 const router = createRouter({
@@ -209,7 +208,7 @@ const router = createRouter({
       return savedPosition
     }
     return { top: 0 }
-  },
+  }
 })
 
 export default router
