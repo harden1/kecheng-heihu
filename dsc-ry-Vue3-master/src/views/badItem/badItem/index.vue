@@ -60,8 +60,8 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize"
-      @pagination="getList" />
+    <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize" @pagination="getList" />
 
     <!-- 添加或修改badItem对话框 -->
     <!-- <el-dialog :title="title" v-model="open" width="500px" append-to-body>
@@ -91,15 +91,15 @@
       <el-form ref="badItemRef" :model="form" :rules="rules" size="default" label-width="100px">
         <el-form-item label="不良项名称" prop="field102">
           <el-input v-model="form.badName" type="text" placeholder="请输入不良项名称" clearable
-            :style="{width: '100%'}"></el-input>
+            :style="{ width: '100%' }"></el-input>
         </el-form-item>
         <el-form-item label="不良项颜色" prop="field101" required>
           <el-color-picker v-model="form.badColor" size="large"></el-color-picker>
         </el-form-item>
         <el-form-item label="排序" prop="field104">
-          <el-select v-model="form.no" placeholder="请选择排序" clearable :style="{width: '100%'}">
-            <el-option v-for="(item, index) in field104Options" :key="index" :label="item.label"
-              :value="item.value" :disabled="item.disabled"></el-option>
+          <el-select v-model="form.no" placeholder="请选择排序" clearable :style="{ width: '100%' }">
+            <el-option v-for="(item, index) in field104Options" :key="index" :label="item.label" :value="item.value"
+              :disabled="item.disabled"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="启用状态" prop="field105" required>
@@ -123,7 +123,7 @@
         </div>
       </template>
     </el-dialog>
-    
+
   </div>
 </template>
 
@@ -158,7 +158,7 @@ const data = reactive({
     badColor: undefined,
     badName: null,
     no: undefined,
-    state: false,
+    state: true,
   },
   rules: {
     field102: [{
@@ -171,8 +171,18 @@ const data = reactive({
       message: '请选择排序',
       trigger: 'change'
     }],
+    field101: [{
+      required: true,
+      message: '请选择颜色',
+      trigger: 'change'
+    }],
+    field105: [{
+      required: true,
+      message: '请选择状态',
+      trigger: 'change'
+    }],
   }
-  
+
 })
 const field104Options = ref([{
   "label": "1",
@@ -268,7 +278,9 @@ function handleUpdate(row) {
 
 /** 提交按钮 */
 function submitForm() {
+
   proxy.$refs["badItemRef"].validate(valid => {
+    console.log("修改提交验证", valid)
     if (valid) {
       if (form.value.id != null) {
         updateBadItem(form.value).then(response => {

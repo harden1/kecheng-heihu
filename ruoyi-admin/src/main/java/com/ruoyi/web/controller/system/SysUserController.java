@@ -53,7 +53,7 @@ public class SysUserController extends BaseController
     @GetMapping("/checkUserToBlackLack")
      public AjaxResult checkUserToBlackLack( @RequestParam("username") String username) {
         System.out.println("收到的数据" + username);
-        List<BlacklackUser> blacklackUserList = apiUserInfoForBlackLack.getUserApiForBlacklack();
+        List<BlacklackUser> blacklackUserList = apiUserInfoForBlackLack.getUserApiForBlacklack(true);
         for (BlacklackUser user : blacklackUserList) {
             if (username.equals(user.getUsername()) && user.getActive() == 1) {
                 System.out.println("用户存在MES中"+user);

@@ -1,5 +1,5 @@
 <template>
-  <div class="h5-container" style="">
+  <div class="app">
     <!-- 顶部标题栏 -->
     <div class="header">
       <h1>二维码扫描</h1>
@@ -7,39 +7,19 @@
     <!-- 扫描区域 -->
     <div class="scanner-area" style="margin-left: auto; margin-right: auto;">
       <div class="" id="reader"></div>
-      <div class="scan-line" style="" v-if="isScannerActive"></div>
-    </div>
-
-
-    <!-- 操作按钮 -->
-    <div class="action-buttons-area">
-      <div class="action-buttons">
-        <button class="btn primary" @click="isScannerActive ? stopScanner() : startScanner()">
-          {{ isScannerActive ? '停止扫描' : '开始扫描' }}
-        </button>
-        <!-- <button class="btn primary" @click="toggleFlash">
-          {{ isScannerActive ? '关闭闪光灯' : '打开闪光灯' }}
-        </button> -->
-        <!-- <button class="btn secondary" @click="toggleFlash" v-if="hasFlash">
-        {{ flashOn ? '关闭闪光灯' : '打开闪光灯' }}
-      </button> -->
+      <div style="height: 78%; ">
+        <div class="scan-line" style="" v-if="isScannerActive"></div>
       </div>
+
     </div>
-
-
     <!-- 扫描结果 -->
     <div class="result-area">
       <h2 style=" text-align: center ;">扫描结果</h2>
-      <div class="result-content">
-        <p>{{ scanResult }}</p>
-      </div>
       <!-- 订单详情区域 -->
       <div class="order-area">
-        <table style="width: 50%;height: 100%; margin-left: auto; margin-right: auto;font-size: 20px;">
-
+        <table style="width: 50%;height: 100%; margin-left: auto; margin-right: auto;font-size: 16px;">
           <thead>
           </thead>
-
           <tbody>
             <tr>
               <td>当前用户：</td>
@@ -49,6 +29,7 @@
               <td>工单号：</td>
               <td>11232</td>
             </tr>
+
             <tr>
               <td>数量：</td>
               <td>333</td>
@@ -57,31 +38,49 @@
               <td>颜色：</td>
               <td>1444</td>
             </tr>
+            <tr>
+              <td>任务号：</td>
+              <td>{{ scanResult }}</td>
+            </tr>
+
           </tbody>
         </table>
       </div>
-
-
       <div class="result-actions" style="">
         <button class="btn primary" @click="goToUser">开始报工</button>
+        <button class="btn primary" @click="isScannerActive ? stopScanner() : startScanner()">
+          {{ isScannerActive ? '停止扫描' : '开始扫描' }}
+        </button>
         <button class="btn secondary" @click="logout">下线</button>
       </div>
     </div>
-
     <!-- 错误提示 -->
     <div class="error-message" v-if="scannerError">
       {{ scannerError }}
     </div>
-
+    <!-- 操作按钮 -->
+    <!-- <div class="action-buttons-area">
+      <div class="action-buttons">
+        <button class="btn primary" @click="isScannerActive ? stopScanner() : startScanner()">
+          {{ isScannerActive ? '停止扫描' : '开始扫描' }}
+        </button>
+        <button class="btn primary" @click="toggleFlash">
+          {{ isScannerActive ? '关闭闪光灯' : '打开闪光灯' }}
+        </button>
+        <button class="btn secondary" @click="toggleFlash" v-if="hasFlash">
+        {{ flashOn ? '关闭闪光灯' : '打开闪光灯' }}
+      </button>
+      </div>
+    </div> -->
     <!-- 底部导航 -->
     <div class="footer">
       <button class="nav-btn" @click="goToBackground">
         <span class="icon-setting"></span>
         <span>后台</span>
       </button>
-      <button class="nav-btn active" @click="goToUser">
+      <button class="nav-btn active" @click="goToSettings">
         <span class="icon-scan"></span>
-        <span>扫描</span>
+        <span>设置</span>
       </button>
     </div>
   </div>
@@ -93,10 +92,10 @@ import { Html5Qrcode } from 'html5-qrcode'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import useUserStore from '../store/modules/user'
+import { queryScanTaskResult } from '../api/blackLackApi/blackLackApi'
+import { checkUserToBlackLack } from "../api/system/user"
 const userStore = useUserStore()
 const router = useRouter()
-
-import { checkUserToBlackLack } from "../api/system/user"
 function logout() {
   ElMessageBox.confirm('确定注销并退出系统吗？', '提示', {
     confirmButtonText: '确定',
@@ -108,9 +107,7 @@ function logout() {
     })
   }).catch(() => { })
 }
-// 路由跳转
-const goToBackground = () => router.push('/background')
-const goToUser = () => router.push('/selectBadItems')
+
 
 // 扫描相关状态
 const scanResult = ref(null)
@@ -119,7 +116,7 @@ const isScannerActive = ref(false)
 const hasFlash = ref(false)
 const flashOn = ref(false)
 let html5QrCode = null
-
+const resData = ref(null)
 // 启动扫描（强制后置摄像头）
 const startScanner = async () => {
   const res = await userStore.getInfo()
@@ -155,7 +152,7 @@ const startScanner = async () => {
 
     const config = {
       fps: 10,
-      qrbox: { width: 150, height: 150 }
+      qrbox: { width: 200, height: 200 }
     };
 
     await html5QrCode.start(
@@ -165,6 +162,7 @@ const startScanner = async () => {
         // 成功扫描到二维码
         scanResult.value = decodedText;
         stopScanner();
+        scanResQueryApi(decodedText)
       },
       (error) => {
         // 关键修改：忽略"未检测到二维码"的常规错误
@@ -184,6 +182,52 @@ const startScanner = async () => {
   }
 };
 
+async function scanResQueryApi(taskCode) {
+  console.log("taskCode", taskCode);
+  //调用后端接口查询
+  let response = await queryScanTaskResult(taskCode);
+  console.log("扫描结果", response.data);
+  resData.value = response.data;
+  //显示在扫描结果表格
+  //准备进入不良品报工界面
+};
+// 路由跳转
+const goToBackground = () => {
+  //验证权限是否是管理员
+  if (userStore.roles.includes('admin')) {
+    router.push('/background')
+  } else {
+    ElMessage.error('您没有权限进入后台管理界面');
+    return;
+  }
+}
+const goToSettings = () => {
+  //验证权限是否是管理员
+  if (userStore.roles.includes('admin')) {
+    router.push('/selectBadItems')
+  } else {
+    ElMessage.error('您没有权限进入设置界面');
+    return;
+  }
+}
+
+const goToUser = () => {
+  try {
+    console.log("进入用户界面", resData.value.taskCode, scanResult.value)
+  } catch (error) {
+    ElMessage.error('扫描失败，请重新扫描');
+    return;
+  }
+  if (resData.value === null || resData.value.taskCode !== scanResult.value) {
+    return;
+  }
+  router.push({
+    path: '/selectBadItems',
+    query: {
+      myData: JSON.stringify(resData.value) // 如果是对象要序列化
+    }
+  })
+}
 // 停止扫描
 const stopScanner = async () => {
   if (html5QrCode && isScannerActive.value) {

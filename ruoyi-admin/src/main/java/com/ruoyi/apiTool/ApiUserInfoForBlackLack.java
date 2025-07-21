@@ -26,7 +26,7 @@ public class ApiUserInfoForBlackLack {
     private IBlacklackUserService blacklackUserService;
     @Autowired
     private BlacklackUserMapper blacklackUserMapper;
-    public List<BlacklackUser> getUserApiForBlacklack() {
+    public List<BlacklackUser> getUserApiForBlacklack(boolean tokenState) {
         if (accessTokenService == null) {
             System.err.println("❌ accessTokenService 未初始化");
             return  null;
@@ -34,7 +34,7 @@ public class ApiUserInfoForBlackLack {
         // 请求地址
         String url = "https://v3-ali.blacklake.cn/api/openapi/domain/web/v1/route/user/open/v1/user/_list"; // 替换为真实接口地址
         // Access Token 和 X-AUTH 一致
-        String accessToken = accessTokenService.getAccessToken(true);
+        String accessToken = accessTokenService.getAccessToken(tokenState);
         System.out.println("✅ Access Token: " + accessToken);
         OkHttpClient client = new OkHttpClient();
 
@@ -74,11 +74,10 @@ public class ApiUserInfoForBlackLack {
 
                     // 处理失效逻辑（如刷新 token、抛异常等）
                     //重新获取token
-                    accessToken = accessTokenService.getAccessToken(false);
                     //间隔1s
                     Thread.sleep(1000);
                     // 重新请求数据
-                    getUserApiForBlacklack();
+                    getUserApiForBlacklack(false);
 
                 } else {
                     System.out.println("✅ Token 有效，继续处理...");

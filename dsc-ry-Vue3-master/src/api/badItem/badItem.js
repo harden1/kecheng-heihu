@@ -19,6 +19,7 @@ export function getBadItem(id) {
 
 // 新增badItem
 export function addBadItem(data) {
+  console.log('新增接口', data)
   return request({
     url: '/badItem/badItem',
     method: 'post',

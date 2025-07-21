@@ -2,16 +2,11 @@ package com.ruoyi.apiTool.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.apiTool.ApiTaskForBlackLack;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -33,7 +28,15 @@ public class BlacklackUserController extends BaseController
 {
     @Autowired
     private IBlacklackUserService blacklackUserService;
+    @Autowired
+    private ApiTaskForBlackLack apiTaskForBlackLack;
+    @PostMapping("/queryScanTaskResult")
+    public String checkUserToBlackLack( @RequestParam("taskCode") String taskCode) {
+        System.out.println("收到的数据" + taskCode);
 
+        //0表示错误
+        return apiTaskForBlackLack.getTackForBlackLack(taskCode);
+    }
     /**
      * 查询黑湖用户信息列表
      */

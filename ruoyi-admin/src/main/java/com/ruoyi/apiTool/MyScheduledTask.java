@@ -10,6 +10,8 @@ public class MyScheduledTask {
     private AccessTokenService accessTokenService;
     @Autowired
     private ApiUserInfoForBlackLack apiUserInfoForBlackLack;
+    @Autowired
+    private ApiTaskForBlackLack apiTaskForBlackLack;
 
     // 每小时执行一次（整点开始）
     @Scheduled(cron = "0/50 * * * * ?")
@@ -21,7 +23,8 @@ public class MyScheduledTask {
         //测试userinfo
 //        apiUserInfoForBlackLack.getUserApiForBlacklack();
         //调用订单二维码数据，查询订单
-
+        //测试task接口
+        //apiTaskForBlackLack.getTackForBlackLack("25072100000");
     }
 
 }
