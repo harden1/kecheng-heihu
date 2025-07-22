@@ -2,15 +2,26 @@
   <div class="app">
     <!-- 顶部标题栏 -->
     <div class="header">
-      <h1>二维码扫描</h1>
+      <h1><el-button icon="fold" class="nav-btn back" @click="goToBackground">
+        <span>后台</span>
+      </el-button>
+        二维码扫描
+      <el-button icon="operation" class="nav-btn set" @click="goToSettings">
+        <span>设置</span>
+      </el-button></h1>
+      
     </div>
+     
     <!-- 扫描区域 -->
     <div class="scanner-area" style="margin-left: auto; margin-right: auto;">
       <div class="" id="reader"></div>
       <div style="height: 78%; ">
         <div class="scan-line" style="" v-if="isScannerActive"></div>
       </div>
-
+<!-- 错误提示 -->
+    <div class="error-message" v-if="scannerError">
+      {{ scannerError }}
+    </div>
     </div>
     <!-- 扫描结果 -->
     <div class="result-area">
@@ -54,10 +65,7 @@
         <button class="btn secondary" @click="logout">下线</button>
       </div>
     </div>
-    <!-- 错误提示 -->
-    <div class="error-message" v-if="scannerError">
-      {{ scannerError }}
-    </div>
+   
     <!-- 操作按钮 -->
     <!-- <div class="action-buttons-area">
       <div class="action-buttons">
@@ -72,17 +80,6 @@
       </button>
       </div>
     </div> -->
-    <!-- 底部导航 -->
-    <div class="footer">
-      <button class="nav-btn" @click="goToBackground">
-        <span class="icon-setting"></span>
-        <span>后台</span>
-      </button>
-      <button class="nav-btn active" @click="goToSettings">
-        <span class="icon-scan"></span>
-        <span>设置</span>
-      </button>
-    </div>
   </div>
 </template>
 

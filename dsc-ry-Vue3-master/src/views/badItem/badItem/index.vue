@@ -93,7 +93,7 @@
           <el-input v-model="form.badName" type="text" placeholder="请输入不良项名称" clearable
             :style="{ width: '100%' }"></el-input>
         </el-form-item>
-        <el-form-item label="不良项颜色" prop="field101" required>
+        <el-form-item label="不良项颜色" prop="field101" >
           <el-color-picker v-model="form.badColor" size="large"></el-color-picker>
         </el-form-item>
         <el-form-item label="排序" prop="field104">
@@ -102,7 +102,7 @@
               :disabled="item.disabled"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="启用状态" prop="field105" required>
+        <el-form-item label="启用状态" prop="field105" >
           <el-switch v-model="form.state" active-color="#148F12"></el-switch>
         </el-form-item>
       </el-form>
@@ -160,28 +160,28 @@ const data = reactive({
     no: undefined,
     state: true,
   },
-  rules: {
-    field102: [{
-      required: true,
-      message: '请输入不良项名称',
-      trigger: 'blur'
-    }],
-    field104: [{
-      required: true,
-      message: '请选择排序',
-      trigger: 'change'
-    }],
-    field101: [{
-      required: true,
-      message: '请选择颜色',
-      trigger: 'change'
-    }],
-    field105: [{
-      required: true,
-      message: '请选择状态',
-      trigger: 'change'
-    }],
-  }
+  // rules: {
+  //   field102: [{
+  //     required: true,
+  //     message: '请输入不良项名称',
+  //     trigger: 'blur'
+  //   }],
+  //   field104: [{
+  //     required: true,
+  //     message: '请选择排序',
+  //     trigger: 'change'
+  //   }],
+  //   field101: [{
+  //     required: true,
+  //     message: '请选择颜色',
+  //     trigger: 'change'
+  //   }],
+    // field105: [{
+    //   required: true,
+    //   message: '请选择状态',
+    //   trigger: 'change'
+    // }],
+  // }
 
 })
 const field104Options = ref([{
@@ -199,7 +199,53 @@ const field104Options = ref([{
 }, {
   "label": "5",
   "value": 5
-}])
+}, {
+  "label": "6",
+  "value": 6
+}, {
+  "label": "7",
+  "value": 7
+}, {
+  "label": "8",
+  "value": 8
+}, {
+  "label": "9",
+  "value": 9
+}, {
+  "label": "10",
+  "value": 10
+}, {
+  "label": "11",
+  "value": 11
+}, {
+  "label": "12",
+  "value": 12
+}, {
+  "label": "13",
+  "value": 13
+}, {
+  "label": "14",
+  "value": 14
+}, {
+  "label": "15",
+  "value": 15
+}, {
+  "label": "16",
+  "value": 16
+}, {
+  "label": "17",
+  "value": 17
+}, {
+  "label": "18",
+  "value": 18
+}, {
+  "label": "19",
+  "value": 19
+}, {
+  "label": "20",
+  "value": 20
+}
+])
 const { queryParams, form, rules } = toRefs(data)
 
 /** 查询badItem列表 */

@@ -14,109 +14,109 @@
       <tbody>
         <tr>
           <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #00bfae;" @click="handleClick('融色')">
-              融色 <br />(1) <br />5%
+            <el-button v-if="badSortList[0]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[0]?.badColor }"  @click="handleClick(badSortList[0]?.badName )">
+             {{badSortList[0]?.badName }}<br />(1) <br />5%
             </el-button>
           </td>
           <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #4c7fc2;" @click="handleClick('印偏')">
-              印偏 <br />(1) <br />5%
+            <el-button v-if="badSortList[1]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[1]?.badColor }"  @click="handleClick(badSortList[1]?.badName )">
+             {{badSortList[1]?.badName }}<br />(1) <br />5%
             </el-button>
           </td>
           <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #8f8f8f;" @click="handleClick('赭色')">
-              赭色 <br />(1) <br />5%
+            <el-button v-if="badSortList[2]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[2]?.badColor }"  @click="handleClick(badSortList[2]?.badName )">
+             {{badSortList[2]?.badName }}<br />(1) <br />5%
             </el-button>
           </td>
           <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #f7a700;" @click="handleClick('黄色')">
-              黄色 <br />(1) <br />5%
+           <el-button v-if="badSortList[3]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[3]?.badColor }"  @click="handleClick(badSortList[3]?.badName )">
+             {{badSortList[3]?.badName }}<br />(1) <br />5%
             </el-button>
           </td>
           <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #b5c8c9;" @click="handleClick('绿色')">
-              绿色 <br />(1) <br />5%
-            </el-button>
-          </td>
-        </tr>
-        <tr>
-          <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #c8a3c3;" @click="handleClick('粉色')">
-              粉色 <br />(1) <br />5%
-            </el-button>
-          </td>
-          <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #d6a895;" @click="handleClick('灰色')">
-              灰色 <br />(1) <br />5%
-            </el-button>
-          </td>
-          <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #635c2b;" @click="handleClick('棕色')">
-              棕色 <br />(1) <br />5%
-            </el-button>
-          </td>
-          <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #95c059;" @click="handleClick('淡绿')">
-              淡绿 <br />(1) <br />5%
-            </el-button>
-          </td>
-          <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #8e88c4;" @click="handleClick('蓝色')">
-              蓝色 <br />(1) <br />5%
+            <el-button v-if="badSortList[4]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[4]?.badColor }"  @click="handleClick(badSortList[4]?.badName )">
+             {{badSortList[4]?.badName }}<br />(1) <br />5%
             </el-button>
           </td>
         </tr>
         <tr>
           <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #bc2e92;" @click="handleClick('紫色')">
-              紫色 <br />(1) <br />5%
+            <el-button v-if="badSortList[5]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[5]?.badColor }"  @click="handleClick(badSortList[5]?.badName )">
+             {{badSortList[5]?.badName }}<br />(1) <br />5%
             </el-button>
           </td>
           <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #f8e3ba;" @click="handleClick('浅黄')">
-              浅黄 <br />(1) <br />5%
+           <el-button v-if="badSortList[6]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[6]?.badColor }"  @click="handleClick(badSortList[6]?.badName )">
+             {{badSortList[6]?.badName }}<br />(1) <br />5%
             </el-button>
           </td>
           <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #8e8dba;" @click="handleClick('浅灰')">
-              浅灰 <br />(1) <br />5%
+            <el-button v-if="badSortList[7]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[7]?.badColor }"  @click="handleClick(badSortList[7]?.badName )">
+             {{badSortList[7]?.badName }}<br />(1) <br />5%
             </el-button>
           </td>
           <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #96b4e6;" @click="handleClick('浅蓝')">
-              浅蓝 <br />(1) <br />5%
+            <el-button v-if="badSortList[8]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[8]?.badColor }"  @click="handleClick(badSortList[8]?.badName )">
+             {{badSortList[8]?.badName }}<br />(1) <br />5%
             </el-button>
           </td>
           <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #946228;" @click="handleClick('浅棕')">
-              浅棕 <br />(1) <br />5%
+            <el-button v-if="badSortList[9]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[9]?.badColor }"  @click="handleClick(badSortList[9]?.badName )">
+             {{badSortList[9]?.badName }}<br />(1) <br />5%
             </el-button>
           </td>
         </tr>
         <tr>
           <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #00bfae;" @click="handleClick('融色')">
-              融色 <br />(1) <br />5%
+            <el-button v-if="badSortList[10]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[10]?.badColor }"  @click="handleClick(badSortList[10]?.badName )">
+             {{badSortList[10]?.badName }}<br />(1) <br />5%
             </el-button>
           </td>
           <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #4c7fc2;" @click="handleClick('印偏')">
-              印偏 <br />(1) <br />5%
+            <el-button v-if="badSortList[11]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[11]?.badColor }"  @click="handleClick(badSortList[11]?.badName )">
+             {{badSortList[11]?.badName }}<br />(1) <br />5%
             </el-button>
           </td>
           <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #8f8f8f;" @click="handleClick('赭色')">
-              赭色<br />(1) <br />5%
+            <el-button v-if="badSortList[12]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[12]?.badColor }"  @click="handleClick(badSortList[12]?.badName )">
+             {{badSortList[12]?.badName }}<br />(1) <br />5%
             </el-button>
           </td>
           <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #f7a700;" @click="handleClick('黄色')">
-              黄色<br />(1) <br />5%
+           <el-button v-if="badSortList[13]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[13]?.badColor }"  @click="handleClick(badSortList[13]?.badName )">
+             {{badSortList[13]?.badName }}<br />(1) <br />5%
             </el-button>
           </td>
           <td class="color-box">
-            <el-button type="primary" class="color-btn" style="background-color: #b5c8c9;" @click="handleClick('绿色')">
-              绿色 <br />(1) <br />5%
+            <el-button v-if="badSortList[14]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[14]?.badColor }"  @click="handleClick(badSortList[14]?.badName )">
+             {{badSortList[14]?.badName }}<br />(1) <br />5%
+            </el-button>
+          </td>
+        </tr>
+        <tr>
+          <td class="color-box">
+            <el-button v-if="badSortList[15]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[15]?.badColor }"  @click="handleClick(badSortList[15]?.badName )">
+             {{badSortList[15]?.badName }}<br />(1) <br />5%
+            </el-button>
+          </td>
+          <td class="color-box">
+            <el-button v-if="badSortList[16]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[16]?.badColor }"  @click="handleClick(badSortList[16]?.badName )">
+             {{badSortList[16]?.badName }}<br />(1) <br />5%
+            </el-button>
+          </td>
+          <td class="color-box">
+            <el-button v-if="badSortList[17]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[17]?.badColor }"  @click="handleClick(badSortList[17]?.badName )">
+             {{badSortList[17]?.badName }}<br />(1) <br />5%
+            </el-button>
+          </td>
+          <td class="color-box">
+            <el-button v-if="badSortList[18]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[18]?.badColor }"  @click="handleClick(badSortList[18]?.badName )">
+             {{badSortList[18]?.badName }}<br />(1) <br />5%
+            </el-button>
+          </td>
+          <td class="color-box">
+            <el-button v-if="badSortList[19]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[19]?.badColor }"  @click="handleClick(badSortList[19]?.badName )">
+             {{badSortList[19]?.badName }}<br />(1) <br />5%
             </el-button>
           </td>
         </tr>
@@ -132,29 +132,45 @@
     </el-row>
     <div class="result-actions" style="">
       <button class="btn thirdly" @click="stop">暂停</button>
-      <button class="btn fourthly" @click="">报工</button>
+      <button class="btn fourthly" @click="submitToApiAll">报工</button>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, onMounted } from 'vue';
+import { defineComponent, onMounted ,ref} from 'vue';
 import { ElButton, ElRow, ElCol } from 'element-plus';
 import { ElMessageBox } from 'element-plus'
 import useUserStore from '../../store/modules/user'
 import { useRoute } from 'vue-router'
-
+import { useRouter } from 'vue-router'
+import { listBadItem } from '../../api/badItem/badItem'
+const router = useRouter()
 const route = useRoute()
 const rawData = route.query.myData as string
 const parsedData = rawData ? JSON.parse(rawData) : null
-onMounted(() => {
+const badSortList = ref([])
+onMounted(async() => {
+  // 处理传入的数据
   console.log("传入的数据", parsedData)
+  // 获取不良项目表，并填入各个不良项目
+  
+  let query = {
+    pageNum: 1,
+    pageSize: 1000
+  }
+
+  await listBadItem(query).then(res => {
+    console.log("获取的不良项目列表", res)
+    badSortList.value = res.rows.sort((a, b) => Number(a.no) - Number(b.no));
+    badSortList.value .forEach(item => {
+     console.log("item", item)
+    })
+  })
+  // 新建一条主表信息
 })
 
 const userStore = useUserStore()
-function handleClick(color: string) {
-  console.log(`Clicked on color: ${color}`);
-}
 function stop() {
   ElMessageBox.confirm('暂停中...', '提示', {
     cancelButtonText: '取消',
@@ -171,6 +187,29 @@ function logout() {
       location.href = '/index'
     })
   }).catch(() => { })
+}
+function handleClick(color: string) {
+  console.log(`Clicked on color: ${color}`);
+  submitToApi();
+}
+function submitToApi(){
+  //报工一条并记录反馈信息，生成一条报工表数据（一个不良报工），
+
+}
+function submitToApiAll(){
+  //生成一条主表数据，统计所有数量
+  //打开弹窗，显示一条详情，等待用户确认
+  //扣除不良品，传给后端不良品数据，后端进行良品报工
+  //跳转到报工表，统计不良品，展示报工记录和情况
+  //回传良品报工，填入返回数据和状态
+  console.log("报工所有");
+  
+  router.push({
+    path: '/submitToApi',
+    // query: {
+    //   myData: JSON.stringify() // 如果是对象要序列化
+    // }
+  })
 }
 </script>
 

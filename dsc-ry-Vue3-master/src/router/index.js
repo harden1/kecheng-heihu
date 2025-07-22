@@ -197,7 +197,14 @@ export const dynamicRoutes = [
     path: '/background',
     component: () => import('@/layout/index'),
     hidden: true
-  }
+  },
+  {
+    roles: ['common'],
+    path: '/submitToApi',
+    component: () => import('@/views/inspection/report/index.vue'),
+    name: 'submitToApi',
+     meta: { title: '用户首页', icon: 'user', affix: true }
+  },
 ]
 
 const router = createRouter({
