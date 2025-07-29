@@ -1,18 +1,18 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="100px">
       <el-form-item label="不良项名称" prop="badName">
         <el-input v-model="queryParams.badName" placeholder="请输入不良项名称" clearable @keyup.enter="handleQuery" />
       </el-form-item>
-      <el-form-item label="不良项颜色" prop="badColor">
+      <!-- <el-form-item label="不良项颜色" prop="badColor">
         <el-input v-model="queryParams.badColor" placeholder="请输入不良项颜色" clearable @keyup.enter="handleQuery" />
-      </el-form-item>
-      <el-form-item label="顺序" prop="no">
+      </el-form-item> -->
+      <!-- <el-form-item label="顺序" prop="no">
         <el-input v-model="queryParams.no" placeholder="请输入顺序" clearable @keyup.enter="handleQuery" />
-      </el-form-item>
-      <el-form-item label="启用状态" prop="state">
+      </el-form-item> -->
+      <!-- <el-form-item label="启用状态" prop="state">
         <el-input v-model="queryParams.state" placeholder="请输入启用状态" clearable @keyup.enter="handleQuery" />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -20,42 +20,62 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button type="primary" plain icon="Plus" @click="handleAdd"
           v-hasPermi="['badItem:badItem:add']">新增</el-button>
-      </el-col>
+      </el-col> -->
       <el-col :span="1.5">
         <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate"
           v-hasPermi="['badItem:badItem:edit']">修改</el-button>
       </el-col>
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete"
           v-hasPermi="['badItem:badItem:remove']">删除</el-button>
-      </el-col>
+      </el-col> -->
       <el-col :span="1.5">
         <el-button type="warning" plain icon="Download" @click="handleExport"
           v-hasPermi="['badItem:badItem:export']">导出</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button type="primary" plain icon="Plus" @click="heihuAPI"
-          v-hasPermi="['badItem:badItem:add']">接口訪問</el-button>
-      </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="badItemList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="badItemList" @selection-change="handleSelectionChange" >
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="编号" align="center" prop="id" />
+      <!-- <el-table-column label="编号" align="center" prop="id" /> -->
       <el-table-column label="不良项名称" align="center" prop="badName" />
-      <el-table-column label="不良项颜色" align="center" prop="badColor" />
-      <el-table-column label="顺序" align="center" prop="no" />
-      <el-table-column label="启用状态" align="center" prop="state" />
+      <!-- <el-table-column label="不良项颜色"  align="center" prop="badColor" /> -->
+      <el-table-column prop="badColor" label="不良项颜色">
+      <template #default="{ row }">
+        <div
+          :style="{
+            backgroundColor: row.badColor,
+            padding: '8px',
+            borderRadius: '4px'
+          }"
+        >
+          {{ row.badColor }}
+        </div>
+      </template>
+    </el-table-column>
+      <el-table-column label="顺序" align="center" sortable prop="no" />
+      <!-- <el-table-column label="启用状态" align="center" prop="state" /> -->
+    <el-table-column prop="tag" label="启用状态"
+      :filters="[
+        { text: 'true', value: 'true' },
+        { text: 'false', value: 'false' },
+      ]"
+      :filter-method="filterTag"
+      filter-placement="bottom-end" >
+      <template #default="scope">
+        <el-tag :type="scope.row.state === 'true' ? 'success' : 'error'" >{{ scope.row.state==="true"?"启用":"停用" }}</el-tag >
+      </template>
+    </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
             v-hasPermi="['badItem:badItem:edit']">修改</el-button>
-          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
-            v-hasPermi="['badItem:badItem:remove']">删除</el-button>
+          <!-- <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
+            v-hasPermi="['badItem:badItem:remove']">删除</el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -146,7 +166,7 @@ const title = ref("")
 const data = reactive({
   queryParams: {
     pageNum: 1,
-    pageSize: 10,
+    pageSize: 20,
     badName: null,
     badColor: null,
     no: null,

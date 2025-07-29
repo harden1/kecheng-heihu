@@ -47,7 +47,7 @@
           </td>
           <td class="color-box">
            <el-button v-if="badSortList[6]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[6]?.badColor }"  @click="handleClick(badSortList[6]?.badName )">
-             {{badSortList[6]?.badName }}<br />(1) <br />5%
+             {{badSortList[6]?.  }}<br />(1) <br />5%
             </el-button>
           </td>
           <td class="color-box">

@@ -110,7 +110,17 @@ public class InspectionSummary extends BaseEntity
     /** 不良20 */
     @Excel(name = "不良20")
     private Long defect20;
-
+    /** 不良20 */
+    @Excel(name = "全部缺陷项")
+    private String allDefectItems;
+    /** 不良20 */
+    @Excel(name = "暂停时间")
+    private String stopTime;
+    /** 不良20 */
+    @Excel(name = "api反馈")
+    private String apiDetail;
+    @Excel(name = "二维码")
+    private String qrCode;
     /** 报工记录信息 */
     private List<InspectionReport> inspectionReportList;
 
@@ -354,6 +364,38 @@ public class InspectionSummary extends BaseEntity
         return defect20;
     }
 
+    public String getAllDefectItems() {
+        return allDefectItems;
+    }
+
+    public void setAllDefectItems(String allDefectItems) {
+        this.allDefectItems = allDefectItems;
+    }
+
+    public String getStopTime() {
+        return stopTime;
+    }
+
+    public void setStopTime(String stopTime) {
+        this.stopTime = stopTime;
+    }
+
+    public String getApiDetail() {
+        return apiDetail;
+    }
+
+    public void setApiDetail(String apiDetail) {
+        this.apiDetail = apiDetail;
+    }
+
+    public String getQrCode() {
+        return qrCode;
+    }
+
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
+    }
+
     public List<InspectionReport> getInspectionReportList()
     {
         return inspectionReportList;
@@ -391,6 +433,10 @@ public class InspectionSummary extends BaseEntity
             .append("defect18", getDefect18())
             .append("defect19", getDefect19())
             .append("defect20", getDefect20())
+                .append("allDefectItems", getAllDefectItems())
+                .append("stopTime", getStopTime())
+                .append("apiDetail", getApiDetail())
+                .append("qrCode", getQrCode())
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())
             .append("updateBy", getUpdateBy())

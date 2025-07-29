@@ -12,6 +12,8 @@ public class MyScheduledTask {
     private ApiUserInfoForBlackLack apiUserInfoForBlackLack;
     @Autowired
     private ApiTaskForBlackLack apiTaskForBlackLack;
+    @Autowired
+    private ApiWareHouseDetail  apiWareHouseDetail;
 
     // 每小时执行一次（整点开始）
     @Scheduled(cron = "0/50 * * * * ?")
@@ -25,6 +27,8 @@ public class MyScheduledTask {
         //调用订单二维码数据，查询订单
         //测试task接口
         //apiTaskForBlackLack.getTackForBlackLack("25072100000");
+        //测库存明细接口
+//        apiWareHouseDetail.getWareHouseDetailForBlackLack("6911989136731");
     }
 
 }
