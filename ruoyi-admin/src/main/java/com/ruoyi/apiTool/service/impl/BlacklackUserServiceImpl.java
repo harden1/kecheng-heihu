@@ -1,7 +1,18 @@
 package com.ruoyi.apiTool.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ruoyi.badItem.domain.CreateBadItemsTable;
+import com.ruoyi.badItem.mapper.CreateBadItemsTableMapper;
+import com.ruoyi.badItem.service.ICreateBadItemsTableService;
+import com.ruoyi.inspection.domain.InspectionSummary;
+import com.ruoyi.inspection.mapper.InspectionSummaryMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.apiTool.mapper.BlacklackUserMapper;
@@ -20,6 +31,10 @@ public class BlacklackUserServiceImpl  implements IBlacklackUserService {
 
     @Autowired
     private BlacklackUserMapper blacklackUserMapper;
+    @Autowired
+    private InspectionSummaryMapper  inspectionSummaryMapper;
+    @Autowired
+    private CreateBadItemsTableMapper createBadItemsTableMapper;
     @Override
     @Transactional // 添加事务保证原子性
     public void replaceAll(List<BlacklackUser> list) {
@@ -101,5 +116,93 @@ public class BlacklackUserServiceImpl  implements IBlacklackUserService {
     public int deleteBlacklackUserById(Long id)
     {
         return blacklackUserMapper.deleteBlacklackUserById(id);
+    }
+
+    @Override
+    public InspectionSummary selectInspectionMainByQrcode(String taskCode) {
+        InspectionSummary inspectionSummary= new InspectionSummary();
+        inspectionSummary.setQrCode(taskCode);
+        InspectionSummary inspectionSummary1=null;
+        try {
+            inspectionSummary1= inspectionSummaryMapper.selectInspectionSummaryList(inspectionSummary).get(0);
+            return inspectionSummary1;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+    @Override
+    public InspectionSummary addOrUpdateInspectionMain(Map<String, String> processResult3) {
+        System.out.println("map对象的数据有没有颜色"+processResult3);
+        String color = processResult3.get("color");
+        //新增
+        InspectionSummary inspectionSummary = null;
+        if (!Objects.equals(processResult3.get("creatBy"), "-1")) {
+            //更新,直接返回这个主表记录
+            InspectionSummary ins= new InspectionSummary();
+            ins.setQrCode(processResult3.get("qrCode"));
+            inspectionSummary= inspectionSummaryMapper.selectInspectionSummaryList(ins).get(0);
+
+
+        } else {
+            List<CreateBadItemsTable> createBadItemsTableList = createBadItemsTableMapper.selectCreateBadItemsTableList(null);
+            ObjectMapper mapper = new ObjectMapper();
+
+            String jsonString;
+            try {
+                jsonString = mapper.writeValueAsString(createBadItemsTableList);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            //构建报工必须json
+            /*
+             * 当前操作人
+             * 报工单位id
+             * 物料行id
+             * 物料id
+             * 报工工序id
+             * 生产任务id
+             * 报工批号
+             * 报工批号id
+             * 报工二维码
+             * 二维码数量
+             * ********
+             * 报工数量
+             * 质量状态
+             * 报工方式
+             * 不良项目
+             *
+             */
+            Map<String, String> reportInfo = new HashMap<>();
+            reportInfo.put("creatBy", processResult3.get("creatBy"));
+            reportInfo.put("unitId", processResult3.get("unitId"));
+            reportInfo.put("materialLineId", processResult3.get("materialLineId"));
+            reportInfo.put("materialId", processResult3.get("materialId"));
+            reportInfo.put("processId", processResult3.get("processId"));
+            reportInfo.put("taskId", processResult3.get("taskId"));
+            reportInfo.put("batchNo", processResult3.get("batchNo"));
+            reportInfo.put("batchNoId", processResult3.get("batchNoId"));
+            reportInfo.put("qrCode", processResult3.get("qrCode"));
+            reportInfo.put("qrCodeNum", "1");
+            ObjectMapper reportMapper = new ObjectMapper();
+            String reportjsonString;
+            try {
+                reportjsonString = reportMapper.writeValueAsString(reportInfo);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            //新增
+            inspectionSummary = new InspectionSummary();
+            inspectionSummary.setWorkOrderCode(processResult3.get("workOrderCode"));
+            inspectionSummary.setTotalQuantity(Long.parseLong(processResult3.get("amount")));
+            inspectionSummary.setQrCode(processResult3.get("qrCode"));
+            inspectionSummary.setAllDefectItems(jsonString);
+            inspectionSummary.setApiReport(reportjsonString);
+            System.out.println(inspectionSummary);
+            inspectionSummaryMapper.insertInspectionSummary(inspectionSummary);
+
+        }
+        inspectionSummary.setColor(color);
+        return inspectionSummary;
     }
 }

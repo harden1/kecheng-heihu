@@ -20,3 +20,30 @@ export function queryScanTaskResult(taskCode) {
     params: query
   })
 }
+//开始报工
+export function addOrReadInspectionMain(reportRecord) {
+  console.log('开始报工', reportRecord)
+  return request({
+    url: '/blacklackUser/BlacklackUser/addOrReadInspectionMain',
+    method: 'post',
+    data: reportRecord 
+  })
+}
+//不良品报工
+export function reportBadItemOne(data) {
+  console.log('开始报工', data);
+  return request({
+    url: '/blacklackUser/BlacklackUser/reportBadItemOne',
+    method: 'post',
+    data,
+  });
+}
+//良品报工
+export function reportBatch(params) {
+  console.log('开始报工', reportRecord)
+  return request({
+    url: '/blacklackUser/BlacklackUser/reportBatch',
+    method: 'post',
+    data: reportRecord 
+  })
+}

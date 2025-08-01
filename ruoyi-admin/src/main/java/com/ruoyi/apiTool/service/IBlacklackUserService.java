@@ -1,9 +1,11 @@
 package com.ruoyi.apiTool.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ruoyi.apiTool.domain.BlacklackUser;
+import com.ruoyi.inspection.domain.InspectionSummary;
 
 /**
  * 黑湖用户信息Service接口
@@ -61,4 +63,8 @@ public interface IBlacklackUserService  {
      * @return 结果
      */
     public int deleteBlacklackUserById(Long id);
+
+    InspectionSummary selectInspectionMainByQrcode(String taskCode);
+
+    InspectionSummary addOrUpdateInspectionMain(Map<String, String> processResult3);
 }

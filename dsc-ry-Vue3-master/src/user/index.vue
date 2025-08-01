@@ -33,25 +33,24 @@
           </thead>
           <tbody>
             <tr>
-              <td>当前用户：</td>
-              <td>123</td>
+              <td>物料标识码</td>
+              <td>{{ scanResult }}</td>
+            </tr>
+             <tr>
+              <td>物料：</td>
+              <td>{{ resData?.name }}</td>
             </tr>
             <tr>
-              <td>工单号：</td>
-              <td>11232</td>
+              <td>度数</td>
+              <td>{{ resData?.specification }}</td>
             </tr>
-
             <tr>
               <td>数量：</td>
-              <td>333</td>
+              <td>{{ resData?.amount }}</td>
             </tr>
             <tr>
-              <td>颜色：</td>
-              <td>1444</td>
-            </tr>
-            <tr>
-              <td>任务号：</td>
-              <td>{{ scanResult }}</td>
+              <td>物料编号:</td>
+              <td>{{ resData?.materialCode  }}</td>
             </tr>
 
           </tbody>
@@ -89,7 +88,7 @@ import { Html5Qrcode } from 'html5-qrcode'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import useUserStore from '../store/modules/user'
-import { queryScanTaskResult } from '../api/blackLackApi/blackLackApi'
+import { queryScanTaskResult ,addOrReadInspectionMain} from '../api/blackLackApi/blackLackApi'
 import { checkUserToBlackLack } from "../api/system/user"
 const userStore = useUserStore()
 const router = useRouter()
@@ -121,7 +120,7 @@ const startScanner = async () => {
   console.log("启动扫描", username.username, username)
   checkUserToBlackLack(username).then(res => {
     console.log("查询用户接口返回数据", res)
-    if (res.code === 200 && res.msg === "0") {
+    if (res.code !== 200 ||res.msg !== "操作成功") {
       // 清空token和用户信息
       userStore.logOut().then(() => {
         ElMessageBox.confirm(
@@ -136,6 +135,8 @@ const startScanner = async () => {
           location.href = '/index'
         })
       })
+    }else {
+      userStore.setMesUserId(res.data)
     }
   })
   try {
@@ -186,8 +187,29 @@ async function scanResQueryApi(taskCode) {
   console.log("扫描结果", response.data);
   resData.value = response.data;
   //显示在扫描结果表格
-  //准备进入不良品报工界面
+  //提示是否扫过码
+  if (resData.value.creatBy !=="-1") {
+    const date = new Date(resData.value.creatDate)
+    const pad = (n) => n.toString().padStart(2, '0')
+    const formattedDate = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+
+    //弹窗确认
+    ElMessageBox.confirm("该条码已经扫描过，是否继续报工？上次扫描时间："+formattedDate, "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    }).then(() => {
+      // 确定
+      goToUser()
+    }).catch(() => {
+      // 取消
+      startScanner()
+    })
+
+  } 
 };
+
+
 // 路由跳转
 const goToBackground = () => {
   //验证权限是否是管理员
@@ -210,14 +232,15 @@ const goToSettings = () => {
 
 const goToUser = () => {
   try {
-    console.log("进入用户界面", resData.value.taskCode, scanResult.value)
+    console.log("进入用户界面", resData.value.qrCode, scanResult.value)
   } catch (error) {
     ElMessage.error('扫描失败，请重新扫描');
     return;
   }
-  if (resData.value === null || resData.value.taskCode !== scanResult.value) {
+  if (resData.value === null || resData.value.qrCode !== scanResult.value) {
     return;
   }
+  stopScanner()
   router.push({
     path: '/selectBadItems',
     query: {

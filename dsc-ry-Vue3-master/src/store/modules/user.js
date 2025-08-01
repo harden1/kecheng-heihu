@@ -7,6 +7,7 @@ import defAva from '@/assets/images/profile.jpg'
 const useUserStore = defineStore('user', {
   state: () => ({
     token: getToken(),
+    mesUserId: '',
     id: '',
     name: '',
     nickName: '',
@@ -15,6 +16,9 @@ const useUserStore = defineStore('user', {
     permissions: []
   }),
   actions: {
+    setMesUserId(id) {
+    this.mesUserId = id
+  },
     // 登录
     login(userInfo) {
       const username = userInfo.username.trim()

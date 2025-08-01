@@ -121,6 +121,10 @@ public class InspectionSummary extends BaseEntity
     private String apiDetail;
     @Excel(name = "二维码")
     private String qrCode;
+    @Excel(name = "二维码")
+    private String apiReport;
+    private String color;
+
     /** 报工记录信息 */
     private List<InspectionReport> inspectionReportList;
 
@@ -437,11 +441,28 @@ public class InspectionSummary extends BaseEntity
                 .append("stopTime", getStopTime())
                 .append("apiDetail", getApiDetail())
                 .append("qrCode", getQrCode())
+                .append("apiReport", getApiReport())
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())
             .append("updateBy", getUpdateBy())
             .append("updateTime", getUpdateTime())
             .append("inspectionReportList", getInspectionReportList())
             .toString();
+    }
+
+    public String getApiReport() {
+        return apiReport;
+    }
+
+    public void setApiReport(String apiReport) {
+        this.apiReport = apiReport;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }

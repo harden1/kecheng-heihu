@@ -29,6 +29,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="defect18"    column="defect_18"    />
         <result property="defect19"    column="defect_19"    />
         <result property="defect20"    column="defect_20"    />
+        <result property="allDefectItems"    column="all_defect_items"    />
+        <result property="stopTime"    column="stop_time"    />
+        <result property="apiDetail"    column="api_detail"    />
+        <result property="apiReport"    column="api_report"    />
+        <result property="qrCode"    column="qr_code"    />
         <result property="createBy"    column="create_by"    />
         <result property="createTime"    column="create_time"    />
         <result property="updateBy"    column="update_by"    />
@@ -56,7 +61,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectInspectionSummaryVo">
-        select id, work_order_code, total_quantity, defective_total, defect_1, defect_2, defect_3, defect_4, defect_5, defect_6, defect_7, defect_8, defect_9, defect_10, defect_11, defect_12, defect_13, defect_14, defect_15, defect_16, defect_17, defect_18, defect_19, defect_20, create_by, create_time, update_by, update_time from inspection_summary
+        select id, work_order_code, total_quantity, defective_total, defect_1, defect_2, defect_3, defect_4, defect_5, defect_6, defect_7, defect_8, defect_9, defect_10, defect_11, defect_12, defect_13, defect_14, defect_15, defect_16, defect_17, defect_18, defect_19, defect_20, all_defect_items, stop_time, api_detail, qr_code, api_report, create_by, create_time, update_by, update_time from inspection_summary
     </sql>
 
     <select id="selectInspectionSummaryList" parameterType="InspectionSummary" resultMap="InspectionSummaryResult">
@@ -67,7 +72,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
     
     <select id="selectInspectionSummaryById" parameterType="Long" resultMap="InspectionSummaryInspectionReportResult">
-        select id, work_order_code, total_quantity, defective_total, defect_1, defect_2, defect_3, defect_4, defect_5, defect_6, defect_7, defect_8, defect_9, defect_10, defect_11, defect_12, defect_13, defect_14, defect_15, defect_16, defect_17, defect_18, defect_19, defect_20, create_by, create_time, update_by, update_time
+        select id, work_order_code, total_quantity, defective_total, defect_1, defect_2, defect_3, defect_4, defect_5, defect_6, defect_7, defect_8, defect_9, defect_10, defect_11, defect_12, defect_13, defect_14, defect_15, defect_16, defect_17, defect_18, defect_19, defect_20, all_defect_items, stop_time, api_detail, qr_code, api_report, create_by, create_time, update_by, update_time
         from inspection_summary
         where id = #{id}
     </select>
@@ -104,6 +109,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="defect18 != null">defect_18,</if>
             <if test="defect19 != null">defect_19,</if>
             <if test="defect20 != null">defect_20,</if>
+
+            <if test="allDefectItems != null">all_defect_items,</if>
+            <if test="stopTime != null">stop_time,</if>
+            <if test="apiDetail != null">api_detail,</if>
+            <if test="qrCode != null">qr_code,</if>
+            <if test="apiReport != null">api_report,</if>
             <if test="createBy != null">create_by,</if>
             <if test="createTime != null">create_time,</if>
             <if test="updateBy != null">update_by,</if>
@@ -133,6 +144,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="defect18 != null">#{defect18},</if>
             <if test="defect19 != null">#{defect19},</if>
             <if test="defect20 != null">#{defect20},</if>
+            <if test="allDefectItems != null">#{allDefectItems},</if>
+            <if test="stopTime != null">#{stopTime},</if>
+            <if test="apiDetail != null">#{apiDetail},</if>
+            <if test="qrCode != null">#{qrCode},</if>
+            <if test="apiReport != null">#{apiReport},</if>
+
             <if test="createBy != null">#{createBy},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="updateBy != null">#{updateBy},</if>
@@ -166,6 +183,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="defect18 != null">defect_18 = #{defect18},</if>
             <if test="defect19 != null">defect_19 = #{defect19},</if>
             <if test="defect20 != null">defect_20 = #{defect20},</if>
+            <if test="allDefectItems != null">all_defect_items = #{allDefectItems},</if>
+            <if test="stopTime != null">stop_time = #{stopTime},</if>
+            <if test="apiDetail != null">api_detail = #{apiDetail},</if>
+            <if test="apiReport != null">api_report = #{apiReport},</if>
+            <if test="qrCode != null">qr_code = #{qrCode},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>

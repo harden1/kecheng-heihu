@@ -4,11 +4,11 @@
     <table class="color-table">
       <thead>
         <tr>
-          <th class="color-btn-top">生产批次: LOT000001</th>
-          <th class="color-btn-top">花纹型号: Ggf</th>
-          <th class="color-btn-top">颜色: 橙7</th>
-          <th class="color-btn-top">度数: 125°</th>
-          <th class="color-btn-top">总数不合格率: 10/2%</th>
+          <th class="color-btn-top">生产批次: {{ reportJson?.batchNo }}</th>
+          <th class="color-btn-top">花纹型号: {{ reportRecord?.name}}</th>
+          <th class="color-btn-top">颜色: {{ reportMain?.color }}</th>
+          <th class="color-btn-top">度数: {{ reportRecord?.specification}}</th>
+          <th class="color-btn-top">总数不合格率: {{ reportRecord?.amount}}/</th>
         </tr>
       </thead>
       <tbody>
@@ -47,7 +47,7 @@
           </td>
           <td class="color-box">
            <el-button v-if="badSortList[6]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[6]?.badColor }"  @click="handleClick(badSortList[6]?.badName )">
-             {{badSortList[6]?.  }}<br />(1) <br />5%
+             {{badSortList[6]?.badName  }}<br />(1) <br />5%
             </el-button>
           </td>
           <td class="color-box">
@@ -145,6 +145,10 @@ import useUserStore from '../../store/modules/user'
 import { useRoute } from 'vue-router'
 import { useRouter } from 'vue-router'
 import { listBadItem } from '../../api/badItem/badItem'
+import {addOrReadInspectionMain,reportBadItemOne} from '../../api/blackLackApi/blackLackApi'
+const userStore = useUserStore()
+const mesUserId = userStore.mesUserId
+const userName = userStore.userName
 const router = useRouter()
 const route = useRoute()
 const rawData = route.query.myData as string
@@ -153,24 +157,50 @@ const badSortList = ref([])
 onMounted(async() => {
   // 处理传入的数据
   console.log("传入的数据", parsedData)
-  // 获取不良项目表，并填入各个不良项目
+  //获取不良项目表，并填入各个不良项目
+  //查询qrcode，看看有没有这条数据，  
+  //如果有：提示已经在什么时候被谁扫码，有没有报工，
+  //如果没有：新增一条主表信息，记录二维码，记录工单，记录当时的不良项目
   
   let query = {
     pageNum: 1,
     pageSize: 1000
   }
-
-  await listBadItem(query).then(res => {
-    console.log("获取的不良项目列表", res)
-    badSortList.value = res.rows.sort((a, b) => Number(a.no) - Number(b.no));
-    badSortList.value .forEach(item => {
-     console.log("item", item)
-    })
-  })
+  //新建或读取一条主记录
+  addOrReadMain(parsedData)
+  // await listBadItem(query).then(res => {
+  //   console.log("获取的不良项目列表", res)
+  //   badSortList.value = res.rows.sort((a, b) => Number(a.no) - Number(b.no));
+  //   badSortList.value .forEach(item => {
+  //   //  console.log("item", item)
+  //   })
+  // })
   // 新建一条主表信息
 })
+const reportMain= ref(null)
+const reportJson= ref(null)
+const reportRecord = ref(null)
+//开始报工
+  async function addOrReadMain(object) {
+    console.log("开始报工", (object))
+    reportRecord.value = object;
+    object.mesUserId = mesUserId;
+    object.creatBy = userName;
+    console.log("mesUserId", mesUserId)
+    console.log("object", object)
+    let mainObject = await addOrReadInspectionMain(object);
+    console.log("mainObject", mainObject)
+    const rawJson =  mainObject.data.allDefectItems;
+    const createBadItemsList = JSON.parse(rawJson);
+    reportMain.value = mainObject.data; 
+    badSortList.value = createBadItemsList.sort((a, b) => Number(a.no) - Number(b.no));
+    //移除状态0的记录
+    badSortList.value = badSortList.value.filter(item => item.state === "true");
 
-const userStore = useUserStore()
+    const rawJsonReport=  mainObject.data.apiReport;
+    reportJson.value = JSON.parse(rawJsonReport);
+  
+  };
 function stop() {
   ElMessageBox.confirm('暂停中...', '提示', {
     cancelButtonText: '取消',
@@ -188,14 +218,15 @@ function logout() {
     })
   }).catch(() => { })
 }
-function handleClick(color: string) {
+async function handleClick(color: string) {
   console.log(`Clicked on color: ${color}`);
-  submitToApi();
+  let parms = {
+    color: color,
+    reportJson: reportJson.value,
+  }
+  await reportBadItemOne(parms);
 }
-function submitToApi(){
-  //报工一条并记录反馈信息，生成一条报工表数据（一个不良报工），
 
-}
 function submitToApiAll(){
   //生成一条主表数据，统计所有数量
   //打开弹窗，显示一条详情，等待用户确认
