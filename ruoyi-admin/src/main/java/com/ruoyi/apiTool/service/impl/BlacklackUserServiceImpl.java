@@ -8,6 +8,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ruoyi.apiTool.domain.ReportRecord;
 import com.ruoyi.badItem.domain.CreateBadItemsTable;
 import com.ruoyi.badItem.mapper.CreateBadItemsTableMapper;
 import com.ruoyi.badItem.service.ICreateBadItemsTableService;
@@ -132,19 +133,12 @@ public class BlacklackUserServiceImpl  implements IBlacklackUserService {
     }
 
     @Override
-    public InspectionSummary addOrUpdateInspectionMain(Map<String, String> processResult3) {
-        System.out.println("map对象的数据有没有颜色"+processResult3);
+    public InspectionSummary addOrUpdateInspectionMain(Map<String, String> processResult3, ReportRecord reportRecord) {
+        System.out.println("是新单还是已存在："+processResult3.get("creatBy"));
         String color = processResult3.get("color");
         //新增
         InspectionSummary inspectionSummary = null;
-        if (!Objects.equals(processResult3.get("creatBy"), "-1")) {
-            //更新,直接返回这个主表记录
-            InspectionSummary ins= new InspectionSummary();
-            ins.setQrCode(processResult3.get("qrCode"));
-            inspectionSummary= inspectionSummaryMapper.selectInspectionSummaryList(ins).get(0);
-
-
-        } else {
+        if (Objects.equals(processResult3.get("flag"), "-1")) {
             List<CreateBadItemsTable> createBadItemsTableList = createBadItemsTableMapper.selectCreateBadItemsTableList(null);
             ObjectMapper mapper = new ObjectMapper();
 
@@ -184,6 +178,7 @@ public class BlacklackUserServiceImpl  implements IBlacklackUserService {
             reportInfo.put("batchNoId", processResult3.get("batchNoId"));
             reportInfo.put("qrCode", processResult3.get("qrCode"));
             reportInfo.put("qrCodeNum", "1");
+            System.out.println("报工信息："+reportInfo);
             ObjectMapper reportMapper = new ObjectMapper();
             String reportjsonString;
             try {
@@ -200,6 +195,15 @@ public class BlacklackUserServiceImpl  implements IBlacklackUserService {
             inspectionSummary.setApiReport(reportjsonString);
             System.out.println(inspectionSummary);
             inspectionSummaryMapper.insertInspectionSummary(inspectionSummary);
+
+
+        } else {
+            //更新,直接返回这个主表记录
+            InspectionSummary ins= new InspectionSummary();
+            ins.setQrCode(processResult3.get("qrCode"));
+            inspectionSummary= inspectionSummaryMapper.selectInspectionSummaryList(ins).get(0);
+
+
 
         }
         inspectionSummary.setColor(color);

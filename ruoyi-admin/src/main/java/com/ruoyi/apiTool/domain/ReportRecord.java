@@ -17,6 +17,7 @@ public class ReportRecord {
     private String taskId;
     private Map<String, String> allDefectItems;
     private String creatBy;
+    private String flag;
     // ✅ 添加这个字段
     private String mesUserId;
 
@@ -149,7 +150,16 @@ public class ReportRecord {
                 ", taskId='" + taskId + '\'' +
                 ", allDefectItems=" + allDefectItems +
                 ", creatBy='" + creatBy + '\'' +
+                ", flag='" + flag + '\'' +
                 ", mesUserId='" + mesUserId + '\'' +
                 '}';
+    }
+
+    public String getFlag() {
+        return flag;
+    }
+
+    public void setFlag(String flag) {
+        this.flag = flag;
     }
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ruoyi.apiTool.domain.BlacklackUser;
+import com.ruoyi.apiTool.domain.ReportRecord;
 import com.ruoyi.inspection.domain.InspectionSummary;
 
 /**
@@ -66,5 +67,5 @@ public interface IBlacklackUserService  {
 
     InspectionSummary selectInspectionMainByQrcode(String taskCode);
 
-    InspectionSummary addOrUpdateInspectionMain(Map<String, String> processResult3);
+    InspectionSummary addOrUpdateInspectionMain(Map<String, String> processResult3, ReportRecord reportRecord);
 }

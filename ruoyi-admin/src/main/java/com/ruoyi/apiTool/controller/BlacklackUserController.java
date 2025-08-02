@@ -58,12 +58,15 @@ public class BlacklackUserController extends BaseController {
                 "主表记录：" + inspectionSummary
         );
         //将inspectionSummary对象的值赋给reportRecordResult
-        if (inspectionSummary != null){
+        if (inspectionSummary == null){
+            reportRecordResult.put("creatBy", "");
+            reportRecordResult.put("creatDate", "");
+            reportRecordResult.put("flag", "-1");
+            System.out.println("找不到记录："+reportRecordResult);
+
+        }else {
             reportRecordResult.put("creatBy", inspectionSummary.getCreateBy());
             reportRecordResult.put("creatDate", inspectionSummary.getCreateTime().toString());
-        }else {
-            reportRecordResult.put("creatBy", "-1");
-            reportRecordResult.put("creatDate", "");
         }
 
         //返回确认信息
@@ -82,20 +85,32 @@ public class BlacklackUserController extends BaseController {
 
         Map<String, String> processResult3 = null;
         processResult3 = processListForBlackLack.getWareHouseDetailForBlackLack(reportRecord.getWorkOrderId(),  reportRecord.getProcessId());
-        processResult3.put("creatBy", reportRecord.getCreatBy());
+        processResult3.put("flag", reportRecord.getFlag());
         processResult3.put("amount", reportRecord.getAmount());
         processResult3.put("qrCode", reportRecord.getQrCode());
         processResult3.put("color", materialDetailResult1.get("color"));
         processResult3.put("unitId", materialDetailResult1.get("unitId"));
 
-        System.out.println("工单信息："+processResult3.get("color"));
         //返回确认信息
         //新建、修改主表记录，返回给前端显示
-        InspectionSummary result=blacklackUserService.addOrUpdateInspectionMain(processResult3);
+        InspectionSummary result=blacklackUserService.addOrUpdateInspectionMain(processResult3,reportRecord);
         return success(result);
     }
     @PostMapping("/reportBadItemOne")
     public AjaxResult reportBadItemOne(@RequestBody Map<String, Object> params) {
+        // 获取 color
+        String color = (String) params.get("color");
+
+        // 获取 reportJson（它是个 List）
+        Map<String, Object> reportJson = (Map<String, Object>) params.get("reportJson");
+
+        System.out.println("color = " + color);
+        System.out.println("reportJson = " + reportJson);
+
+        return AjaxResult.success("接收成功");
+    }
+    @PostMapping("/reportBatch")
+    public AjaxResult reportBatch(@RequestBody Map<String, Object> params) {
         // 获取 color
         String color = (String) params.get("color");
 

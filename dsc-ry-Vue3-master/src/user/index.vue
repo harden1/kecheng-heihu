@@ -33,7 +33,7 @@
           </thead>
           <tbody>
             <tr>
-              <td>物料标识码</td>
+              <td>物料标识码：</td>
               <td>{{ scanResult }}</td>
             </tr>
              <tr>
@@ -41,7 +41,7 @@
               <td>{{ resData?.name }}</td>
             </tr>
             <tr>
-              <td>度数</td>
+              <td>度数：</td>
               <td>{{ resData?.specification }}</td>
             </tr>
             <tr>
@@ -49,7 +49,7 @@
               <td>{{ resData?.amount }}</td>
             </tr>
             <tr>
-              <td>物料编号:</td>
+              <td>物料编号：</td>
               <td>{{ resData?.materialCode  }}</td>
             </tr>
 
@@ -188,7 +188,7 @@ async function scanResQueryApi(taskCode) {
   resData.value = response.data;
   //显示在扫描结果表格
   //提示是否扫过码
-  if (resData.value.creatBy !=="-1") {
+  if (resData.value.flag !=="-1") {
     const date = new Date(resData.value.creatDate)
     const pad = (n) => n.toString().padStart(2, '0')
     const formattedDate = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
@@ -241,6 +241,7 @@ const goToUser = () => {
     return;
   }
   stopScanner()
+  console.log("进入用户界面",resData.value)
   router.push({
     path: '/selectBadItems',
     query: {

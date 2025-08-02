@@ -103,6 +103,7 @@ public class ApiProcessListForBlackLack {
             if (processId1.equals(processId)){
                 //返回下一个工序的id
                 JsonNode task1 = taskList.get(i+1);
+                System.out.println("找到的下一个工序: "+task1);
                 // 提取关键信息
                 String taskId = task1.path("taskId").asText();
                 String taskCode = task1.path("taskCode").asText();
@@ -110,6 +111,20 @@ public class ApiProcessListForBlackLack {
                 String processName = task1.path("processName").asText();
                 String status = task1.path("taskStatus").path("message").asText();
                 String workOrderCode = task1.path("workOrderCode").asText();
+                long lineId = task1.path("progressReportOpenVO").path("lineId").asLong();
+                long materialId = task1.path("progressReportOpenVO").path("materialInfo").path("baseInfo").path("id").asLong();
+
+                System.out.println("----------------------------------");
+                System.out.println("lineId: " + lineId);
+                System.out.println("taskId = " + taskId);
+                System.out.println("taskCode = " + taskCode);
+                System.out.println("processId = " + processId2);
+                System.out.println("processName = " + processName);
+                System.out.println("status = " + status);
+                System.out.println("workOrderCode = " + workOrderCode);
+                System.out.println("materialId = " + materialId);
+                System.out.println("----------------------------------");
+
                 result.put("taskId", taskId);
                 result.put("taskCode", taskCode);
                 result.put("processId", processId2);

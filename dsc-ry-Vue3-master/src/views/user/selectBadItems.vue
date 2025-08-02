@@ -154,9 +154,17 @@ const route = useRoute()
 const rawData = route.query.myData as string
 const parsedData = rawData ? JSON.parse(rawData) : null
 const badSortList = ref([])
+const parsedData1=ref()
 onMounted(async() => {
   // 处理传入的数据
-  console.log("传入的数据", parsedData)
+  console.log("传入的数据12", parsedData.flag)
+  parsedData1.value=parsedData
+  console.log("进入用户界面1231",parsedData1.value.flag,typeof(parsedData1.value.flag))
+  if(parsedData1.value.flag === "-1"){
+    parsedData1.value.creatBy="-1";
+    console.log("进入用户界面12345",parsedData1.value)
+  }
+  console.log("传入的数据123", parsedData)
   //获取不良项目表，并填入各个不良项目
   //查询qrcode，看看有没有这条数据，  
   //如果有：提示已经在什么时候被谁扫码，有没有报工，

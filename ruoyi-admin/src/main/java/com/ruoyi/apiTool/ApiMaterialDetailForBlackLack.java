@@ -97,7 +97,8 @@ public class ApiMaterialDetailForBlackLack {
         System.out.println("item: " + item);
         // 2. 提取花纹型号（从name字段）
         String patternModel = item.path("name").asText("未知型号");
-
+        String unitId=item.path("unit").path("id").asText();
+        System.out.println("unitId = " + unitId);
         // 3. 提取颜色和度数（从customFields数组）
         String color = "未知颜色";
         String degree = "未知度数";
@@ -130,6 +131,7 @@ public class ApiMaterialDetailForBlackLack {
         result.put("name", String.valueOf(patternModel));
         result.put("color", String.valueOf(color));
         result.put("degree", String.valueOf(degree));
+        result.put("unitId", String.valueOf(unitId));
         //取出想要的字符串返回到前端显示和后端建表
         return result;
     }
