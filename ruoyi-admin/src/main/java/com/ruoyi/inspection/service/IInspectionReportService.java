@@ -1,6 +1,8 @@
 package com.ruoyi.inspection.service;
 
 import java.util.List;
+import java.util.Map;
+
 import com.ruoyi.inspection.domain.InspectionReport;
 
 /**
@@ -58,4 +60,6 @@ public interface IInspectionReportService
      * @return 结果
      */
     public int deleteInspectionReportById(Long id);
+
+    void insertReportOne(Map<String, Object> res, Map<String, Object> reportJson, int mainId,int no,String badItem);
 }

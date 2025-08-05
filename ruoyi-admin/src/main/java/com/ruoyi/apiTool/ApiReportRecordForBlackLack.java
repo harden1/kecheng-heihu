@@ -29,6 +29,7 @@ public class ApiReportRecordForBlackLack {
         // 1. 创建 Map 并设置参数
         Map<String, String> jsonMap = new HashMap<>();
         jsonMap.put("qrCode", qrCode);
+        jsonMap.put("size", "1");
 
         // 2. 转换成 JSON 字符串
         ObjectMapper objectMapper = new ObjectMapper();
@@ -99,7 +100,7 @@ public class ApiReportRecordForBlackLack {
 
 
         JsonNode item = root.path("data").path("list").get(0);
-        System.out.println( "item = " + item);
+        System.out.println( "报工记录item = " + item);
         String materialId = item.path("materialInfo").path("baseInfo").path("id").asText();
         String workOrderId = item.path("workOrderId").asText();
         String taskId = item.path("taskId").asText();

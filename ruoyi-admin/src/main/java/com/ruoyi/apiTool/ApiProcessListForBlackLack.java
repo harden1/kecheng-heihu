@@ -16,7 +16,7 @@ public class ApiProcessListForBlackLack {
     @Autowired
     private AccessTokenService accessTokenService;
 
-    public Map<String, String> getWareHouseDetailForBlackLack(String workOrderIdList,String processId) {
+    public Map<String, String> getProcessListForBlackLack(String workOrderIdList,String processId) {
 
         // Access Token 和 X-AUTH 一致
         String accessToken = accessTokenService.getAccessToken(true);
@@ -60,7 +60,7 @@ public class ApiProcessListForBlackLack {
                     Thread.sleep(1000);
                     // 重新请求数据
                     accessTokenService.getAccessToken(false);
-                    getWareHouseDetailForBlackLack(workOrderIdList, processId);
+                    getProcessListForBlackLack(workOrderIdList, processId);
                 } else {
                     System.out.println("✅ Token 有效，继续处理...");
                 }
@@ -131,6 +131,9 @@ public class ApiProcessListForBlackLack {
                 result.put("processName", processName);
                 result.put("status", status);
                 result.put("workOrderCode", workOrderCode);
+                result.put("materialId", String.valueOf(materialId));
+                result.put("lineId", String.valueOf(lineId));
+
                 return result;
             }
         }

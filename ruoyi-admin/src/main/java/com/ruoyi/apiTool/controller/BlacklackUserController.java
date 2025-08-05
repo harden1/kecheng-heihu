@@ -1,17 +1,19 @@
 package com.ruoyi.apiTool.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ruoyi.apiTool.ApiMaterialDetailForBlackLack;
-import com.ruoyi.apiTool.ApiProcessListForBlackLack;
-import com.ruoyi.apiTool.ApiReportRecordForBlackLack;
-import com.ruoyi.apiTool.ApiTaskForBlackLack;
+import com.ruoyi.apiTool.*;
 import com.ruoyi.badItem.domain.CreateBadItemsTable;
 import com.ruoyi.badItem.mapper.CreateBadItemsTableMapper;
+import com.ruoyi.inspection.domain.InspectionReport;
 import com.ruoyi.inspection.domain.InspectionSummary;
+import com.ruoyi.inspection.service.IInspectionRecordService;
+import com.ruoyi.inspection.service.IInspectionReportService;
 import com.ruoyi.inspection.service.IInspectionSummaryService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,14 @@ public class BlacklackUserController extends BaseController {
     private ApiProcessListForBlackLack processListForBlackLack;
     @Autowired
     private IInspectionSummaryService inspectionSummaryService;
+    @Autowired
+    private IInspectionRecordService inspectionRecordService;
+    @Autowired
+    private IInspectionReportService inspectionReportService;
+    @Autowired
+    private AccessTokenService accessTokenService;
+    @Autowired
+    ApiBatchReportForBlackLack batchReportForBlackLack;
 
     @PostMapping("/queryScanTaskResult")
     public AjaxResult checkUserToBlackLack(@RequestParam("taskCode") String taskCode) {
@@ -53,20 +63,26 @@ public class BlacklackUserController extends BaseController {
         Map<String, String> reportRecordResult = null;
         reportRecordResult = reportRecordForBlackLack.getReportRecordDetailForBlackLack(taskCode);
         //查主表记录：并返回给前端做提示
-        InspectionSummary inspectionSummary = blacklackUserService.selectInspectionMainByQrcode(taskCode);
-        System.out.println(
-                "主表记录：" + inspectionSummary
-        );
-        //将inspectionSummary对象的值赋给reportRecordResult
-        if (inspectionSummary == null){
+        try {
+            InspectionSummary inspectionSummary = blacklackUserService.selectInspectionMainByQrcode(taskCode).get(0);
+
+            if (inspectionSummary.getApiDetail() != null && !inspectionSummary.getApiDetail().isEmpty()) {
+                reportRecordResult.put("flag", inspectionSummary.getApiDetail());
+            } else {
+                reportRecordResult.put("flag", "0");
+            }
+            reportRecordResult.put("creatBy", inspectionSummary.getCreateBy());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            reportRecordResult.put("creatDate", sdf.format(inspectionSummary.getCreateTime()));
+
+        } catch (IndexOutOfBoundsException e) {
+
+
             reportRecordResult.put("creatBy", "");
             reportRecordResult.put("creatDate", "");
             reportRecordResult.put("flag", "-1");
-            System.out.println("找不到记录："+reportRecordResult);
+            System.out.println("找不到记录：" + reportRecordResult);
 
-        }else {
-            reportRecordResult.put("creatBy", inspectionSummary.getCreateBy());
-            reportRecordResult.put("creatDate", inspectionSummary.getCreateTime().toString());
         }
 
         //返回确认信息
@@ -84,8 +100,9 @@ public class BlacklackUserController extends BaseController {
         materialDetailResult1.put("batchNoId", reportRecord.getBatchNoId());
 
         Map<String, String> processResult3 = null;
-        processResult3 = processListForBlackLack.getWareHouseDetailForBlackLack(reportRecord.getWorkOrderId(),  reportRecord.getProcessId());
+        processResult3 = processListForBlackLack.getProcessListForBlackLack(reportRecord.getWorkOrderId(), reportRecord.getProcessId());
         processResult3.put("flag", reportRecord.getFlag());
+        processResult3.put("mesUserId", reportRecord.getMesUserId());
         processResult3.put("amount", reportRecord.getAmount());
         processResult3.put("qrCode", reportRecord.getQrCode());
         processResult3.put("color", materialDetailResult1.get("color"));
@@ -93,35 +110,212 @@ public class BlacklackUserController extends BaseController {
 
         //返回确认信息
         //新建、修改主表记录，返回给前端显示
-        InspectionSummary result=blacklackUserService.addOrUpdateInspectionMain(processResult3,reportRecord);
+        InspectionSummary result = blacklackUserService.addOrUpdateInspectionMain(processResult3, reportRecord);
         return success(result);
     }
+
     @PostMapping("/reportBadItemOne")
     public AjaxResult reportBadItemOne(@RequestBody Map<String, Object> params) {
-        // 获取 color
-        String color = (String) params.get("color");
-
         // 获取 reportJson（它是个 List）
         Map<String, Object> reportJson = (Map<String, Object>) params.get("reportJson");
+        System.out.println("reportJson = " + reportJson);
+        long userId = Long.parseLong(reportJson.get("creatBy").toString());
+        String qrCode = "";
+        long reportUnitId = Long.parseLong(reportJson.get("unitId").toString());
+        long reportProcessId = Long.parseLong(reportJson.get("processId").toString());
+        long lineId = Long.parseLong(reportJson.get("materialLineId").toString());
+        long materialId = Long.parseLong(reportJson.get("materialId").toString());
+        long taskId = Long.parseLong(reportJson.get("taskId").toString());
+        String badItem = (String) params.get("color");
+        int no = (int) params.get("no");
+        int mainId = (int) params.get("mainId");
+        long batchNoId = 0L;
+        if (reportJson.get("batchNoId") != null) {
+            batchNoId = Long.parseLong(reportJson.get("batchNoId").toString());
+        }
+        String batchNo = "";
+        if (reportJson.get("batchNo") != null) {
+            batchNo = reportJson.get("batchNo").toString();
+        }
 
-        System.out.println("color = " + color);
+        //时间
+        String stopTime = reportJson.get("stopTime").toString();
+        long reportStartTime = Long.parseLong(reportJson.get("reportStartTime").toString());
+        long reportEndTime = Long.parseLong(reportJson.get("reportEndTime").toString());
+        //报工数量1,质量不合格，扫码报工不合格
+        int reportAmount = 1;
+        int qcStatus = 4;
+        int reportType = 4;
+        System.out.println("color = " + badItem);
         System.out.println("reportJson = " + reportJson);
 
-        return AjaxResult.success("接收成功");
+        Map<String, Object> res = batchReportForBlackLack.batchReportForBlackLack(
+                userId,
+                qrCode,
+                reportUnitId,
+                reportProcessId,
+                reportAmount,
+                lineId,
+                materialId,
+                qcStatus,
+                reportType,
+                taskId,
+                badItem,
+                stopTime,
+                batchNoId,
+                batchNo,
+                reportStartTime,
+                reportEndTime
+        );
+
+        //创建子表
+        inspectionReportService.insertReportOne(res, reportJson, mainId, no, badItem);
+        System.out.println("创建子表成功");
+        //更新主表
+        InspectionSummary inspectionSummary = inspectionSummaryService.selectInspectionSummaryById((long) mainId);
+        switch (no) {
+            case 0:
+                inspectionSummary.setDefect1(inspectionSummary.getDefect1() + 1);
+                break;
+            case 1:
+                inspectionSummary.setDefect2(inspectionSummary.getDefect2() + 1);
+                break;
+            case 2:
+                inspectionSummary.setDefect3(inspectionSummary.getDefect3() + 1);
+                break;
+            case 3:
+                inspectionSummary.setDefect4(inspectionSummary.getDefect4() + 1);
+                break;
+            case 4:
+                inspectionSummary.setDefect5(inspectionSummary.getDefect5() + 1);
+                break;
+            case 5:
+                inspectionSummary.setDefect6(inspectionSummary.getDefect6() + 1);
+                break;
+            case 6:
+                inspectionSummary.setDefect7(inspectionSummary.getDefect7() + 1);
+                break;
+            case 7:
+                inspectionSummary.setDefect8(inspectionSummary.getDefect8() + 1);
+                break;
+            case 8:
+                inspectionSummary.setDefect9(inspectionSummary.getDefect9() + 1);
+                break;
+            case 9:
+                inspectionSummary.setDefect10(inspectionSummary.getDefect10() + 1);
+                break;
+            case 10:
+                inspectionSummary.setDefect11(inspectionSummary.getDefect11() + 1);
+                break;
+            case 11:
+                inspectionSummary.setDefect12(inspectionSummary.getDefect12() + 1);
+                break;
+            case 12:
+                inspectionSummary.setDefect13(inspectionSummary.getDefect13() + 1);
+                break;
+            case 13:
+                inspectionSummary.setDefect14(inspectionSummary.getDefect14() + 1);
+                break;
+            case 14:
+                inspectionSummary.setDefect15(inspectionSummary.getDefect15() + 1);
+                break;
+            case 15:
+                inspectionSummary.setDefect16(inspectionSummary.getDefect16() + 1);
+                break;
+            case 16:
+                inspectionSummary.setDefect17(inspectionSummary.getDefect17() + 1);
+                break;
+            case 17:
+                inspectionSummary.setDefect18(inspectionSummary.getDefect18() + 1);
+                break;
+            case 18:
+                inspectionSummary.setDefect19(inspectionSummary.getDefect19() + 1);
+                break;
+            case 19:
+                inspectionSummary.setDefect20(inspectionSummary.getDefect20() + 1);
+                break;
+        }
+        inspectionSummary.setDefectiveTotal(inspectionSummary.getDefectiveTotal() + 1);
+        int i = inspectionSummaryService.updateInspectionSummary(inspectionSummary);
+        //查询主表记录
+
+        Map<String, Object> result1 = new HashMap<>();
+        if (i > 0) {
+            inspectionSummary.setInspectionReportList(null);
+            result1.put("summary", inspectionSummary);
+        }
+        return AjaxResult.success(result1);
     }
+
     @PostMapping("/reportBatch")
     public AjaxResult reportBatch(@RequestBody Map<String, Object> params) {
-        // 获取 color
-        String color = (String) params.get("color");
-
         // 获取 reportJson（它是个 List）
         Map<String, Object> reportJson = (Map<String, Object>) params.get("reportJson");
-
-        System.out.println("color = " + color);
         System.out.println("reportJson = " + reportJson);
+        long userId = Long.parseLong(reportJson.get("creatBy").toString());
+        String qrCode = reportJson.get("qrCode").toString();
+        long reportUnitId = Long.parseLong(reportJson.get("unitId").toString());
+        long reportProcessId = Long.parseLong(reportJson.get("processId").toString());
+        long lineId = Long.parseLong(reportJson.get("materialLineId").toString());
+        long materialId = Long.parseLong(reportJson.get("materialId").toString());
+        long taskId = Long.parseLong(reportJson.get("taskId").toString());
+        String badItem = "黑点";// (String) params.get("color");
+        int mainId = (int) params.get("mainId");
+        InspectionSummary inspectionSummary = inspectionSummaryService.selectInspectionSummaryById((long) mainId);
+        long batchNoId = 0L;
+        if (reportJson.get("batchNoId") != null) {
+            batchNoId = Long.parseLong(reportJson.get("batchNoId").toString());
+        }
+        String batchNo = "";
+        if (reportJson.get("batchNo") != null) {
+            batchNo = reportJson.get("batchNo").toString();
+        }
 
-        return AjaxResult.success("接收成功");
+        //时间
+        String stopTime = reportJson.get("stopTime").toString();
+        long reportStartTime = Long.parseLong(reportJson.get("reportStartTime").toString());
+        long reportEndTime = Long.parseLong(reportJson.get("reportEndTime").toString());
+        //报工数量1,质量不合格，扫码报工不合格
+        int reportAmount = 1;
+        int qcStatus = 1;
+        int reportType = 1;
+
+        Map<String, Object> res = batchReportForBlackLack.batchReportForBlackLack(
+                userId,
+                qrCode,
+                reportUnitId,
+                reportProcessId,
+                reportAmount,
+                lineId,
+                materialId,
+                qcStatus,
+                reportType,
+                taskId,
+                badItem,
+                stopTime,
+                batchNoId,
+                batchNo,
+                reportStartTime,
+                reportEndTime
+        );
+        //更新主表
+        System.out.println("报工状态：" + res.get("message"));
+        if (res.get("message").equals("成功")) {
+            inspectionSummary.setSuccessFlag(1);
+        } else {
+            inspectionSummary.setSuccessFlag(0);
+        }
+        inspectionSummary.setApiDetail(res.toString());
+        int i = inspectionSummaryService.updateInspectionSummary(inspectionSummary);
+        //查询主表记录
+        Map<String, Object> result1 = new HashMap<>();
+        if (i > 0) {
+            inspectionSummary.setInspectionReportList(null);
+            result1.put("summary", inspectionSummary);
+        }
+        return AjaxResult.success(result1);
     }
+
     /**
      * 查询黑湖用户信息列表
      */

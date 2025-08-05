@@ -25,11 +25,11 @@ public class InspectionSummary extends BaseEntity
 
     /** 总数量 */
     @Excel(name = "总数量")
-    private Long totalQuantity;
+    private int totalQuantity;
 
     /** 不合格总数 */
     @Excel(name = "不合格总数")
-    private Long defectiveTotal;
+    private int defectiveTotal;
 
     /** 不良1 */
     @Excel(name = "不良1")
@@ -124,6 +124,9 @@ public class InspectionSummary extends BaseEntity
     @Excel(name = "二维码")
     private String apiReport;
     private String color;
+    /** 成功状态，true表示成功 */
+    @Excel(name = "成功状态，true表示成功")
+    private Integer successFlag;
 
     /** 报工记录信息 */
     private List<InspectionReport> inspectionReportList;
@@ -148,22 +151,22 @@ public class InspectionSummary extends BaseEntity
         return workOrderCode;
     }
 
-    public void setTotalQuantity(Long totalQuantity) 
+    public void setTotalQuantity(int totalQuantity)
     {
         this.totalQuantity = totalQuantity;
     }
 
-    public Long getTotalQuantity() 
+    public int getTotalQuantity()
     {
         return totalQuantity;
     }
 
-    public void setDefectiveTotal(Long defectiveTotal) 
+    public void setDefectiveTotal(int defectiveTotal)
     {
         this.defectiveTotal = defectiveTotal;
     }
 
-    public Long getDefectiveTotal() 
+    public int getDefectiveTotal()
     {
         return defectiveTotal;
     }
@@ -442,6 +445,7 @@ public class InspectionSummary extends BaseEntity
                 .append("apiDetail", getApiDetail())
                 .append("qrCode", getQrCode())
                 .append("apiReport", getApiReport())
+                .append("successFlag", getSuccessFlag())
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())
             .append("updateBy", getUpdateBy())
@@ -464,5 +468,13 @@ public class InspectionSummary extends BaseEntity
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public Integer getSuccessFlag() {
+        return successFlag;
+    }
+
+    public void setSuccessFlag(Integer successFlag) {
+        this.successFlag = successFlag;
     }
 }

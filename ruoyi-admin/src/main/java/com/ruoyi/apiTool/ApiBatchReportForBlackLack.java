@@ -8,17 +8,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class ApiBatchReportForBlackLack {
     @Autowired
     private AccessTokenService accessTokenService;
 
-    public String batchReportForBlackLack(int currentUserId1, String qrCode1, int reportUnitId1, int reportProcessId1, int reportAmount1, int lineId1, int materialId1, int qcStatus1, int reportType1, int taskId1   ) {
+    public Map<String,Object> batchReportForBlackLack(long currentUserId1,
+                                          String qrCode1,
+                                          long reportUnitId1,
+                                          long reportProcessId1,
+                                          int reportAmount1,
+                                          long lineId1,
+                                          long materialId1,
+                                          int qcStatus1,
+                                          int reportType1,
+                                          long taskId1,
+                                          String badItem,
+                                          String stopTime,
+                                          long batchNoId,
+                                          String batchNo,
+                                          long reportStartTime,
+                                          long reportEndTime) {
+        Map<String, Object>  res=new HashMap<>();
 
         // Access Token 和 X-AUTH 一致
         String accessToken = accessTokenService.getAccessToken(true);
@@ -34,9 +47,14 @@ public class ApiBatchReportForBlackLack {
         // 变量替换区
 
         // 构造最内层 customFields
-        Map<String, Object> customField = new HashMap<>();
-        customField.put("fieldCode", "cust_field21__c");
-        customField.put("fieldValue", "测试");
+        Map<String, Object> customField1 = new HashMap<>();
+        customField1.put("fieldCode", "cust_field21__c");
+        customField1.put("fieldValue", badItem);
+
+        Map<String, Object> customField2 = new HashMap<>();
+        customField2.put("fieldCode", "cust_field30__c");
+        customField2.put("fieldValue", stopTime);
+
 
         // 构造 progressReportMaterialItems
         Map<String, Object> materialItem = new HashMap<>();
@@ -44,7 +62,10 @@ public class ApiBatchReportForBlackLack {
         materialItem.put("reportUnitId", reportUnitId1);
         materialItem.put("qrCode", qrCode1);
         materialItem.put("qrCodeNum", 1);
-        materialItem.put("customFields", Collections.singletonList(customField));
+        materialItem.put("batchNoId", batchNoId);
+        materialItem.put("batchNo", batchNo);
+        materialItem.put("customFields", Arrays.asList(customField1, customField2));
+
 
         // 构造 progressReportItems
         Map<String, Object> reportItem = new HashMap<>();
@@ -62,6 +83,8 @@ public class ApiBatchReportForBlackLack {
         jsonMap.put("progressReportItems", Collections.singletonList(reportItem));
         jsonMap.put("progressReportMaterial", reportMaterial);
         jsonMap.put("qcStatus", qcStatus1);
+        jsonMap.put("reportStartTime", reportStartTime);
+        jsonMap.put("reportEndTime", reportEndTime);
         jsonMap.put("reportType", reportType1);
         jsonMap.put("taskId", taskId1);
         // 如果需要可以加：jsonMap.put("storageLocationId", 1752892472337317L);
@@ -108,7 +131,9 @@ public class ApiBatchReportForBlackLack {
                     Thread.sleep(1000);
                     // 重新请求数据
                     accessTokenService.getAccessToken(false);
-                    batchReportForBlackLack(currentUserId1, qrCode1, reportUnitId1, reportProcessId1, reportAmount1, lineId1, materialId1, qcStatus1, reportType1, taskId1);
+                    batchReportForBlackLack(currentUserId1, qrCode1, reportUnitId1, reportProcessId1, reportAmount1,
+                            lineId1, materialId1, qcStatus1, reportType1, taskId1, badItem, stopTime, batchNoId,
+                            batchNo, reportStartTime, reportEndTime);
                 } else {
                     System.out.println("✅ Token 有效，继续处理...");
                 }
@@ -132,22 +157,15 @@ public class ApiBatchReportForBlackLack {
 
         int code = root.get("code").asInt();
         String message = root.get("message").asText();
-//        long taskId = root.get("data").get("taskId").asLong();
-//        String taskCode = root.get("data").get("taskCode").asText();
-
         System.out.println("Code: " + code);
         System.out.println("Message: " + message);
-//        System.out.println("Task ID: " + taskId);
-//        System.out.println("Task Code: " + taskCode);
 
-        // 遍历 executors 数组
-        JsonNode executors = root.get("data").get("executors");
-        for (JsonNode executor : executors) {
-            System.out.println("执行人: " + executor.get("name").asText());
-        }
+        res.put("message", message);
+        res.put("code", code);
+        res.put("data", root);
+        res.put("response", responseStr);
         // 返回前端
-        return responseStr;
-
-        // 存入数据库主表json字段
+        return res;
     }
+
 }

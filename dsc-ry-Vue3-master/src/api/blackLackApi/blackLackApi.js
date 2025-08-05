@@ -39,7 +39,7 @@ export function reportBadItemOne(data) {
   });
 }
 //良品报工
-export function reportBatch(params) {
+export function reportBatch(reportRecord) {
   console.log('开始报工', reportRecord)
   return request({
     url: '/blacklackUser/BlacklackUser/reportBatch',

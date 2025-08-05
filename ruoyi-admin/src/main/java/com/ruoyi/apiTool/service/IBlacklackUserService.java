@@ -65,7 +65,7 @@ public interface IBlacklackUserService  {
      */
     public int deleteBlacklackUserById(Long id);
 
-    InspectionSummary selectInspectionMainByQrcode(String taskCode);
+    List<InspectionSummary>  selectInspectionMainByQrcode(String taskCode);
 
     InspectionSummary addOrUpdateInspectionMain(Map<String, String> processResult3, ReportRecord reportRecord);
 }

@@ -84,4 +84,6 @@ public interface InspectionSummaryMapper
      * @return 结果
      */
     public int deleteInspectionReportBySummaryId(Long id);
+
+    public List<InspectionSummary> selectInspectionSummaryByQrCode(String taskCode);
 }

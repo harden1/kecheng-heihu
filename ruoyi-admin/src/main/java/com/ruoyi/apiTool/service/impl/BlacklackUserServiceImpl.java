@@ -120,13 +120,10 @@ public class BlacklackUserServiceImpl  implements IBlacklackUserService {
     }
 
     @Override
-    public InspectionSummary selectInspectionMainByQrcode(String taskCode) {
-        InspectionSummary inspectionSummary= new InspectionSummary();
-        inspectionSummary.setQrCode(taskCode);
-        InspectionSummary inspectionSummary1=null;
+    public List<InspectionSummary>  selectInspectionMainByQrcode(String taskCode) {
         try {
-            inspectionSummary1= inspectionSummaryMapper.selectInspectionSummaryList(inspectionSummary).get(0);
-            return inspectionSummary1;
+            List<InspectionSummary> inspectionSummary1s= inspectionSummaryMapper.selectInspectionSummaryByQrCode(taskCode);
+            return inspectionSummary1s;
         }catch (Exception e){
             return null;
         }
@@ -168,16 +165,18 @@ public class BlacklackUserServiceImpl  implements IBlacklackUserService {
              *
              */
             Map<String, String> reportInfo = new HashMap<>();
-            reportInfo.put("creatBy", processResult3.get("creatBy"));
+            reportInfo.put("creatBy", processResult3.get("mesUserId"));
             reportInfo.put("unitId", processResult3.get("unitId"));
-            reportInfo.put("materialLineId", processResult3.get("materialLineId"));
+            reportInfo.put("materialLineId", processResult3.get("lineId"));
             reportInfo.put("materialId", processResult3.get("materialId"));
             reportInfo.put("processId", processResult3.get("processId"));
             reportInfo.put("taskId", processResult3.get("taskId"));
             reportInfo.put("batchNo", processResult3.get("batchNo"));
             reportInfo.put("batchNoId", processResult3.get("batchNoId"));
             reportInfo.put("qrCode", processResult3.get("qrCode"));
+            //固定信息
             reportInfo.put("qrCodeNum", "1");
+
             System.out.println("报工信息："+reportInfo);
             ObjectMapper reportMapper = new ObjectMapper();
             String reportjsonString;
@@ -189,7 +188,7 @@ public class BlacklackUserServiceImpl  implements IBlacklackUserService {
             //新增
             inspectionSummary = new InspectionSummary();
             inspectionSummary.setWorkOrderCode(processResult3.get("workOrderCode"));
-            inspectionSummary.setTotalQuantity(Long.parseLong(processResult3.get("amount")));
+            inspectionSummary.setTotalQuantity(Integer.parseInt((processResult3.get("amount"))));
             inspectionSummary.setQrCode(processResult3.get("qrCode"));
             inspectionSummary.setAllDefectItems(jsonString);
             inspectionSummary.setApiReport(reportjsonString);
@@ -197,15 +196,11 @@ public class BlacklackUserServiceImpl  implements IBlacklackUserService {
             inspectionSummaryMapper.insertInspectionSummary(inspectionSummary);
 
 
-        } else {
-            //更新,直接返回这个主表记录
-            InspectionSummary ins= new InspectionSummary();
-            ins.setQrCode(processResult3.get("qrCode"));
-            inspectionSummary= inspectionSummaryMapper.selectInspectionSummaryList(ins).get(0);
-
-
-
         }
+        //更新,直接返回这个主表记录
+        InspectionSummary ins= new InspectionSummary();
+        ins.setQrCode(processResult3.get("qrCode"));
+        inspectionSummary= inspectionSummaryMapper.selectInspectionSummaryList(ins).get(0);
         inspectionSummary.setColor(color);
         return inspectionSummary;
     }

@@ -188,13 +188,16 @@ async function scanResQueryApi(taskCode) {
   resData.value = response.data;
   //显示在扫描结果表格
   //提示是否扫过码
+  
   if (resData.value.flag !=="-1") {
-    const date = new Date(resData.value.creatDate)
-    const pad = (n) => n.toString().padStart(2, '0')
-    const formattedDate = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
-
+    if (resData.value.flag !== "0") {
+      ElMessage.error("该条码已经报工，请勿重复扫码。" );
+      startScanner();
+      return;
+    }
+    const str = resData.value.creatDate
     //弹窗确认
-    ElMessageBox.confirm("该条码已经扫描过，是否继续报工？上次扫描时间："+formattedDate, "提示", {
+    ElMessageBox.confirm("该条码已经扫描过，是否继续报工？上次扫描时间："+str, "提示", {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",
@@ -212,6 +215,7 @@ async function scanResQueryApi(taskCode) {
 
 // 路由跳转
 const goToBackground = () => {
+   stopScanner()
   //验证权限是否是管理员
   if (userStore.roles.includes('admin')) {
     router.push('/background')
@@ -221,6 +225,7 @@ const goToBackground = () => {
   }
 }
 const goToSettings = () => {
+   stopScanner()
   //验证权限是否是管理员
   if (userStore.roles.includes('admin')) {
     router.push('/selectBadItems')
