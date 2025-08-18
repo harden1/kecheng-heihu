@@ -54,7 +54,7 @@ public class BlacklackUserController extends BaseController {
     @Autowired
     private AccessTokenService accessTokenService;
     @Autowired
-    ApiBatchReportForBlackLack batchReportForBlackLack;
+    private ApiBatchReportForBlackLack batchReportForBlackLack;
 
     @PostMapping("/queryScanTaskResult")
     public AjaxResult checkUserToBlackLack(@RequestParam("taskCode") String taskCode) {
@@ -167,7 +167,7 @@ public class BlacklackUserController extends BaseController {
                 reportStartTime,
                 reportEndTime
         );
-
+        System.out.println("res = " + res);
         //创建子表
         inspectionReportService.insertReportOne(res, reportJson, mainId, no, badItem);
         System.out.println("创建子表成功");
@@ -246,7 +246,14 @@ public class BlacklackUserController extends BaseController {
         }
         return AjaxResult.success(result1);
     }
-
+    @PostMapping("/updateStopTime")
+    public AjaxResult updateStopTime(@RequestBody Map<String, Object> params) {
+        int mainId = (int) params.get("mainId");
+        String stopTime = String.format("%.2f", (double)params.get("stopTime"));
+        //更新记录
+        int i = inspectionSummaryService.updateStopTime(mainId, stopTime);
+        return AjaxResult.success("继续");
+    }
     @PostMapping("/reportBatch")
     public AjaxResult reportBatch(@RequestBody Map<String, Object> params) {
         // 获取 reportJson（它是个 List）

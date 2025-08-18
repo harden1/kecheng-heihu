@@ -127,6 +127,7 @@ public class InspectionSummary extends BaseEntity
     /** 成功状态，true表示成功 */
     @Excel(name = "成功状态，true表示成功")
     private Integer successFlag;
+    private String debounce;
 
     /** 报工记录信息 */
     private List<InspectionReport> inspectionReportList;
@@ -446,6 +447,7 @@ public class InspectionSummary extends BaseEntity
                 .append("qrCode", getQrCode())
                 .append("apiReport", getApiReport())
                 .append("successFlag", getSuccessFlag())
+                .append("debounce", getDebounce())
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())
             .append("updateBy", getUpdateBy())
@@ -476,5 +478,13 @@ public class InspectionSummary extends BaseEntity
 
     public void setSuccessFlag(Integer successFlag) {
         this.successFlag = successFlag;
+    }
+
+    public String getDebounce() {
+        return debounce;
+    }
+
+    public void setDebounce(String debounce) {
+        this.debounce = debounce;
     }
 }

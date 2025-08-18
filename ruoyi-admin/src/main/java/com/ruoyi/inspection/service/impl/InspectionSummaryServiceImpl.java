@@ -19,7 +19,7 @@ import com.ruoyi.inspection.service.IInspectionSummaryService;
  * @date 2025-07-08
  */
 @Service
-public class InspectionSummaryServiceImpl implements IInspectionSummaryService 
+public class InspectionSummaryServiceImpl implements IInspectionSummaryService
 {
     @Autowired
     private InspectionSummaryMapper inspectionSummaryMapper;
@@ -106,6 +106,12 @@ public class InspectionSummaryServiceImpl implements IInspectionSummaryService
     {
         inspectionSummaryMapper.deleteInspectionReportBySummaryId(id);
         return inspectionSummaryMapper.deleteInspectionSummaryById(id);
+    }
+
+    @Override
+    public int updateStopTime(int mainId, String stopTime) {
+        int rows = inspectionSummaryMapper.updateStopTime(mainId, stopTime);
+        return rows;
     }
 
     /**

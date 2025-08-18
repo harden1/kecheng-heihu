@@ -3,6 +3,7 @@ package com.ruoyi.inspection.mapper;
 import java.util.List;
 import com.ruoyi.inspection.domain.InspectionSummary;
 import com.ruoyi.inspection.domain.InspectionReport;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 镜检统计主Mapper接口
@@ -86,4 +87,8 @@ public interface InspectionSummaryMapper
     public int deleteInspectionReportBySummaryId(Long id);
 
     public List<InspectionSummary> selectInspectionSummaryByQrCode(String taskCode);
+
+    String selectStopTime(String qrCode);
+
+    int updateStopTime(@Param("id") int id, @Param("stopTime") String stopTime);
 }

@@ -90,6 +90,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         from inspection_summary
         where qr_code = #{qr_code}
     </select>
+    <select id="selectStopTime" resultType="java.lang.String">
+        select stop_time from inspection_summary
+        where qr_code = #{qr_code}
+    </select>
 
     <insert id="insertInspectionSummary" parameterType="InspectionSummary" useGeneratedKeys="true" keyProperty="id">
         insert into inspection_summary
@@ -205,6 +209,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
         where id = #{id}
+    </update>
+    <update id="updateStopTime">
+        UPDATE inspection_summary
+        SET stop_time = #{stopTime}
+        WHERE id = #{id}
     </update>
 
     <delete id="deleteInspectionSummaryById" parameterType="Long">

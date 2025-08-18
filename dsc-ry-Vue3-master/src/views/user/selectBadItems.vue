@@ -8,119 +8,38 @@
           <th class="color-btn-top">花纹型号: {{ reportRecord?.name}}</th>
           <th class="color-btn-top">颜色: {{ reportMain?.color }}</th>
           <th class="color-btn-top">度数: {{ reportRecord?.specification}}</th>
-          <th class="color-btn-top">总数不合格率: {{ reportRecord?.amount}}/{{((mainObject.data.defectiveTotal/ reportRecord?.amount)*100).toFixed(2)}}%</th>
+          <th class="color-btn-top">总数<br>不合格率: {{ reportRecord?.amount}}/{{((mainObject.data.defectiveTotal/ reportRecord?.amount)*100).toFixed(2)}}%</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td class="color-box">
-            <el-button v-if="badSortList[0]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[0]?.badColor }"  @click="handleClick(badSortList[0]?.badName,0)">
-             {{badSortList[0]?.badName }}<br />{{mainObject.data.defect1 }}<br />{{(mainObject.data.defect1/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-          <td class="color-box">
-            <el-button v-if="badSortList[1]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[1]?.badColor }"  @click="handleClick(badSortList[1]?.badName,1 )">
-             {{badSortList[1]?.badName }}<br />{{mainObject.data.defect2 }} <br />{{(mainObject.data.defect2/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-          <td class="color-box">
-            <el-button v-if="badSortList[2]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[2]?.badColor }"  @click="handleClick(badSortList[2]?.badName ,2)">
-             {{badSortList[2]?.badName }}<br />{{mainObject.data.defect3 }}<br />{{(mainObject.data.defect3/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-          <td class="color-box">
-           <el-button v-if="badSortList[3]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[3]?.badColor }"  @click="handleClick(badSortList[3]?.badName  ,3)">
-             {{badSortList[3]?.badName }}<br />{{mainObject.data.defect4 }}<br />{{(mainObject.data.defect4/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-          <td class="color-box">
-            <el-button v-if="badSortList[4]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[4]?.badColor }"  @click="handleClick(badSortList[4]?.badName ,4 )">
-             {{badSortList[4]?.badName }}<br />{{mainObject.data.defect5}}<br />{{(mainObject.data.defect5/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-        </tr>
-        <tr>
-          <td class="color-box">
-            <el-button v-if="badSortList[5]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[5]?.badColor }"  @click="handleClick(badSortList[5]?.badName ,5)">
-             {{badSortList[5]?.badName }}<br />{{mainObject.data.defect6}}<br />{{(mainObject.data.defect6/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-          <td class="color-box">
-           <el-button v-if="badSortList[6]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[6]?.badColor }"  @click="handleClick(badSortList[6]?.badName,6)">
-             {{badSortList[6]?.badName  }}<br />{{mainObject.data.defect7 }}<br />{{(mainObject.data.defect7/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-          <td class="color-box">
-            <el-button v-if="badSortList[7]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[7]?.badColor }"  @click="handleClick(badSortList[7]?.badName,7)">
-             {{badSortList[7]?.badName }}<br />{{mainObject.data.defect8}}<br />{{(mainObject.data.defect8/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-          <td class="color-box">
-            <el-button v-if="badSortList[8]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[8]?.badColor }"  @click="handleClick(badSortList[8]?.badName,8)">
-             {{badSortList[8]?.badName }}<br />{{mainObject.data.defect9}}<br />{{(mainObject.data.defect9/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-          <td class="color-box">
-            <el-button v-if="badSortList[9]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[9]?.badColor }"  @click="handleClick(badSortList[9]?.badName, 9)">
-             {{badSortList[9]?.badName }}<br />{{mainObject.data.defect10}}<br />{{(mainObject.data.defect10/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-        </tr>
-        <tr>
-          <td class="color-box">
-            <el-button v-if="badSortList[10]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[10]?.badColor }"  @click="handleClick(badSortList[10]?.badName,10)">
-             {{badSortList[10]?.badName }}<br />{{mainObject.data.defect11 }}<br />{{(mainObject.data.defect11/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-          <td class="color-box">
-            <el-button v-if="badSortList[11]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[11]?.badColor }"  @click="handleClick(badSortList[11]?.badName,11 )">
-             {{badSortList[11]?.badName }}<br />{{mainObject.data.defect12 }} <br />{{(mainObject.data.defect12/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-          <td class="color-box">
-            <el-button v-if="badSortList[12]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[12]?.badColor }"  @click="handleClick(badSortList[12]?.badName ,12)">
-             {{badSortList[12]?.badName }}<br />{{mainObject.data.defect13 }}<br />{{(mainObject.data.defect13/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-          <td class="color-box">
-           <el-button v-if="badSortList[13]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[13]?.badColor }"  @click="handleClick(badSortList[13]?.badName ,13)">
-             {{badSortList[13]?.badName }}<br />{{mainObject.data.defect14}}<br />{{(mainObject.data.defect14/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-          <td class="color-box">
-            <el-button v-if="badSortList[14]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[14]?.badColor }"  @click="handleClick(badSortList[14]?.badName ,14)">
-             {{badSortList[14]?.badName }}<br />{{mainObject.data.defect15 }}<br />{{(mainObject.data.defect15/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-        </tr>
-        <tr>
-          <td class="color-box">
-            <el-button v-if="badSortList[15]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[15]?.badColor }"  @click="handleClick(badSortList[15]?.badName ,15)">
-             {{badSortList[15]?.badName }}<br />{{mainObject.data.defect16 }}<br />{{(mainObject.data.defect16/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-          <td class="color-box">
-            <el-button v-if="badSortList[16]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[16]?.badColor }"  @click="handleClick(badSortList[16]?.badName ,16)">
-             {{badSortList[16]?.badName }}<br />{{mainObject.data.defect17 }}<br />{{(mainObject.data.defect17/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-          <td class="color-box">
-            <el-button v-if="badSortList[17]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[17]?.badColor }"  @click="handleClick(badSortList[17]?.badName ,17)">
-             {{badSortList[17]?.badName }}<br />{{mainObject.data.defect18 }}<br />{{(mainObject.data.defect18/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-          <td class="color-box">
-            <el-button v-if="badSortList[18]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[18]?.badColor }"  @click="handleClick(badSortList[18]?.badName ,18)">
-             {{badSortList[18]?.badName }}<br />{{mainObject.data.defect19 }}<br />{{(mainObject.data.defect19/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-          <td class="color-box">
-            <el-button v-if="badSortList[19]" type="primary" class="color-btn"  :style="{ backgroundColor: badSortList[19]?.badColor }"  @click="handleClick(badSortList[19]?.badName ,19)">
-             {{badSortList[19]?.badName }}<br />{{mainObject.data.defect20 }}<br />{{(mainObject.data.defect20/reportRecord?.amount*100).toFixed(2)}}%
-            </el-button>
-          </td>
-        </tr>
-      </tbody>
+  <tr v-for="row in 4" :key="row">
+    <td class="color-box"
+        v-for="col in 5"
+        :key="(row - 1) * 5 + (col - 1)"
+    >
+      <el-button
+        v-if="badSortList[(row - 1) * 5 + (col - 1)] && !hiddenButtons[(row - 1) * 5 + (col - 1)]"
+        type="primary"
+        class="color-btn"
+        :style="{ backgroundColor: badSortList[(row - 1) * 5 + (col - 1)]?.badColor }"
+        @click="onButtonClick(badSortList[(row - 1) * 5 + (col - 1)]?.badName, (row - 1) * 5 + (col - 1))"
+      >
+        {{ badSortList[(row - 1) * 5 + (col - 1)]?.badName }}
+        <br />{{ mainObject.data[`defect${(row - 1) * 5 + col}`] }}
+        <br />{{ ((mainObject.data[`defect${(row - 1) * 5 + col}`] / reportRecord?.amount) * 100).toFixed(2) }}%
+      </el-button>
+
+      <el-button
+        v-else-if="badSortList[(row - 1) * 5 + (col - 1)] && hiddenButtons[(row - 1) * 5 + (col - 1)]"
+        type="default"
+        class="color-btn"
+        disabled
+      >
+         {{ countdowns[(row - 1) * 5 + (col - 1)] }}秒
+      </el-button>
+    </td>
+  </tr>
+</tbody>
     </table>
 
     <!-- Footer Section -->
@@ -138,14 +57,14 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, onMounted ,ref} from 'vue';
+import { defineComponent, onMounted ,ref,reactive} from 'vue';
 import { ElButton, ElRow, ElCol } from 'element-plus';
 import { ElMessageBox } from 'element-plus'
 import useUserStore from '../../store/modules/user'
 import { useRoute } from 'vue-router'
 import { useRouter } from 'vue-router'
 import { listBadItem } from '../../api/badItem/badItem'
-import {addOrReadInspectionMain,reportBadItemOne,reportBatch} from '../../api/blackLackApi/blackLackApi'
+import {addOrReadInspectionMain,reportBadItemOne,reportBatch,updateStopTime} from '../../api/blackLackApi/blackLackApi'
 import { no } from 'element-plus/es/locales.mjs';
 const userStore = useUserStore()
 const mesUserId = userStore.mesUserId
@@ -160,16 +79,18 @@ const reportMain= ref()
 const reportJson = ref()
 const reportRecord = ref()
 const mainObject = ref()
+const debounce=ref()
+const totalPauseTime = ref(0) // 累计暂停总时间（秒）
 onMounted(async() => {
   // 处理传入的数据
-  console.log("传入的数据12", parsedData.flag)
+  // console.log("传入的数据12", parsedData.flag)
   parsedData1.value=parsedData
-  console.log("进入用户界面1231",parsedData1.value.flag,typeof(parsedData1.value.flag))
+  // console.log("进入用户界面1231",parsedData1.value.flag,typeof(parsedData1.value.flag))
   if(parsedData1.value.flag === "-1"){
     parsedData1.value.creatBy="-1";
-    console.log("进入用户界面12345",parsedData1.value)
+    // console.log("进入用户界面12345",parsedData1.value)
   }
-  console.log("传入的数据123", parsedData)
+  // console.log("传入的数据123", parsedData)
   //获取不良项目表，并填入各个不良项目
   //查询qrcode，看看有没有这条数据，  
   //如果有：提示已经在什么时候被谁扫码，有没有报工，
@@ -181,7 +102,7 @@ onMounted(async() => {
   }
   //新建或读取一条主记录
   await addOrReadMain(parsedData)
-  console.log("开始报工", (parsedData))
+  // console.log("开始报工", (parsedData))
     reportRecord.value = parsedData;
     parsedData.mesUserId = mesUserId;
     parsedData.creatBy = userName;
@@ -189,6 +110,9 @@ onMounted(async() => {
     console.log("object", parsedData)
     mainObject.value = await addOrReadInspectionMain(parsedData);
     console.log("mainObject", mainObject)
+    debounce.value=mainObject.value.data.debounce;
+    console.log("debounce", debounce)
+    totalPauseTime.value=Number(mainObject.value.data.stopTime)
     const rawJson =  mainObject.value.data.allDefectItems;
     const createBadItemsList = JSON.parse(rawJson);
     reportMain.value = mainObject.value.data; 
@@ -205,11 +129,35 @@ onMounted(async() => {
     
     // reportMain.value.creatBy = userInfo.value.username;
   };
-function stop() {
+
+let pauseStartTime: number | null = null // 当前暂停开始时间
+async function stop() {
+  // 记录暂停开始时间
+  pauseStartTime = Date.now()
+
   ElMessageBox.confirm('暂停中...', '提示', {
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).catch(() => { })
+    confirmButtonText: '继续',
+    type: 'warning',
+    closeOnClickModal: false,
+    closeOnPressEscape: false,
+    showCancelButton: false // 只允许点击确认
+  }).then(async () => {
+    if (pauseStartTime) {
+      const now = Date.now()
+      const elapsed = (now - pauseStartTime) / 1000 // 转秒
+      totalPauseTime.value += elapsed
+      pauseStartTime = null
+      console.log(`本次暂停: ${elapsed.toFixed(1)} 秒，累计暂停: ${totalPauseTime.value.toFixed(1)} 秒`)
+    }
+    //更新暂停累计时间
+      let parms = {
+    mainId: mainObject.value.data.id,
+    stopTime: totalPauseTime.value,
+  }
+    await updateStopTime(parms);
+  }).catch(() => {
+    // 弹窗被取消或关闭（这里其实不会触发，因为只显示确认）
+  })
 }
 function logout() {
   ElMessageBox.confirm('确定注销并退出系统吗？', '提示', {
@@ -222,7 +170,36 @@ function logout() {
     })
   }).catch(() => { })
 }
-async function handleClick(color: string,No) {
+const debounceMs = Number(debounce.value) * 1000;
+
+// 记录按钮是否隐藏
+const hiddenButtons = reactive<Record<number, boolean>>({});
+
+// 倒计时数字
+const countdowns = reactive<Record<number, number>>({});
+
+function onButtonClick(name: string, index: number) {
+  if (hiddenButtons[index]) return; // 防抖中
+
+  hiddenButtons[index] = true;        // 点击后隐藏按钮
+  countdowns[index] = Number(debounce.value); // 初始化倒计时
+
+  handleClickApi(name, index); // 调用 API
+
+  // 每秒更新倒计时
+  const timer = setInterval(() => {
+    countdowns[index]--;
+    if (countdowns[index] <= 0) {
+      clearInterval(timer);
+      hiddenButtons[index] = false; // 倒计时结束显示按钮
+    }
+  }, 1000);
+}
+
+async function handleClickApi(color: string,No) {
+  
+
+
   console.log(`Clicked on color: ${color}`);
   reportJson.value.stopTime="0"
    console.log(mainObject.value.data);
