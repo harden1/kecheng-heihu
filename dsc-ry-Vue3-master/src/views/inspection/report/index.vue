@@ -1,5 +1,5 @@
 <template>
-  <div class="app" style="margin-top: 10px;">
+  <div class="app" style="margin-top: 0px; height:88%">
   <div class="app-container">
       <el-form style="margin-left: 25px; margin-bottom: 10px;" :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
         <!-- <el-form-item label="主表ID" prop="summaryId">
@@ -207,7 +207,7 @@ const data = reactive({
   form: {},
   queryParams: {
     pageNum: 1,
-    pageSize: 10,
+    pageSize: 5,
     summaryId: null,
     workOrderCode: null,
     reportTime: null,

@@ -58,4 +58,6 @@ public interface IInspectionSummaryService
      * @return 结果
      */
     public int deleteInspectionSummaryById(Long id);
+
+    int updateStopTime(int mainId, String stopTime);
 }

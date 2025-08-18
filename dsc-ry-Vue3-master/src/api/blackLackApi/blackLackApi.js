@@ -47,3 +47,10 @@ export function reportBatch(reportRecord) {
     data: reportRecord 
   })
 }
+export function updateStopTime(reportRecord) {
+  return request({
+    url: '/blacklackUser/BlacklackUser/updateStopTime',
+    method: 'post',
+    data: reportRecord 
+  })
+}

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,8 @@ import com.ruoyi.badItem.mapper.CreateBadItemsTableMapper;
 import com.ruoyi.badItem.service.ICreateBadItemsTableService;
 import com.ruoyi.inspection.domain.InspectionSummary;
 import com.ruoyi.inspection.mapper.InspectionSummaryMapper;
+import com.ruoyi.system.domain.SysConfig;
+import com.ruoyi.system.mapper.SysConfigMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.apiTool.mapper.BlacklackUserMapper;
@@ -36,6 +39,8 @@ public class BlacklackUserServiceImpl  implements IBlacklackUserService {
     private InspectionSummaryMapper  inspectionSummaryMapper;
     @Autowired
     private CreateBadItemsTableMapper createBadItemsTableMapper;
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
     @Override
     @Transactional // 添加事务保证原子性
     public void replaceAll(List<BlacklackUser> list) {
@@ -202,6 +207,16 @@ public class BlacklackUserServiceImpl  implements IBlacklackUserService {
         ins.setQrCode(processResult3.get("qrCode"));
         inspectionSummary= inspectionSummaryMapper.selectInspectionSummaryList(ins).get(0);
         inspectionSummary.setColor(color);
+        // 查询防抖时间
+        String debounce = sysConfigMapper.selectDebounce();
+        inspectionSummary.setDebounce(debounce);
+        //查询暂停时间，如果为空返回0
+        String stopTime = inspectionSummaryMapper.selectStopTime(processResult3.get("qrCode"));
+        if (stopTime==null){
+            inspectionSummary.setStopTime("0");
+        }else{
+            inspectionSummary.setStopTime(stopTime);
+        }
         return inspectionSummary;
     }
 }

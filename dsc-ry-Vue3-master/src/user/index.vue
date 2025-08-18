@@ -228,7 +228,7 @@ const goToSettings = () => {
    stopScanner()
   //验证权限是否是管理员
   if (userStore.roles.includes('admin')) {
-    router.push('/selectBadItems')
+    router.push('/system/config')
   } else {
     ElMessage.error('您没有权限进入设置界面');
     return;
