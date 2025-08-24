@@ -101,6 +101,7 @@ public class ApiReportRecordForBlackLack {
 
         JsonNode item = root.path("data").path("list").get(0);
         System.out.println( "报工记录item = " + item);
+        String processCode = item.get("processCode").asText();
         String materialId = item.path("materialInfo").path("baseInfo").path("id").asText();
         String workOrderId = item.path("workOrderId").asText();
         String taskId = item.path("taskId").asText();
@@ -136,6 +137,7 @@ public class ApiReportRecordForBlackLack {
         result.put("name", name);
         result.put("specification", specification);
         result.put("workOrderCode", workOrderCode);
+        result.put("processCode", processCode);
         //打印结果
         System.out.println("Material ID: " + result.get("materialId"));
         System.out.println("Work Order ID: " + result.get("workOrderId"));

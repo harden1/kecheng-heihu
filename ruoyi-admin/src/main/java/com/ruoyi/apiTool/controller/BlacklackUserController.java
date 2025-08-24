@@ -1,12 +1,16 @@
 package com.ruoyi.apiTool.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ruoyi.apiTool.*;
 import com.ruoyi.badItem.domain.CreateBadItemsTable;
 import com.ruoyi.badItem.mapper.CreateBadItemsTableMapper;
@@ -55,6 +59,8 @@ public class BlacklackUserController extends BaseController {
     private AccessTokenService accessTokenService;
     @Autowired
     private ApiBatchReportForBlackLack batchReportForBlackLack;
+    @Autowired
+    private ApiReportRecordForBlackLack apiReportRecordForBlackLack;
 
     @PostMapping("/queryScanTaskResult")
     public AjaxResult checkUserToBlackLack(@RequestParam("taskCode") String taskCode) {
@@ -65,7 +71,6 @@ public class BlacklackUserController extends BaseController {
         //查主表记录：并返回给前端做提示
         try {
             InspectionSummary inspectionSummary = blacklackUserService.selectInspectionMainByQrcode(taskCode).get(0);
-
             if (inspectionSummary.getApiDetail() != null && !inspectionSummary.getApiDetail().isEmpty()) {
                 reportRecordResult.put("flag", inspectionSummary.getApiDetail());
             } else {
@@ -76,17 +81,24 @@ public class BlacklackUserController extends BaseController {
             reportRecordResult.put("creatDate", sdf.format(inspectionSummary.getCreateTime()));
 
         } catch (IndexOutOfBoundsException e) {
-
-
             reportRecordResult.put("creatBy", "");
             reportRecordResult.put("creatDate", "");
             reportRecordResult.put("flag", "-1");
             System.out.println("找不到记录：" + reportRecordResult);
-
         }
-
-        //返回确认信息
-        return success(reportRecordResult);
+        //查询前工序配置
+        String previousProcessSetting = blacklackUserService.queryPreviousProcessSetting();
+        List<String> previousProcessSettingList = Arrays.asList(previousProcessSetting.split("/"));
+        System.out.println("查询前工序配置：" + previousProcessSettingList);
+        String processCode = reportRecordResult.get("processCode");
+        for (String pName : previousProcessSettingList){
+            if (pName.equals(processCode)){
+                System.out.println("当前工序：" + processCode);
+                //返回确认信息
+                return success(reportRecordResult);
+            }
+        }
+        return error("当前工序未到镜检，或工序更新后未设置，请联系管理员！需要配置工序编码："+processCode);
     }
 
     //点击开始报工，主表新增记录
@@ -95,6 +107,10 @@ public class BlacklackUserController extends BaseController {
     public AjaxResult addOrReadInspectionMain(@RequestBody ReportRecord reportRecord) {
         System.out.println("-------------------------------------");
         System.out.println("收到的数据：" + reportRecord);
+        //判断页面刷新是否重复传了接口，使用qrcode查询，如果存在，则返回主表记录
+        if (blacklackUserService.querySummaryByQrCode(reportRecord.getQrCode()) != null){
+            return AjaxResult.success(blacklackUserService.querySummaryByQrCode(reportRecord.getQrCode()));
+        }else {
         Map<String, String> materialDetailResult1 = materialDetailForBlackLack.getMaterialDetailForBlackLack(reportRecord.getMaterialCode());
         materialDetailResult1.put("batchNo", reportRecord.getBatchNo());
         materialDetailResult1.put("batchNoId", reportRecord.getBatchNoId());
@@ -112,8 +128,83 @@ public class BlacklackUserController extends BaseController {
         //新建、修改主表记录，返回给前端显示
         InspectionSummary result = blacklackUserService.addOrUpdateInspectionMain(processResult3, reportRecord);
         return success(result);
+        }
     }
+    @PostMapping("/reReportBadItemOne")
+    public AjaxResult reReportBadItemOne(@RequestBody InspectionReport params) {
+        System.out.println("map对象数据"+ params);
+        //查询主表匹配记录
+        InspectionSummary inspectionSummary = blacklackUserService.querySummaryByQrCode(params.getWorkOrderCode());
+        // 获取 reportJson（它是个 List）
+        String reportJsonStr= inspectionSummary.getApiReport();
+        ObjectMapper mapperReport = new ObjectMapper();
+        Map<String, Object> reportJson = new HashMap<>();
+        try {
+            reportJson = mapperReport.readValue(reportJsonStr, Map.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("reportJson = " + reportJson);
+        long userId = Long.parseLong(reportJson.get("creatBy").toString());
+        String qrCode = "";
+        long reportUnitId = Long.parseLong(reportJson.get("unitId").toString());
+        long reportProcessId = Long.parseLong(reportJson.get("processId").toString());
+        long lineId = Long.parseLong(reportJson.get("materialLineId").toString());
+        long materialId = Long.parseLong(reportJson.get("materialId").toString());
+        long taskId = Long.parseLong(reportJson.get("taskId").toString());
+        String badItem =params.getDefectRemark();
+        long batchNoId = 0L;
+        if (reportJson.get("batchNoId") != null) {
+            batchNoId = Long.parseLong(reportJson.get("batchNoId").toString());
+        }
+        String batchNo = "";
+        if (reportJson.get("batchNo") != null) {
+            batchNo = reportJson.get("batchNo").toString();
+        }
 
+        //时间
+        String stopTime = "";
+        long reportStartTime = 0;
+        long reportEndTime = 0;
+        //报工数量1,质量不合格，扫码报工不合格
+        int reportAmount = 1;
+        int qcStatus = 4;
+        int reportType = 4;
+        System.out.println("color = " + badItem);
+        System.out.println("reportJson = " + reportJson);
+        //报工
+        Map<String, Object> res = batchReportForBlackLack.batchReportForBlackLackOne(
+                userId,
+                qrCode,
+                reportUnitId,
+                reportProcessId,
+                reportAmount,
+                lineId,
+                materialId,
+                qcStatus,
+                reportType,
+                taskId,
+                badItem,
+                stopTime,
+                batchNoId,
+                batchNo,
+                reportStartTime,
+                reportEndTime
+        );
+        //检验成功状态
+        String message = res.get("message").toString();
+        int code = (int) res.get("code");
+        System.out.println("message1 = " + message  );
+        System.out.println(" code1 = " + code);
+        if (code!=200){
+            return AjaxResult.error(message);
+        }
+        //更新这条报工记录成功或失败
+        params.setSuccessFlag(1);
+        inspectionReportService.updateInspectionReport(params);
+
+        return AjaxResult.success("重新报工成功");
+    }
     @PostMapping("/reportBadItemOne")
     public AjaxResult reportBadItemOne(@RequestBody Map<String, Object> params) {
         // 获取 reportJson（它是个 List）
@@ -139,7 +230,7 @@ public class BlacklackUserController extends BaseController {
         }
 
         //时间
-        String stopTime = reportJson.get("stopTime").toString();
+        String stopTime = "";
         long reportStartTime = Long.parseLong(reportJson.get("reportStartTime").toString());
         long reportEndTime = Long.parseLong(reportJson.get("reportEndTime").toString());
         //报工数量1,质量不合格，扫码报工不合格
@@ -149,7 +240,7 @@ public class BlacklackUserController extends BaseController {
         System.out.println("color = " + badItem);
         System.out.println("reportJson = " + reportJson);
 
-        Map<String, Object> res = batchReportForBlackLack.batchReportForBlackLack(
+        Map<String, Object> res = batchReportForBlackLack.batchReportForBlackLackOne(
                 userId,
                 qrCode,
                 reportUnitId,
@@ -168,6 +259,14 @@ public class BlacklackUserController extends BaseController {
                 reportEndTime
         );
         System.out.println("res = " + res);
+        //检验成功状态
+        String message = res.get("message").toString();
+        int code = (int) res.get("code");
+        System.out.println("消息 = " + message  );
+        System.out.println(" 代码code = " + code);
+        if (code!=200){
+            return AjaxResult.error(message);
+        }
         //创建子表
         inspectionReportService.insertReportOne(res, reportJson, mainId, no, badItem);
         System.out.println("创建子表成功");
@@ -246,14 +345,16 @@ public class BlacklackUserController extends BaseController {
         }
         return AjaxResult.success(result1);
     }
+
     @PostMapping("/updateStopTime")
     public AjaxResult updateStopTime(@RequestBody Map<String, Object> params) {
         int mainId = (int) params.get("mainId");
-        String stopTime = String.format("%.2f", (double)params.get("stopTime"));
+        String stopTime = String.format("%.2f", (double) params.get("stopTime"));
         //更新记录
         int i = inspectionSummaryService.updateStopTime(mainId, stopTime);
         return AjaxResult.success("继续");
     }
+
     @PostMapping("/reportBatch")
     public AjaxResult reportBatch(@RequestBody Map<String, Object> params) {
         // 获取 reportJson（它是个 List）
@@ -305,6 +406,14 @@ public class BlacklackUserController extends BaseController {
                 reportStartTime,
                 reportEndTime
         );
+        //检验成功状态
+        String message = res.get("message").toString();
+        int code = (int) res.get("code");
+        System.out.println("message1 = " + message  );
+        System.out.println(" code1 = " + code);
+        if (code!=200){
+            return AjaxResult.error(message);
+        }
         //更新主表
         System.out.println("报工状态：" + res.get("message"));
         if (res.get("message").equals("成功")) {

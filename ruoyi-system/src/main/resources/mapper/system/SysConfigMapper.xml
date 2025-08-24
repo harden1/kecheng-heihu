@@ -71,6 +71,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectDebounce" resultType="java.lang.String">
         select config_value from sys_config where config_key = 'debounce'
     </select>
+    <select id="selectPreviousProcessSetting" resultType="java.lang.String">
+        select config_value from sys_config where config_key = 'Previous_process_setting'
+    </select>
 
 
     <insert id="insertConfig" parameterType="SysConfig">

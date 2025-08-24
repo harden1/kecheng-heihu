@@ -28,6 +28,7 @@ export function addReport(data) {
 
 // 修改报工记录
 export function updateReport(data) {
+  console.log('修改报工记录', data)
   return request({
     url: '/inspection/report',
     method: 'put',

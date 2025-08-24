@@ -76,4 +76,6 @@ public interface SysConfigMapper
 
 
     String selectDebounce();
+
+    String selectPreviousProcessSetting();
 }

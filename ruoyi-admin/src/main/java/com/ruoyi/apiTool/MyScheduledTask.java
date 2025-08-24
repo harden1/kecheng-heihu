@@ -16,7 +16,7 @@ public class MyScheduledTask {
     private ApiWareHouseDetail  apiWareHouseDetail;
 
     // 每小时执行一次（整点开始）
-    @Scheduled(cron = "* 0/50 * * * ?")
+    @Scheduled(cron = "* 0/59 * * * ?")
     public void executeTask() {
         System.out.println("执行任务时间：" + java.time.LocalDateTime.now());
         //调用token接口

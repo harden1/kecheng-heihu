@@ -114,6 +114,8 @@ public class InspectionSummaryServiceImpl implements IInspectionSummaryService
         return rows;
     }
 
+
+
     /**
      * 新增报工记录信息
      * 

@@ -68,4 +68,8 @@ public interface IBlacklackUserService  {
     List<InspectionSummary>  selectInspectionMainByQrcode(String taskCode);
 
     InspectionSummary addOrUpdateInspectionMain(Map<String, String> processResult3, ReportRecord reportRecord);
+
+    String queryPreviousProcessSetting();
+
+    InspectionSummary querySummaryByQrCode(String qrCode);
 }

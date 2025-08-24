@@ -128,6 +128,7 @@ public class InspectionSummary extends BaseEntity
     @Excel(name = "成功状态，true表示成功")
     private Integer successFlag;
     private String debounce;
+    private String previousProcessSetting;
 
     /** 报工记录信息 */
     private List<InspectionReport> inspectionReportList;
@@ -448,6 +449,7 @@ public class InspectionSummary extends BaseEntity
                 .append("apiReport", getApiReport())
                 .append("successFlag", getSuccessFlag())
                 .append("debounce", getDebounce())
+                .append("previousProcessSetting", getPreviousProcessSetting())
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())
             .append("updateBy", getUpdateBy())
@@ -486,5 +488,13 @@ public class InspectionSummary extends BaseEntity
 
     public void setDebounce(String debounce) {
         this.debounce = debounce;
+    }
+
+    public String getPreviousProcessSetting() {
+        return previousProcessSetting;
+    }
+
+    public void setPreviousProcessSetting(String previousProcessSetting) {
+        this.previousProcessSetting = previousProcessSetting;
     }
 }

@@ -38,7 +38,7 @@
 
 .scan-line {
   position: relative;
-  margin-top: -75%;
+  margin-top: -85%;
   z-index: 999;
   top: 0;
   left: 0;
@@ -59,6 +59,7 @@
   }
 } /* 扫描区域 */
 .scanner-area {
+  margin-top: 10%;
   width: 80%;
   height: 60%;
 }
@@ -109,13 +110,14 @@
 }
 .btn:active {
   transform: scale(0.98);
-  
 }
 
 /* 结果区域 */
 .result-area {
-  height: 35%;
-  margin: 0 15px 15px;
+  height: 20%;
+  width: 98%;
+  margin-top: 65px;
+  margin-left: 1%;
   padding: 15px;
   background: white;
   border-radius: 8px;
@@ -133,15 +135,15 @@
 .result-actions {
   display: flex;
   gap: 10px;
-  position: fixed;           /* 固定位置 */
-  bottom: 0;                 /* 页面底部 */
+  position: fixed; /* 固定位置 */
+  bottom: 0; /* 页面底部 */
   left: 0;
-  width: 100%;               /* 宽度铺满页面 */
-  z-index: 999;              /* 层级高，避免被遮挡 */
-  display: flex;             /* 横向排列按钮 */
-  justify-content: center;   /* 居中显示 */
-  background-color: white;   /* 可选，背景防止透明 */
-  padding: 10px 0;           /* 上下内边距 */
+  width: 100%; /* 宽度铺满页面 */
+  z-index: 999; /* 层级高，避免被遮挡 */
+  display: flex; /* 横向排列按钮 */
+  justify-content: center; /* 居中显示 */
+  background-color: white; /* 可选，背景防止透明 */
+  padding: 10px 0; /* 上下内边距 */
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* 顶部阴影区分主体 */
 }
 
@@ -175,30 +177,26 @@
   border: 0px;
   margin-top: -5px;
 }
-.nav-btn span{
+.nav-btn span {
   color: grey;
-  background-color: #02B980;
+  background-color: #02b980;
   font-size: 16px;
 }
 .nav-btn.back {
-
   color: grey;
   float: left;
-  background-color:#02B980;
+  background-color: #02b980;
 }
-.nav-btn.set{
-
+.nav-btn.set {
   color: grey;
   float: right;
-  background-color:#02B980;
+  background-color: #02b980;
 }
 
 .nav-btn i {
   font-size: 1.2rem;
   margin-bottom: 4px;
 }
-
-
 
 ////-------------------------------不良项目页面
 .app {
@@ -229,6 +227,7 @@
   border: 2px solid #02b980;
   border-radius: 3px; //边框圆角
   font-size: 14px;
+  font-weight: bolder;
   color: #02b980;
 }
 

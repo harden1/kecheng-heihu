@@ -26,21 +26,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 黑湖用户信息Service业务层处理
- * 
+ *
  * @author w
  * @date 2025-07-17
  */
 @Service
-public class BlacklackUserServiceImpl  implements IBlacklackUserService {
+public class BlacklackUserServiceImpl implements IBlacklackUserService {
 
     @Autowired
     private BlacklackUserMapper blacklackUserMapper;
     @Autowired
-    private InspectionSummaryMapper  inspectionSummaryMapper;
+    private InspectionSummaryMapper inspectionSummaryMapper;
     @Autowired
     private CreateBadItemsTableMapper createBadItemsTableMapper;
     @Autowired
     private SysConfigMapper sysConfigMapper;
+
     @Override
     @Transactional // 添加事务保证原子性
     public void replaceAll(List<BlacklackUser> list) {
@@ -52,51 +53,48 @@ public class BlacklackUserServiceImpl  implements IBlacklackUserService {
             blacklackUserMapper.batchInsert(list);
         }
     }
+
     /**
      * 查询黑湖用户信息
-     * 
+     *
      * @param id 黑湖用户信息主键
      * @return 黑湖用户信息
      */
     @Override
-    public BlacklackUser selectBlacklackUserById(Long id)
-    {
+    public BlacklackUser selectBlacklackUserById(Long id) {
         return blacklackUserMapper.selectBlacklackUserById(id);
     }
 
     /**
      * 查询黑湖用户信息列表
-     * 
+     *
      * @param blacklackUser 黑湖用户信息
      * @return 黑湖用户信息
      */
     @Override
-    public List<BlacklackUser> selectBlacklackUserList(BlacklackUser blacklackUser)
-    {
+    public List<BlacklackUser> selectBlacklackUserList(BlacklackUser blacklackUser) {
         return blacklackUserMapper.selectBlacklackUserList(blacklackUser);
     }
 
     /**
      * 新增黑湖用户信息
-     * 
+     *
      * @param blacklackUser 黑湖用户信息
      * @return 结果
      */
     @Override
-    public int insertBlacklackUser(BlacklackUser blacklackUser)
-    {
+    public int insertBlacklackUser(BlacklackUser blacklackUser) {
         return blacklackUserMapper.insertBlacklackUser(blacklackUser);
     }
 
     /**
      * 修改黑湖用户信息
-     * 
+     *
      * @param blacklackUser 黑湖用户信息
      * @return 结果
      */
     @Override
-    public int updateBlacklackUser(BlacklackUser blacklackUser)
-    {
+    public int updateBlacklackUser(BlacklackUser blacklackUser) {
         return blacklackUserMapper.updateBlacklackUser(blacklackUser);
     }
 
@@ -107,8 +105,7 @@ public class BlacklackUserServiceImpl  implements IBlacklackUserService {
      * @return 结果
      */
     @Override
-    public int deleteBlacklackUserByIds(Long[] ids)
-    {
+    public int deleteBlacklackUserByIds(Long[] ids) {
         return blacklackUserMapper.deleteBlacklackUserByIds(ids);
     }
 
@@ -119,24 +116,22 @@ public class BlacklackUserServiceImpl  implements IBlacklackUserService {
      * @return 结果
      */
     @Override
-    public int deleteBlacklackUserById(Long id)
-    {
+    public int deleteBlacklackUserById(Long id) {
         return blacklackUserMapper.deleteBlacklackUserById(id);
     }
 
     @Override
-    public List<InspectionSummary>  selectInspectionMainByQrcode(String taskCode) {
+    public List<InspectionSummary> selectInspectionMainByQrcode(String taskCode) {
         try {
-            List<InspectionSummary> inspectionSummary1s= inspectionSummaryMapper.selectInspectionSummaryByQrCode(taskCode);
-            return inspectionSummary1s;
-        }catch (Exception e){
+            return inspectionSummaryMapper.selectInspectionSummaryByQrCode(taskCode);
+        } catch (Exception e) {
             return null;
         }
     }
 
     @Override
     public InspectionSummary addOrUpdateInspectionMain(Map<String, String> processResult3, ReportRecord reportRecord) {
-        System.out.println("是新单还是已存在："+processResult3.get("creatBy"));
+        System.out.println("是新单还是已存在：" + processResult3.get("creatBy"));
         String color = processResult3.get("color");
         //新增
         InspectionSummary inspectionSummary = null;
@@ -167,7 +162,6 @@ public class BlacklackUserServiceImpl  implements IBlacklackUserService {
              * 质量状态
              * 报工方式
              * 不良项目
-             *
              */
             Map<String, String> reportInfo = new HashMap<>();
             reportInfo.put("creatBy", processResult3.get("mesUserId"));
@@ -182,7 +176,7 @@ public class BlacklackUserServiceImpl  implements IBlacklackUserService {
             //固定信息
             reportInfo.put("qrCodeNum", "1");
 
-            System.out.println("报工信息："+reportInfo);
+            System.out.println("报工信息：" + reportInfo);
             ObjectMapper reportMapper = new ObjectMapper();
             String reportjsonString;
             try {
@@ -202,21 +196,39 @@ public class BlacklackUserServiceImpl  implements IBlacklackUserService {
 
 
         }
-        //更新,直接返回这个主表记录
-        InspectionSummary ins= new InspectionSummary();
-        ins.setQrCode(processResult3.get("qrCode"));
-        inspectionSummary= inspectionSummaryMapper.selectInspectionSummaryList(ins).get(0);
+        inspectionSummary = querySummaryByQrCode(processResult3.get("qrCode"));
         inspectionSummary.setColor(color);
-        // 查询防抖时间
-        String debounce = sysConfigMapper.selectDebounce();
-        inspectionSummary.setDebounce(debounce);
-        //查询暂停时间，如果为空返回0
-        String stopTime = inspectionSummaryMapper.selectStopTime(processResult3.get("qrCode"));
-        if (stopTime==null){
-            inspectionSummary.setStopTime("0");
-        }else{
-            inspectionSummary.setStopTime(stopTime);
-        }
         return inspectionSummary;
+    }
+
+    @Override
+    public String queryPreviousProcessSetting() {
+        //查询前工序配置
+        String previousProcessSetting = sysConfigMapper.selectPreviousProcessSetting();
+        return previousProcessSetting;
+    }
+
+    public InspectionSummary querySummaryByQrCode(String qrcode) {
+        InspectionSummary inspectionSummary = null;
+        //更新,直接返回这个主表记录
+        InspectionSummary ins = new InspectionSummary();
+        ins.setQrCode(qrcode);
+        List<InspectionSummary> list = inspectionSummaryMapper.selectInspectionSummaryList(ins);
+        if (!list.isEmpty() ) {
+            inspectionSummary = list.get(0);
+            // 查询防抖时间
+            String debounce = sysConfigMapper.selectDebounce();
+            inspectionSummary.setDebounce(debounce);
+            //查询暂停时间，如果为空返回0
+            String stopTime = inspectionSummary.getStopTime();// inspectionSummaryMapper.selectStopTime(processResult3.get("qrCode"));
+            if (stopTime == null) {
+                inspectionSummary.setStopTime("0");
+            } else {
+                inspectionSummary.setStopTime(stopTime);
+            }
+            return inspectionSummary;
+        }
+        return null;
+
     }
 }

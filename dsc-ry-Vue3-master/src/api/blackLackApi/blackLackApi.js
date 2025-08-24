@@ -26,17 +26,26 @@ export function addOrReadInspectionMain(reportRecord) {
   return request({
     url: '/blacklackUser/BlacklackUser/addOrReadInspectionMain',
     method: 'post',
-    data: reportRecord 
+    data: reportRecord
   })
 }
 //不良品报工
 export function reportBadItemOne(data) {
-  console.log('开始报工', data);
+  console.log('开始报工', data)
   return request({
     url: '/blacklackUser/BlacklackUser/reportBadItemOne',
     method: 'post',
-    data,
-  });
+    data
+  })
+}
+//不良品报工重传
+export function reReport(data) {
+  console.log('开始报工', data)
+  return request({
+    url: '/blacklackUser/BlacklackUser/reReportBadItemOne',
+    method: 'post',
+    data: JSON.parse(JSON.stringify(data))
+  })
 }
 //良品报工
 export function reportBatch(reportRecord) {
@@ -44,13 +53,13 @@ export function reportBatch(reportRecord) {
   return request({
     url: '/blacklackUser/BlacklackUser/reportBatch',
     method: 'post',
-    data: reportRecord 
+    data: reportRecord
   })
 }
 export function updateStopTime(reportRecord) {
   return request({
     url: '/blacklackUser/BlacklackUser/updateStopTime',
     method: 'post',
-    data: reportRecord 
+    data: reportRecord
   })
 }
