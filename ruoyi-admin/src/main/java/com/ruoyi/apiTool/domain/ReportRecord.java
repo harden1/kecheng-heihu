@@ -18,6 +18,7 @@ public class ReportRecord {
     private Map<String, String> allDefectItems;
     private String creatBy;
     private String flag;
+    private String mesUserName;
     // ✅ 添加这个字段
     private String mesUserId;
 
@@ -133,7 +134,6 @@ public class ReportRecord {
         this.allDefectItems = allDefectItems;
     }
 
-
     @Override
     public String toString() {
         return "ReportRecord{" +
@@ -151,6 +151,7 @@ public class ReportRecord {
                 ", allDefectItems=" + allDefectItems +
                 ", creatBy='" + creatBy + '\'' +
                 ", flag='" + flag + '\'' +
+                ", mesUserName='" + mesUserName + '\'' +
                 ", mesUserId='" + mesUserId + '\'' +
                 '}';
     }
@@ -161,5 +162,13 @@ public class ReportRecord {
 
     public void setFlag(String flag) {
         this.flag = flag;
+    }
+
+    public String getMesUserName() {
+        return mesUserName;
+    }
+
+    public void setMesUserName(String mesUserName) {
+        this.mesUserName = mesUserName;
     }
 }

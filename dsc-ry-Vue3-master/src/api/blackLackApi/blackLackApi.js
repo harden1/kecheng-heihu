@@ -56,6 +56,15 @@ export function reportBatch(reportRecord) {
     data: reportRecord
   })
 }
+//良品报工重传
+export function reReportBatch(data) {
+  console.log('开始报工', data)
+  return request({
+    url: '/blacklackUser/BlacklackUser/reReportBatch',
+    method: 'post',
+    data: JSON.parse(JSON.stringify(data))
+  })
+}
 export function updateStopTime(reportRecord) {
   return request({
     url: '/blacklackUser/BlacklackUser/updateStopTime',

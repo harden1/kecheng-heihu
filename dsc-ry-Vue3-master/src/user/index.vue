@@ -6,7 +6,7 @@
         <el-button icon="fold" class="nav-btn back" @click="goToBackground">
           <span>后台</span>
         </el-button>
-        二维码扫描
+        扫描二维码
         <el-button icon="operation" class="nav-btn set" @click="goToSettings">
           <span>设置</span>
         </el-button>
@@ -33,7 +33,7 @@
           style="width: 100%; height: 100%; margin-left: auto; margin-right: auto; font-size: 20px">
           <thead>
             <tr>
-              <th colspan="2">扫描结果</th>
+              <th colspan="2">扫描结果（用户：{{ userName }}）</th>
             </tr>
           </thead>
           <tbody>
@@ -131,10 +131,12 @@
   const flashOn = ref(false)
   let html5QrCode = null
   const resData = ref(null)
+  const userName = ref()
   // 启动扫描（强制后置摄像头）
   const startScanner = async () => {
     const res = await userStore.getInfo()
     const username = res.user.userName
+    userName.value = username
     console.log('启动扫描', username.username, username)
     checkUserToBlackLack(username).then((res) => {
       console.log('查询用户接口返回数据', res)

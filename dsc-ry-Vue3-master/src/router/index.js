@@ -203,15 +203,15 @@ export const dynamicRoutes = [
     path: '/submitToApi',
     component: () => import('@/views/inspection/report/index.vue'),
     name: 'submitToApi',
-     meta: { title: '用户首页', icon: 'user', affix: true }
+    meta: { title: '用户首页', icon: 'user', affix: true }
   },
   {
     roles: ['common'],
     path: '/submitToApiUser',
-    component: () => import('@/views/inspection/report/index1.vue'),
+    component: () => import('@/views/inspection/summary/index2.vue'),
     name: 'submitToApi',
-     meta: { title: '用户首页', icon: 'user', affix: true }
-  },
+    meta: { title: '报工记录', icon: 'user', affix: true }
+  }
 ]
 
 const router = createRouter({
@@ -226,5 +226,3 @@ const router = createRouter({
 })
 
 export default router
-
-

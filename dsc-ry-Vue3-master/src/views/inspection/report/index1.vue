@@ -198,10 +198,10 @@
         </template>
       </el-dialog>
     </div>
-    <div class="result-actions" style="">
+    <!-- <div class="result-actions" style="">
       <button class="btn thirdly" @click="toScan">继续扫码</button>
       <button class="btn primary" @click="logout">下线</button>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -231,14 +231,20 @@
   const title = ref('')
   import { useRouter } from 'vue-router'
   const router = useRouter()
+  import { defineProps } from 'vue'
+  const props = defineProps({
+    query: { type: String, default: '' }
+  })
   // 禁止返回
   onMounted(() => {
+    console.log('传递参数', props.query)
     history.pushState(null, '', document.URL)
     window.addEventListener('popstate', forbidBack)
   })
 
   onUnmounted(() => {
     window.removeEventListener('popstate', forbidBack)
+    handleQuery()
   })
   function filterTag() {}
   function forbidBack() {
@@ -260,7 +266,6 @@
       pageNum: 1,
       pageSize: 5,
       summaryId: null,
-      workOrderCode: null,
       reportTime: null,
       reportType: null,
       quantity: null,
@@ -337,6 +342,7 @@
   /** 搜索按钮操作 */
   function handleQuery() {
     queryParams.value.pageNum = 1
+    queryParams.value.workOrderCode = props.query.workOrderCode
     getList()
   }
 
@@ -430,5 +436,8 @@
   }
 
   getList()
+  defineExpose({
+    handleQuery
+  })
 </script>
 <style scoped src="../../../assets/styles/user.scss"></style>

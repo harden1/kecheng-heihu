@@ -26,7 +26,10 @@
                   "
                   type="primary"
                   class="color-btn"
-                  :style="{ backgroundColor: badSortList[(row - 1) * 5 + (col - 1)]?.badColor }"
+                  :style="{
+                    backgroundColor: badSortList[(row - 1) * 5 + (col - 1)]?.badColor,
+                    color: badSortList[(row - 1) * 5 + (col - 1)]?.fontColor
+                  }"
                   @click="
                     onButtonClick(
                       badSortList[(row - 1) * 5 + (col - 1)]?.badName,
@@ -58,7 +61,7 @@
         </table>
       </el-tab-pane>
       <el-tab-pane label="报工记录" name="second">
-        <index1 :query="query"></index1>
+        <index1 ref="index1query" :query="querySubform"></index1>
       </el-tab-pane>
     </el-tabs>
     <!-- Table Layout for Color Grid (5 columns, 4 rows) -->
@@ -94,8 +97,8 @@
   import { no } from 'element-plus/es/locales.mjs'
   import type { TabsPaneContext } from 'element-plus'
   import index1 from '../inspection/report/index1.vue'
+  import { color } from 'echarts'
   const userStore = useUserStore()
-  const mesUserId = userStore.mesUserId
   const userName = userStore.userName
   const router = useRouter()
   const route = useRoute()
@@ -109,10 +112,10 @@
   const mainObject = ref()
   const debounce = ref()
   const totalPauseTime = ref(0) // 累计暂停总时间（秒）
-
   const activeName = ref('first')
   const btnLabel = ref('报工记录')
-  const query = ref()
+  const querySubform = ref()
+  const index1query = ref()
   const tabClick = (tab: TabsPaneContext, event: Event) => {
     console.log('tab', tab, 'event', event)
   }
@@ -124,6 +127,7 @@
       activeName.value = 'second'
       btnLabel.value = '不良项报工'
     }
+    index1query.value.handleQuery()
   }
   // 禁止返回
 
@@ -150,25 +154,21 @@
     //查询qrcode，看看有没有这条数据，
     //如果有：提示已经在什么时候被谁扫码，有没有报工，
     //如果没有：新增一条主表信息，记录二维码，记录工单，记录当时的不良项目
-
-    let query = {
-      pageNum: 1,
-      pageSize: 1000
-    }
     //新建或读取一条主记录
-    await addOrReadMain(parsedData)
     // console.log("开始报工", (parsedData))
     reportRecord.value = parsedData
-    parsedData.mesUserId = mesUserId
-    parsedData.creatBy = userName
-    console.log('mesUserId', mesUserId)
+    parsedData.mesUserId = userStore.mesUserId
+    parsedData.mesUserName = userStore.name
+    console.log('mesUserId', userStore.mesUserId, ' ' + userName, userStore)
+    console.log('userStore', userStore.name)
     console.log('object', parsedData)
     mainObject.value = await addOrReadInspectionMain(parsedData)
-    console.log('mainObject', mainObject)
+    console.log('mainObject', mainObject.value)
     debounce.value = mainObject.value.data.debounce
     console.log('debounce', debounce)
     totalPauseTime.value = Number(mainObject.value.data.stopTime)
     const rawJson = mainObject.value.data.allDefectItems
+    // console.log('rawJson', rawJson)
     const createBadItemsList = JSON.parse(rawJson)
     reportMain.value = mainObject.value.data
     badSortList.value = createBadItemsList.sort((a, b) => Number(a.no) - Number(b.no))
@@ -177,12 +177,11 @@
 
     const rawJsonReport = mainObject.value.data.apiReport
     reportJson.value = JSON.parse(rawJsonReport)
+    console.log('reportJson' + reportJson.value.batchNo)
+    querySubform.value = {
+      workOrderCode: mainObject.value.data?.qrCode
+    }
   })
-
-  //开始报工
-  async function addOrReadMain(object) {
-    // reportMain.value.creatBy = userInfo.value.username;
-  }
 
   let pauseStartTime: number | null = null // 当前暂停开始时间
   async function stop() {
@@ -298,10 +297,10 @@
     }
     await reportBatch(parms)
     router.push({
-      path: '/submitToApiUser'
-      // query: {
-      //   myData: JSON.stringify() // 如果是对象要序列化
-      // }
+      path: '/submitToApiUser',
+      query: {
+        workOrderCode: mainObject.value.data?.workOrderCode
+      }
     })
   }
 </script>

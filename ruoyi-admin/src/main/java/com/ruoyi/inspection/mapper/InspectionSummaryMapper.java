@@ -28,6 +28,7 @@ public interface InspectionSummaryMapper
      * @return 镜检统计主集合
      */
     public List<InspectionSummary> selectInspectionSummaryList(InspectionSummary inspectionSummary);
+    public List<InspectionSummary> selectInspectionSummaryList1(InspectionSummary inspectionSummary);
 
     /**
      * 新增镜检统计主

@@ -19,6 +19,8 @@ import com.ruoyi.inspection.domain.InspectionSummary;
 import com.ruoyi.inspection.service.IInspectionRecordService;
 import com.ruoyi.inspection.service.IInspectionReportService;
 import com.ruoyi.inspection.service.IInspectionSummaryService;
+import com.ruoyi.system.domain.SysUserPost;
+import com.ruoyi.system.service.ISysUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -61,6 +63,8 @@ public class BlacklackUserController extends BaseController {
     private ApiBatchReportForBlackLack batchReportForBlackLack;
     @Autowired
     private ApiReportRecordForBlackLack apiReportRecordForBlackLack;
+    @Autowired
+    private ISysUserService sysUserService;
 
     @PostMapping("/queryScanTaskResult")
     public AjaxResult checkUserToBlackLack(@RequestParam("taskCode") String taskCode) {
@@ -106,10 +110,12 @@ public class BlacklackUserController extends BaseController {
     @PostMapping("/addOrReadInspectionMain")
     public AjaxResult addOrReadInspectionMain(@RequestBody ReportRecord reportRecord) {
         System.out.println("-------------------------------------");
-        System.out.println("收到的数据：" + reportRecord);
+        System.out.println("新增或读取数据：" + reportRecord);
+//        System.out.println("查询的数据"+blacklackUserService.querySummaryByQrCode(reportRecord.getQrCode()) );
         //判断页面刷新是否重复传了接口，使用qrcode查询，如果存在，则返回主表记录
-        if (blacklackUserService.querySummaryByQrCode(reportRecord.getQrCode()) != null){
-            return AjaxResult.success(blacklackUserService.querySummaryByQrCode(reportRecord.getQrCode()));
+        List<InspectionSummary> inspectionSummarys = blacklackUserService.selectInspectionMainByQrcode(reportRecord.getQrCode());
+        if (inspectionSummarys != null&& !inspectionSummarys.isEmpty()){
+            return AjaxResult.success(inspectionSummarys.get(0));
         }else {
         Map<String, String> materialDetailResult1 = materialDetailForBlackLack.getMaterialDetailForBlackLack(reportRecord.getMaterialCode());
         materialDetailResult1.put("batchNo", reportRecord.getBatchNo());
@@ -118,6 +124,12 @@ public class BlacklackUserController extends BaseController {
         Map<String, String> processResult3 = null;
         processResult3 = processListForBlackLack.getProcessListForBlackLack(reportRecord.getWorkOrderId(), reportRecord.getProcessId());
         processResult3.put("flag", reportRecord.getFlag());
+        String mesUserId = "";
+        if (mesUserId==null|| mesUserId.equals("")){
+            //去用户表找id
+            mesUserId = sysUserService.getMesUserId(reportRecord.getMesUserName());
+            System.out.println("mesUserId: " + mesUserId);
+        }
         processResult3.put("mesUserId", reportRecord.getMesUserId());
         processResult3.put("amount", reportRecord.getAmount());
         processResult3.put("qrCode", reportRecord.getQrCode());
@@ -145,7 +157,7 @@ public class BlacklackUserController extends BaseController {
             throw new RuntimeException(e);
         }
         System.out.println("reportJson = " + reportJson);
-        long userId = Long.parseLong(reportJson.get("creatBy").toString());
+        long userId = Long.parseLong(reportJson.get("mesUserId").toString());
         String qrCode = "";
         long reportUnitId = Long.parseLong(reportJson.get("unitId").toString());
         long reportProcessId = Long.parseLong(reportJson.get("processId").toString());
@@ -210,7 +222,8 @@ public class BlacklackUserController extends BaseController {
         // 获取 reportJson（它是个 List）
         Map<String, Object> reportJson = (Map<String, Object>) params.get("reportJson");
         System.out.println("reportJson = " + reportJson);
-        long userId = Long.parseLong(reportJson.get("creatBy").toString());
+
+        long userId = Long.parseLong(reportJson.get("mesUserId").toString());
         String qrCode = "";
         long reportUnitId = Long.parseLong(reportJson.get("unitId").toString());
         long reportProcessId = Long.parseLong(reportJson.get("processId").toString());
@@ -357,17 +370,18 @@ public class BlacklackUserController extends BaseController {
 
     @PostMapping("/reportBatch")
     public AjaxResult reportBatch(@RequestBody Map<String, Object> params) {
+
         // 获取 reportJson（它是个 List）
         Map<String, Object> reportJson = (Map<String, Object>) params.get("reportJson");
-        System.out.println("reportJson = " + reportJson);
-        long userId = Long.parseLong(reportJson.get("creatBy").toString());
+        System.out.println("报工所有reportJson = " + reportJson);
+        long userId = Long.parseLong(reportJson.get("mesUserId").toString());
         String qrCode = reportJson.get("qrCode").toString();
         long reportUnitId = Long.parseLong(reportJson.get("unitId").toString());
         long reportProcessId = Long.parseLong(reportJson.get("processId").toString());
         long lineId = Long.parseLong(reportJson.get("materialLineId").toString());
         long materialId = Long.parseLong(reportJson.get("materialId").toString());
         long taskId = Long.parseLong(reportJson.get("taskId").toString());
-        String badItem = "黑点";// (String) params.get("color");
+        //String badItem = "黑点";// (String) params.get("color");
         int mainId = (int) params.get("mainId");
         InspectionSummary inspectionSummary = inspectionSummaryService.selectInspectionSummaryById((long) mainId);
         long batchNoId = 0L;
@@ -384,7 +398,7 @@ public class BlacklackUserController extends BaseController {
         long reportStartTime = Long.parseLong(reportJson.get("reportStartTime").toString());
         long reportEndTime = Long.parseLong(reportJson.get("reportEndTime").toString());
         //报工数量1,质量不合格，扫码报工不合格
-        int reportAmount = 1;
+        int reportAmount = inspectionSummary.getTotalQuantity() -inspectionSummary.getDefectiveTotal();
         int qcStatus = 1;
         int reportType = 1;
 
@@ -399,7 +413,6 @@ public class BlacklackUserController extends BaseController {
                 qcStatus,
                 reportType,
                 taskId,
-                badItem,
                 stopTime,
                 batchNoId,
                 batchNo,
@@ -417,9 +430,102 @@ public class BlacklackUserController extends BaseController {
         //更新主表
         System.out.println("报工状态：" + res.get("message"));
         if (res.get("message").equals("成功")) {
-            inspectionSummary.setSuccessFlag(1);
+            inspectionSummary.setSuccessFlag(1L);
+            System.out.println("报工状态1：" + res.get("message"));
         } else {
-            inspectionSummary.setSuccessFlag(0);
+            inspectionSummary.setSuccessFlag(0L);
+            System.out.println("报工状态0：" + res.get("message"));
+        }
+        inspectionSummary.setApiDetail(res.toString());
+        int i = inspectionSummaryService.updateInspectionSummary(inspectionSummary);
+        //查询主表记录
+        Map<String, Object> result1 = new HashMap<>();
+        if (i > 0) {
+            inspectionSummary.setInspectionReportList(null);
+            result1.put("summary", inspectionSummary);
+        }
+        return AjaxResult.success(result1);
+    }
+    @PostMapping("/reReportBatch")
+    public AjaxResult reReportBatch(@RequestBody InspectionSummary inspectionSummary) {
+        System.out.println("重新报工所有"+ inspectionSummary);
+
+
+        // 获取 reportJson（它是个 List）
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String jsonStr = inspectionSummary.getApiReport(); // JSON 字符串
+        Map<String, Object> reportJson = null;
+        try {
+            reportJson = objectMapper.readValue(jsonStr, Map.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("报工所有reportJson = " + reportJson);
+        long userId = Long.parseLong(reportJson.get("mesUserId").toString());
+        String qrCode = reportJson.get("qrCode").toString();
+        long reportUnitId = Long.parseLong(reportJson.get("unitId").toString());
+        long reportProcessId = Long.parseLong(reportJson.get("processId").toString());
+        long lineId = Long.parseLong(reportJson.get("materialLineId").toString());
+        long materialId = Long.parseLong(reportJson.get("materialId").toString());
+        long taskId = Long.parseLong(reportJson.get("taskId").toString());
+        //String badItem = "黑点";// (String) params.get("color");
+        long batchNoId = 0L;
+        if (reportJson.get("batchNoId") != null) {
+            batchNoId = Long.parseLong(reportJson.get("batchNoId").toString());
+        }
+        String batchNo = "";
+        if (reportJson.get("batchNo") != null) {
+            batchNo = reportJson.get("batchNo").toString();
+        }
+
+        //时间
+        String stopTime ="";
+        if (reportJson.get("stopTime") == null){
+             stopTime ="0";
+        }else {
+             stopTime = reportJson.get("stopTime").toString();
+        }
+        long timestamp = inspectionSummary.getCreateTime().getTime();
+        long reportEndTime = System.currentTimeMillis();
+        //报工数量1,质量不合格，扫码报工不合格
+        int reportAmount = inspectionSummary.getTotalQuantity() -inspectionSummary.getDefectiveTotal();
+        int qcStatus = 1;
+        int reportType = 1;
+
+        Map<String, Object> res = batchReportForBlackLack.batchReportForBlackLack(
+                userId,
+                qrCode,
+                reportUnitId,
+                reportProcessId,
+                reportAmount,
+                lineId,
+                materialId,
+                qcStatus,
+                reportType,
+                taskId,
+                stopTime,
+                batchNoId,
+                batchNo,
+                timestamp,
+                reportEndTime
+        );
+        //检验成功状态
+        String message = res.get("message").toString();
+        int code = (int) res.get("code");
+        System.out.println("message1 = " + message  );
+        System.out.println(" code1 = " + code);
+        if (code!=200){
+            return AjaxResult.error(message);
+        }
+        //更新主表
+        System.out.println("报工状态：" + res.get("message"));
+        if (res.get("message").equals("成功")) {
+            inspectionSummary.setSuccessFlag(1L);
+            System.out.println("报工状态1：" + res.get("message"));
+        } else {
+            inspectionSummary.setSuccessFlag(0L);
+            System.out.println("报工状态0：" + res.get("message"));
         }
         inspectionSummary.setApiDetail(res.toString());
         int i = inspectionSummaryService.updateInspectionSummary(inspectionSummary);

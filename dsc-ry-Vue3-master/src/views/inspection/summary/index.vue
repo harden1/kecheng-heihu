@@ -6,7 +6,7 @@
       :inline="true"
       v-show="showSearch"
       label-width="68px">
-      <el-form-item label="工单号" prop="workOrderCode">
+      <el-form-item label="标识码" prop="workOrderCode">
         <el-input
           v-model="queryParams.workOrderCode"
           placeholder="请输入工单号"
@@ -42,7 +42,7 @@
     <el-table v-loading="loading" :data="summaryList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="主键ID" align="center" prop="id" />
-      <el-table-column label="工单号" align="center" prop="workOrderCode" />
+      <el-table-column label="标识码" align="center" prop="workOrderCode" />
       <el-table-column label="总数量" align="center" prop="totalQuantity" />
       <el-table-column label="不合格总数" align="center" prop="defectiveTotal" />
       <el-table-column label="不良1" align="center" prop="defect1" />
@@ -75,13 +75,21 @@
             v-hasPermi="['inspection:summary:edit']"
             >修改</el-button
           >
-          <el-button
+          <!-- <el-button
             link
             type="primary"
             icon="Delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['inspection:summary:remove']"
             >删除</el-button
+          > -->
+          <el-button
+            link
+            type="primary"
+            icon="Edit"
+            @click="handleUpdate1(scope.row)"
+            v-hasPermi="['inspection:summary:edit']"
+            >重新上传</el-button
           >
         </template>
       </el-table-column>
@@ -367,7 +375,28 @@
       title.value = '修改镜检统计主'
     })
   }
-
+  import { ElMessageBox, ElMessage } from 'element-plus'
+  import { reReportBatch } from '../../../api/blackLackApi/blackLackApi'
+  /** 修改按钮操作 */
+  async function handleUpdate1(row) {
+    reset()
+    console.log(row.successFlag)
+    if (row.successFlag == 1) {
+      ElMessage.error('成功的报工记录不可重复报工')
+      return
+    } else {
+      await reReportBatch(row)
+      handleQuery()
+      //handleUpdate(row)
+    }
+    // const _id = row.id || ids.value
+    // getSummary(_id).then((response) => {
+    //   form.value = response.data
+    //   inspectionReportList.value = response.data.inspectionReportList
+    //   open.value = true
+    //   title.value = '修改镜检统计主'
+    // })
+  }
   /** 提交按钮 */
   function submitForm() {
     console.log('handleAdd')

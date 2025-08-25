@@ -125,8 +125,8 @@ public class InspectionSummary extends BaseEntity
     private String apiReport;
     private String color;
     /** 成功状态，true表示成功 */
-    @Excel(name = "成功状态，true表示成功")
-    private Integer successFlag;
+    @Excel(name = "成功状态，1表示成功")
+    private Long successFlag;
     private String debounce;
     private String previousProcessSetting;
 
@@ -474,13 +474,7 @@ public class InspectionSummary extends BaseEntity
         this.color = color;
     }
 
-    public Integer getSuccessFlag() {
-        return successFlag;
-    }
 
-    public void setSuccessFlag(Integer successFlag) {
-        this.successFlag = successFlag;
-    }
 
     public String getDebounce() {
         return debounce;
@@ -496,5 +490,13 @@ public class InspectionSummary extends BaseEntity
 
     public void setPreviousProcessSetting(String previousProcessSetting) {
         this.previousProcessSetting = previousProcessSetting;
+    }
+
+    public Long getSuccessFlag() {
+        return successFlag;
+    }
+
+    public void setSuccessFlag(Long successFlag) {
+        this.successFlag = successFlag;
     }
 }

@@ -41,4 +41,6 @@ public interface SysUserPostMapper
      * @return 结果
      */
     public int batchUserPost(List<SysUserPost> userPostList);
+
+    String queryMesUserId(String mesUserName);
 }

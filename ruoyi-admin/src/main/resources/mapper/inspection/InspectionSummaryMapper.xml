@@ -63,7 +63,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectInspectionSummaryVo">
-        select id, work_order_code, total_quantity, defective_total, defect_1, defect_2, defect_3, defect_4, defect_5, defect_6, defect_7, defect_8, defect_9, defect_10, defect_11, defect_12, defect_13, defect_14, defect_15, defect_16, defect_17, defect_18, defect_19, defect_20, all_defect_items, stop_time, api_detail, qr_code, api_report, create_by, create_time, update_by, update_time from inspection_summary
+        select id, work_order_code, total_quantity, defective_total, defect_1, defect_2, defect_3, defect_4, defect_5, defect_6, defect_7, defect_8, defect_9, defect_10, defect_11, defect_12, defect_13, defect_14, defect_15, defect_16, defect_17, defect_18, defect_19, defect_20, all_defect_items, stop_time, api_detail, qr_code, api_report, create_by, create_time, update_by, update_time,stop_time,success_flag from inspection_summary
     </sql>
 
     <select id="selectInspectionSummaryList" parameterType="InspectionSummary" resultMap="InspectionSummaryResult">
@@ -72,7 +72,39 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="workOrderCode != null  and workOrderCode != ''"> and work_order_code like concat('%', #{workOrderCode}, '%')</if>
         </where>
     </select>
-    
+    <select id="selectInspectionSummaryList1"
+            parameterType="InspectionSummary"
+            resultMap="InspectionSummaryResult">
+        SELECT
+        id,
+        work_order_code,
+        total_quantity,
+        defective_total,
+        defect_1, defect_2, defect_3, defect_4, defect_5,
+        defect_6, defect_7, defect_8, defect_9, defect_10,
+        defect_11, defect_12, defect_13, defect_14, defect_15,
+        defect_16, defect_17, defect_18, defect_19, defect_20,
+        all_defect_items,
+        stop_time,
+        api_detail,
+        qr_code,
+        api_report,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM inspection_summary
+        <where>
+            <choose>
+                <when test="workOrderCode != null and workOrderCode != ''">
+                    AND work_order_code LIKE concat('%', #{workOrderCode}, '%')
+                </when>
+                <otherwise>
+                    AND 1 = 2
+                </otherwise>
+            </choose>
+        </where>
+    </select>
     <select id="selectInspectionSummaryById" parameterType="Long" resultMap="InspectionSummaryInspectionReportResult">
         select id, work_order_code, total_quantity, defective_total, defect_1, defect_2, defect_3, defect_4, defect_5, defect_6, defect_7, defect_8, defect_9, defect_10, defect_11, defect_12, defect_13, defect_14, defect_15, defect_16, defect_17, defect_18, defect_19, defect_20, all_defect_items, stop_time, api_detail, qr_code,color, api_report, create_by, create_time, update_by, update_time
         from inspection_summary

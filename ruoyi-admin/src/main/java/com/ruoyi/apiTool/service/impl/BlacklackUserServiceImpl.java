@@ -41,6 +41,8 @@ public class BlacklackUserServiceImpl implements IBlacklackUserService {
     private CreateBadItemsTableMapper createBadItemsTableMapper;
     @Autowired
     private SysConfigMapper sysConfigMapper;
+    @Autowired
+    private BlacklackUserServiceImpl blacklackUserService;
 
     @Override
     @Transactional // 添加事务保证原子性
@@ -164,7 +166,8 @@ public class BlacklackUserServiceImpl implements IBlacklackUserService {
              * 不良项目
              */
             Map<String, String> reportInfo = new HashMap<>();
-            reportInfo.put("creatBy", processResult3.get("mesUserId"));
+            reportInfo.put("mesUserId", processResult3.get("mesUserId"));
+            reportInfo.put("mesUserName", processResult3.get("mesUserName"));
             reportInfo.put("unitId", processResult3.get("unitId"));
             reportInfo.put("materialLineId", processResult3.get("lineId"));
             reportInfo.put("materialId", processResult3.get("materialId"));
@@ -196,7 +199,9 @@ public class BlacklackUserServiceImpl implements IBlacklackUserService {
 
 
         }
-        inspectionSummary = querySummaryByQrCode(processResult3.get("qrCode"));
+        List<InspectionSummary> inspectionSummarys = blacklackUserService.selectInspectionMainByQrcode(processResult3.get("qrCode"));
+//        inspectionSummary = querySummaryByQrCode(processResult3.get("qrCode"));
+        inspectionSummary = inspectionSummarys.get(0);
         inspectionSummary.setColor(color);
         return inspectionSummary;
     }
@@ -213,9 +218,11 @@ public class BlacklackUserServiceImpl implements IBlacklackUserService {
         //更新,直接返回这个主表记录
         InspectionSummary ins = new InspectionSummary();
         ins.setQrCode(qrcode);
-        List<InspectionSummary> list = inspectionSummaryMapper.selectInspectionSummaryList(ins);
-        if (!list.isEmpty() ) {
-            inspectionSummary = list.get(0);
+//        List<InspectionSummary> list = inspectionSummaryMapper.selectInspectionSummaryList1(ins);
+        List<InspectionSummary> inspectionSummarys = blacklackUserService.selectInspectionMainByQrcode(qrcode);
+
+        if (!inspectionSummarys.isEmpty()) {
+            inspectionSummary = inspectionSummarys.get(0);
             // 查询防抖时间
             String debounce = sysConfigMapper.selectDebounce();
             inspectionSummary.setDebounce(debounce);
@@ -229,6 +236,6 @@ public class BlacklackUserServiceImpl implements IBlacklackUserService {
             return inspectionSummary;
         }
         return null;
-
     }
+
 }

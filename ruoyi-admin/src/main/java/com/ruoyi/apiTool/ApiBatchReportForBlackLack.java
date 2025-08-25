@@ -3,6 +3,8 @@ package com.ruoyi.apiTool;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ruoyi.system.domain.SysUserPost;
+import com.ruoyi.system.mapper.SysUserPostMapper;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,6 +16,8 @@ import java.util.*;
 public class ApiBatchReportForBlackLack {
     @Autowired
     private AccessTokenService accessTokenService;
+    @Autowired
+    private SysUserPostMapper sysUserPostMapper;
 
     public Map<String,Object> batchReportForBlackLack(long currentUserId1,
                                           String qrCode1,
@@ -25,7 +29,6 @@ public class ApiBatchReportForBlackLack {
                                           int qcStatus1,
                                           int reportType1,
                                           long taskId1,
-                                          String badItem,
                                           String stopTime,
                                           long batchNoId,
                                           String batchNo,
@@ -47,9 +50,9 @@ public class ApiBatchReportForBlackLack {
         // 变量替换区
 
         // 构造最内层 customFields
-        Map<String, Object> customField1 = new HashMap<>();
-        customField1.put("fieldCode", "cust_field21__c");
-        customField1.put("fieldValue", badItem);
+//        Map<String, Object> customField1 = new HashMap<>();
+//        customField1.put("fieldCode", "cust_field21__c");
+//        customField1.put("fieldValue", badItem);
 
         Map<String, Object> customField2 = new HashMap<>();
         customField2.put("fieldCode", "cust_field30__c");
@@ -64,7 +67,7 @@ public class ApiBatchReportForBlackLack {
 //        materialItem.put("qrCodeNum", 1);
         materialItem.put("batchNoId", batchNoId);
         materialItem.put("batchNo", batchNo);
-        materialItem.put("customFields", Arrays.asList(customField1, customField2));
+        materialItem.put("customFields", Arrays.asList( customField2));
 
 
         // 构造 progressReportItems
@@ -132,7 +135,7 @@ public class ApiBatchReportForBlackLack {
                     // 重新请求数据
                     accessTokenService.getAccessToken(false);
                     batchReportForBlackLack(currentUserId1, qrCode1, reportUnitId1, reportProcessId1, reportAmount1,
-                            lineId1, materialId1, qcStatus1, reportType1, taskId1, badItem, stopTime, batchNoId,
+                            lineId1, materialId1, qcStatus1, reportType1, taskId1, stopTime, batchNoId,
                             batchNo, reportStartTime, reportEndTime);
                 } else {
                     System.out.println("✅ Token 有效，继续处理...");

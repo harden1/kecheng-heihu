@@ -16,7 +16,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="countUserPostById" resultType="Integer">
 	    select count(1) from sys_user_post where post_id=#{postId}  
 	</select>
-	
+	<select id="queryMesUserId" resultType="java.lang.String">
+		select remark from sys_user where del_flag = '0' and user_name=#{mesUserName}
+	</select>
+
 	<delete id="deleteUserPost" parameterType="Long">
  		delete from sys_user_post where user_id in
  		<foreach collection="array" item="userId" open="(" separator="," close=")">

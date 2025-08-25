@@ -547,4 +547,9 @@ public class SysUserServiceImpl implements ISysUserService
         }
         return successMsg.toString();
     }
+
+    @Override
+    public String getMesUserId(String mesUserName) {
+        return userPostMapper.queryMesUserId(mesUserName);
+    }
 }

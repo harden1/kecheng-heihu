@@ -25,6 +25,8 @@ public class CreateBadItemsTable extends BaseEntity
     /** 不良项颜色 */
     @Excel(name = "不良项颜色")
     private String badColor;
+    @Excel(name = "不良项字体颜色")
+    private String fontColor;
 
     /** 顺序 */
     @Excel(name = "顺序")
@@ -97,5 +99,13 @@ public class CreateBadItemsTable extends BaseEntity
             .append("updateBy", getUpdateBy())
             .append("updateTime", getUpdateTime())
             .toString();
+    }
+
+    public String getFontColor() {
+        return fontColor;
+    }
+
+    public void setFontColor(String fontColor) {
+        this.fontColor = fontColor;
     }
 }

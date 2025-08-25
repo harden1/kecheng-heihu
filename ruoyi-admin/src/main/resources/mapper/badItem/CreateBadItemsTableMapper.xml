@@ -8,6 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="id"    column="id"    />
         <result property="badName"    column="bad_name"    />
         <result property="badColor"    column="bad_color"    />
+        <result property="fontColor"    column="font_color"    />
         <result property="no"    column="no"    />
         <result property="state"    column="state"    />
         <result property="createBy"    column="create_by"    />
@@ -17,7 +18,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectCreateBadItemsTableVo">
-        select id, bad_name, bad_color, no, state, create_by, create_time, update_by, update_time from create_bad_items_table
+        select id, bad_name, bad_color, font_color,no, state, create_by, create_time, update_by, update_time from create_bad_items_table
     </sql>
 
     <select id="selectCreateBadItemsTableList" parameterType="CreateBadItemsTable" resultMap="CreateBadItemsTableResult">
@@ -25,6 +26,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="badName != null  and badName != ''"> and bad_name like concat('%', #{badName}, '%')</if>
             <if test="badColor != null  and badColor != ''"> and bad_color = #{badColor}</if>
+            <if test="fontColor != null  and fontColor != ''"> and font_color = #{fontColor}</if>
             <if test="no != null "> and no = #{no}</if>
             <if test="state != null  and state != ''"> and state = #{state}</if>
         </where>
@@ -41,6 +43,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="id != null">id,</if>
             <if test="badName != null">bad_name,</if>
             <if test="badColor != null">bad_color,</if>
+            <if test="fontColor != null">font_color,</if>
             <if test="no != null">no,</if>
             <if test="state != null">state,</if>
             <if test="createBy != null">create_by,</if>
@@ -52,6 +55,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="id != null">#{id},</if>
             <if test="badName != null">#{badName},</if>
             <if test="badColor != null">#{badColor},</if>
+            <if test="fontColor != null">#{fontColor},</if>
             <if test="no != null">#{no},</if>
             <if test="state != null">#{state},</if>
             <if test="createBy != null">#{createBy},</if>
@@ -66,6 +70,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="SET" suffixOverrides=",">
             <if test="badName != null">bad_name = #{badName},</if>
             <if test="badColor != null">bad_color = #{badColor},</if>
+            <if test="fontColor != null">font_color = #{fontColor},</if>
             <if test="no != null">no = #{no},</if>
             <if test="state != null">state = #{state},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
