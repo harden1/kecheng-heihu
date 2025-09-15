@@ -55,6 +55,7 @@ public class SysUserController extends BaseController
         System.out.println("收到的数据" + username);
         List<BlacklackUser> blacklackUserList = apiUserInfoForBlackLack.getUserApiForBlacklack(true);
         for (BlacklackUser user : blacklackUserList) {
+            System.out.println("用户名"+user.getUsername());
             if (username.equals(user.getUsername()) && user.getActive() == 1) {
                 System.out.println("用户存在MES中"+user.getId());
                 return success(user.getId());

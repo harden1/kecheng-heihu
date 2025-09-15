@@ -36,10 +36,14 @@ public class ApiUserInfoForBlackLack {
         // Access Token 和 X-AUTH 一致
         String accessToken = accessTokenService.getAccessToken(tokenState);
         System.out.println("✅ Access Token: " + accessToken);
+        if (accessToken == null|| accessToken.isEmpty()) {
+            System.err.println(" Token 未初始化");
+            getUserApiForBlacklack(false);
+        }
         OkHttpClient client = new OkHttpClient();
 
-        // 请求体 JSON
-        String jsonBody = "{ \"access_token\": \"" + accessToken + "\" }";
+        String jsonBody = "{ \"access_token\": \"" + accessToken + "\", \"size\": 1000 }";
+
 
         // 创建 RequestBody 对象
         RequestBody body = RequestBody.create(
@@ -59,7 +63,7 @@ public class ApiUserInfoForBlackLack {
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 responseStr = response.body().string();
-                System.out.println("✅ 请求成功，响应内容：");
+                System.out.println("✅ 请求成功，响应内容："+responseStr);
 //                System.out.println(responseStr);
 
                 // 用 Jackson 解析为 JsonNode

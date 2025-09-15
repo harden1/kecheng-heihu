@@ -54,7 +54,7 @@ public class ApiProcessListForBlackLack {
                 JsonNode jsonNode = mapper.readTree(responseStr);
                 int code = jsonNode.path("code").asInt();
                 String subCode = jsonNode.path("subCode").asText();
-                if (code == 400150 && "USER-DOMAIN/SSO_TOKEN_FAIL".equals(subCode)) {
+                if (code !=200) {
                     System.out.println("❌ Token 已失效，请重新登录。");
                     // 处理失效逻辑（如刷新 token、抛异常等）//间隔1s //重新获取token
                     Thread.sleep(1000);
