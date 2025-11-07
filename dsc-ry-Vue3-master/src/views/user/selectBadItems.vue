@@ -257,6 +257,7 @@
     }, 1000)
   }
 
+  import { ElMessage } from 'element-plus'
   async function handleClickApi(color: string, No) {
     console.log(`Clicked on color: ${color}`)
     reportJson.value.stopTime = '0'
@@ -265,13 +266,20 @@
     const stimestamp = new Date(formattedString).getTime()
     reportJson.value.reportStartTime = stimestamp
     reportJson.value.reportEndTime = new Date().getTime()
-    let parms = {
-      mainId: mainObject.value.data.id,
-      no: No,
-      color: color,
-      reportJson: reportJson.value
+    //判断用户id是否为空
+    if (mainObject.value.data.id === '' || mainObject.value.data.id === null) {
+      //提示：
+      ElMessage.error('报工失败，用户ID缺失，请重新登陆，或者联系管理员')
+    } else {
+      let parms = {
+        mainId: mainObject.value.data.id,
+        no: No,
+        color: color,
+        reportJson: reportJson.value
+      }
+      let response = await reportBadItemOne(parms)
     }
-    let response = await reportBadItemOne(parms)
+
     //重新查询这条记录并刷新
     console.log('提交数据', response.data.summary)
     mainObject.value.data = response.data.summary

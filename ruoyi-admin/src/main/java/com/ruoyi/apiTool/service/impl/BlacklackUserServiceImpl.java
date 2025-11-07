@@ -190,7 +190,9 @@ public class BlacklackUserServiceImpl implements IBlacklackUserService {
             //新增
             inspectionSummary = new InspectionSummary();
             inspectionSummary.setWorkOrderCode(processResult3.get("workOrderCode"));
-            inspectionSummary.setTotalQuantity(Integer.parseInt((processResult3.get("amount"))));
+            inspectionSummary.setTotalQuantity(
+                    (int) Double.parseDouble(processResult3.get("amount").toString())
+            );
             inspectionSummary.setQrCode(processResult3.get("qrCode"));
             inspectionSummary.setAllDefectItems(jsonString);
             inspectionSummary.setApiReport(reportjsonString);
