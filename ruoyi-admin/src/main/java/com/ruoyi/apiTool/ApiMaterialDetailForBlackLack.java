@@ -12,6 +12,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *
+ * @description: 获取物料详情
+ * @author: wmin
+ */
+
 @Component
 public class ApiMaterialDetailForBlackLack {
     @Autowired

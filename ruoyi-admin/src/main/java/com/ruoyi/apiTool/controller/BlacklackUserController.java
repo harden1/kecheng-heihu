@@ -66,43 +66,88 @@ public class BlacklackUserController extends BaseController {
     @Autowired
     private ISysUserService sysUserService;
 
+    /**
+     * 扫码二维码结果
+     * @param taskCode 二维码信息
+     * @return
+     */
+
     @PostMapping("/queryScanTaskResult")
     public AjaxResult checkUserToBlackLack(@RequestParam("taskCode") String taskCode) {
         System.out.println("收到的数据" + taskCode);
 
         Map<String, String> reportRecordResult = null;
+        //报工记录
         reportRecordResult = reportRecordForBlackLack.getReportRecordDetailForBlackLack(taskCode);
+        if (reportRecordResult == null){
+            return error("该条码没有报工记录");
+        }
         //查主表记录：并返回给前端做提示
         try {
-            InspectionSummary inspectionSummary = blacklackUserService.selectInspectionMainByQrcode(taskCode).get(0);
-            if (inspectionSummary.getApiDetail() != null && !inspectionSummary.getApiDetail().isEmpty()) {
-                reportRecordResult.put("flag", inspectionSummary.getApiDetail());
-            } else {
-                reportRecordResult.put("flag", "0");
-            }
-            reportRecordResult.put("creatBy", inspectionSummary.getCreateBy());
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            reportRecordResult.put("creatDate", sdf.format(inspectionSummary.getCreateTime()));
+            List<InspectionSummary> list = blacklackUserService.selectInspectionMainByQrcode(taskCode);
 
-        } catch (IndexOutOfBoundsException e) {
+            InspectionSummary inspectionSummary = null;
+            if (list != null && !list.isEmpty()) {
+                inspectionSummary = list.get(0);
+                String apiDetail = inspectionSummary.getApiDetail();
+                reportRecordResult.put("flag", apiDetail != null ? apiDetail : "0");
+            } else {
+                reportRecordResult.put("flag", "-1");
+            }
+
+            if (inspectionSummary != null) {
+                reportRecordResult.put("creatBy", inspectionSummary.getCreateBy() != null ? inspectionSummary.getCreateBy() : "");
+                if (inspectionSummary.getCreateTime() != null) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    reportRecordResult.put("creatDate", sdf.format(inspectionSummary.getCreateTime()));
+                } else {
+                    reportRecordResult.put("creatDate", "");
+                }
+            } else {
+                reportRecordResult.put("creatBy", "");
+                reportRecordResult.put("creatDate", "");
+            }
+        } catch (Exception e) {
+            System.out.println("查询二维码对应的检验信息异常:" + taskCode + " => " + e.getMessage());
             reportRecordResult.put("creatBy", "");
             reportRecordResult.put("creatDate", "");
             reportRecordResult.put("flag", "-1");
-            System.out.println("找不到记录：" + reportRecordResult);
         }
+
+        //工序列表
+       List<Map<String, String>> processList = processListForBlackLack.getProcessListForBlackLack(reportRecordResult.get("workOrderId"));
+        //处理工序列表，判断是否在工序设置中，如果有则继续下一步，如果没有则提示检查配置
+        System.out.println("工序列表：" + processList);
         //查询前工序配置
         String previousProcessSetting = blacklackUserService.queryPreviousProcessSetting();
         List<String> previousProcessSettingList = Arrays.asList(previousProcessSetting.split("/"));
         System.out.println("查询前工序配置：" + previousProcessSettingList);
-        String processCode = reportRecordResult.get("processCode");
+//        String processCode = reportRecordResult.get("processCode");
         for (String pName : previousProcessSettingList) {
-            if (pName.equals(processCode)) {
-                System.out.println("当前工序：" + processCode);
-                //返回确认信息
-                return success(reportRecordResult);
+            for (Map<String, String> process : processList) {
+                if (pName.equals(process.get("processCode"))) {
+                    System.out.println("找到镜检工序：" + process.get("processCode"));
+                    reportRecordResult.put("taskId", process.get("taskId"));
+                    reportRecordResult.put("taskCode", process.get("taskCode"));
+                    reportRecordResult.put("processId", process.get("processId"));
+                    reportRecordResult.put("processName", process.get("processName"));
+                    reportRecordResult.put("status", process.get("status"));
+                    reportRecordResult.put("workOrderCode", process.get("workOrderCode"));
+                    reportRecordResult.put("materialId", process.get("materialId"));
+                    reportRecordResult.put("lineId", process.get("lineId"));
+                    reportRecordResult.put("processCode", process.get("processCode"));
+                    System.out.println("扫码反返回数据：" + reportRecordResult);
+                    //返回确认信息
+                    return success(reportRecordResult);
+                }
             }
+//            if (pName.equals(processCode)) {
+//                System.out.println("当前工序：" + processCode);
+//                //返回确认信息
+//                return success(reportRecordResult);
+//            }
         }
-        return error("当前工序未到镜检，或工序更新后未设置，请联系管理员！需要配置工序编码：" + processCode);
+        return error("未找到镜检工序，请检查工序编码配置，或者联系管理员！");
     }
 
     //点击开始报工，主表新增记录
@@ -121,8 +166,9 @@ public class BlacklackUserController extends BaseController {
             materialDetailResult1.put("batchNo", reportRecord.getBatchNo());
             materialDetailResult1.put("batchNoId", reportRecord.getBatchNoId());
 
-            Map<String, String> processResult3 = null;
-            processResult3 = processListForBlackLack.getProcessListForBlackLack(reportRecord.getWorkOrderId(), reportRecord.getProcessId());
+            Map<String, String> processResult3 =  new HashMap<>();
+//            processResult3 = processListForBlackLack.getProcessListForBlackLack(reportRecord.getWorkOrderId(), reportRecord.getProcessId());
+            System.out.println("工序列表精确查询：" + processResult3);
             processResult3.put("flag", reportRecord.getFlag());
             String mesUserId = "";
             if (mesUserId == null || mesUserId.equals("")) {
@@ -135,6 +181,16 @@ public class BlacklackUserController extends BaseController {
             processResult3.put("qrCode", reportRecord.getQrCode());
             processResult3.put("color", materialDetailResult1.get("color"));
             processResult3.put("unitId", materialDetailResult1.get("unitId"));
+            processResult3.put("taskId", reportRecord.getTaskId());
+            processResult3.put("taskCode", reportRecord.getTaskCode());
+            processResult3.put("processId", reportRecord.getProcessId());
+            processResult3.put("processName", reportRecord.getProcessName());
+            processResult3.put("status", reportRecord.getStatus());
+            processResult3.put("workOrderCode", reportRecord.getWorkOrderCode());
+            processResult3.put("materialId", reportRecord.getMaterialId());
+            processResult3.put("lineId", reportRecord.getLineId());
+            processResult3.put("processCode", reportRecord.getProcessCode());
+
 
             //返回确认信息
             //新建、修改主表记录，返回给前端显示
@@ -204,7 +260,7 @@ public class BlacklackUserController extends BaseController {
                 reportStartTime,
                 reportEndTime
         );
-        //检验成功状态
+//        检验成功状态
         String message = res.get("message").toString();
         int code = (int) res.get("code");
         System.out.println("message1 = " + message);
@@ -212,7 +268,7 @@ public class BlacklackUserController extends BaseController {
         if (code != 200) {
             return AjaxResult.error(message);
         }
-        //更新这条报工记录成功或失败
+//        更新这条报工记录成功或失败
         params.setSuccessFlag(1);
         inspectionReportService.updateInspectionReport(params);
 

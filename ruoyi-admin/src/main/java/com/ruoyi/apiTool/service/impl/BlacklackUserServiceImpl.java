@@ -171,6 +171,7 @@ public class BlacklackUserServiceImpl implements IBlacklackUserService {
             reportInfo.put("unitId", processResult3.get("unitId"));
             reportInfo.put("materialLineId", processResult3.get("lineId"));
             reportInfo.put("materialId", processResult3.get("materialId"));
+            System.out.println("工序id：" + processResult3.get("processId"));
             reportInfo.put("processId", processResult3.get("processId"));
             reportInfo.put("taskId", processResult3.get("taskId"));
             reportInfo.put("batchNo", processResult3.get("batchNo"));

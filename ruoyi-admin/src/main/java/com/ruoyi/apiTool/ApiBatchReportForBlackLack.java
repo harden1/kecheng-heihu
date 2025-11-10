@@ -12,6 +12,12 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ *
+ * @description: 批量报工和不良项报工
+ * @author: wmin
+ */
+
 @Component
 public class ApiBatchReportForBlackLack {
     @Autowired
@@ -170,6 +176,27 @@ public class ApiBatchReportForBlackLack {
         // 返回前端
         return res;
     }
+
+    /**
+     *  不良项目单个报工
+     * @param currentUserId1
+     * @param qrCode1
+     * @param reportUnitId1
+     * @param reportProcessId1
+     * @param reportAmount1
+     * @param lineId1
+     * @param materialId1
+     * @param qcStatus1
+     * @param reportType1
+     * @param taskId1
+     * @param badItem
+     * @param stopTime
+     * @param batchNoId
+     * @param batchNo
+     * @param reportStartTime
+     * @param reportEndTime
+     * @return
+     */
     public Map<String,Object> batchReportForBlackLackOne(long currentUserId1,
                                                       String qrCode1,
                                                       long reportUnitId1,
@@ -231,6 +258,7 @@ public class ApiBatchReportForBlackLack {
         Map<String, Object> reportMaterial = new HashMap<>();
         reportMaterial.put("lineId", lineId1);
         reportMaterial.put("materialId", materialId1);
+        //工序id
         reportMaterial.put("reportProcessId", reportProcessId1);
 
         // 构造最终 JSON 对象
@@ -241,6 +269,7 @@ public class ApiBatchReportForBlackLack {
         jsonMap.put("reportStartTime", reportStartTime);
         jsonMap.put("reportEndTime", reportEndTime);
         jsonMap.put("reportType", reportType1);
+        //任务id
         jsonMap.put("taskId", taskId1);
         // 如果需要可以加：jsonMap.put("storageLocationId", 1752892472337317L);
 

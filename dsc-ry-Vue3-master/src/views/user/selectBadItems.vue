@@ -142,7 +142,7 @@
     history.pushState(null, '', document.URL)
     window.addEventListener('popstate', forbidBack)
     // 处理传入的数据
-    // console.log("传入的数据12", parsedData.flag)
+    console.log("传入的数据:", parsedData)
     parsedData1.value = parsedData
     // console.log("进入用户界面1231",parsedData1.value.flag,typeof(parsedData1.value.flag))
     if (parsedData1.value.flag === '-1') {
@@ -267,6 +267,7 @@
     reportJson.value.reportStartTime = stimestamp
     reportJson.value.reportEndTime = new Date().getTime()
     //判断用户id是否为空
+    let response
     if (mainObject.value.data.id === '' || mainObject.value.data.id === null) {
       //提示：
       ElMessage.error('报工失败，用户ID缺失，请重新登陆，或者联系管理员')
@@ -277,7 +278,7 @@
         color: color,
         reportJson: reportJson.value
       }
-      let response = await reportBadItemOne(parms)
+       response= await reportBadItemOne(parms)
     }
 
     //重新查询这条记录并刷新

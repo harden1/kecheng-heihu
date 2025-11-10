@@ -3,6 +3,10 @@ package com.ruoyi.apiTool;
 import okhttp3.*;
 import java.io.IOException;
 
+/**
+ * 测试接口用
+ */
+
 public class TokenUserInfoClient {
 
     public static void main(String[] args) throws IOException {

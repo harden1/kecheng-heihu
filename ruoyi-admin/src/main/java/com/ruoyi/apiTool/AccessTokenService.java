@@ -12,13 +12,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ *
+ * @description: 获取 access_token
+ * @author: wmin
+ */
+
 @Service
 public class AccessTokenService {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
 
-    private static final String TOKEN_KEY = "blacklake:access_token";
+    private static final String TOKEN_KEY = "blacklake-zs:access_token";
 
     /**
      * 获取 access_token

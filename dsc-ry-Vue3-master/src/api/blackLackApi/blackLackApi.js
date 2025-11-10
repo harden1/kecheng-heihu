@@ -31,7 +31,7 @@ export function addOrReadInspectionMain(reportRecord) {
 }
 //不良品报工
 export function reportBadItemOne(data) {
-  console.log('开始报工', data)
+  console.log('不良品报工', data)
   return request({
     url: '/blacklackUser/BlacklackUser/reportBadItemOne',
     method: 'post',
@@ -40,7 +40,7 @@ export function reportBadItemOne(data) {
 }
 //不良品报工重传
 export function reReport(data) {
-  console.log('开始报工', data)
+  console.log('不良品报工重传', data)
   return request({
     url: '/blacklackUser/BlacklackUser/reReportBadItemOne',
     method: 'post',
@@ -49,7 +49,7 @@ export function reReport(data) {
 }
 //良品报工
 export function reportBatch(reportRecord) {
-  console.log('开始报工', reportRecord)
+  console.log('良品报工', reportRecord)
   return request({
     url: '/blacklackUser/BlacklackUser/reportBatch',
     method: 'post',
@@ -58,7 +58,7 @@ export function reportBatch(reportRecord) {
 }
 //良品报工重传
 export function reReportBatch(data) {
-  console.log('开始报工', data)
+  console.log('良品报工重传', data)
   return request({
     url: '/blacklackUser/BlacklackUser/reReportBatch',
     method: 'post',

@@ -9,17 +9,22 @@ public class ReportRecord {
     private String batchNoId;
     private String qrCode;
     private String processId;
+    private String processName;
+    private String processCode;
     private String name;
     private String specification;
     private String materialCode;
     private String workOrderId;
+    private String workOrderCode;
     private String materialId;
+    private String lineId;
     private String taskId;
+    private String taskCode;
+    private String status;
     private Map<String, String> allDefectItems;
     private String creatBy;
     private String flag;
     private String mesUserName;
-    // ✅ 添加这个字段
     private String mesUserId;
 
     // ✅ 建议加上 getter/setter
@@ -134,27 +139,6 @@ public class ReportRecord {
         this.allDefectItems = allDefectItems;
     }
 
-    @Override
-    public String toString() {
-        return "ReportRecord{" +
-                "batchNo='" + batchNo + '\'' +
-                ", amount='" + amount + '\'' +
-                ", batchNoId='" + batchNoId + '\'' +
-                ", qrCode='" + qrCode + '\'' +
-                ", processId='" + processId + '\'' +
-                ", name='" + name + '\'' +
-                ", specification='" + specification + '\'' +
-                ", materialCode='" + materialCode + '\'' +
-                ", workOrderId='" + workOrderId + '\'' +
-                ", materialId='" + materialId + '\'' +
-                ", taskId='" + taskId + '\'' +
-                ", allDefectItems=" + allDefectItems +
-                ", creatBy='" + creatBy + '\'' +
-                ", flag='" + flag + '\'' +
-                ", mesUserName='" + mesUserName + '\'' +
-                ", mesUserId='" + mesUserId + '\'' +
-                '}';
-    }
 
     public String getFlag() {
         return flag;
@@ -170,5 +154,81 @@ public class ReportRecord {
 
     public void setMesUserName(String mesUserName) {
         this.mesUserName = mesUserName;
+    }
+
+    public String getProcessName() {
+        return processName;
+    }
+
+    public void setProcessName(String processName) {
+        this.processName = processName;
+    }
+
+    public String getProcessCode() {
+        return processCode;
+    }
+
+    public void setProcessCode(String processCode) {
+        this.processCode = processCode;
+    }
+
+    public String getWorkOrderCode() {
+        return workOrderCode;
+    }
+
+    public void setWorkOrderCode(String workOrderCode) {
+        this.workOrderCode = workOrderCode;
+    }
+
+    public String getLineId() {
+        return lineId;
+    }
+
+    public void setLineId(String lineId) {
+        this.lineId = lineId;
+    }
+
+    public String getTaskCode() {
+        return taskCode;
+    }
+
+    public void setTaskCode(String taskCode) {
+        this.taskCode = taskCode;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "ReportRecord{" +
+                "batchNo='" + batchNo + '\'' +
+                ", amount='" + amount + '\'' +
+                ", batchNoId='" + batchNoId + '\'' +
+                ", qrCode='" + qrCode + '\'' +
+                ", processId='" + processId + '\'' +
+                ", processName='" + processName + '\'' +
+                ", processCode='" + processCode + '\'' +
+                ", name='" + name + '\'' +
+                ", specification='" + specification + '\'' +
+                ", materialCode='" + materialCode + '\'' +
+                ", workOrderId='" + workOrderId + '\'' +
+                ", workOrderCode='" + workOrderCode + '\'' +
+                ", materialId='" + materialId + '\'' +
+                ", lineId='" + lineId + '\'' +
+                ", taskId='" + taskId + '\'' +
+                ", taskCode='" + taskCode + '\'' +
+                ", status='" + status + '\'' +
+                ", allDefectItems=" + allDefectItems +
+                ", creatBy='" + creatBy + '\'' +
+                ", flag='" + flag + '\'' +
+                ", mesUserName='" + mesUserName + '\'' +
+                ", mesUserId='" + mesUserId + '\'' +
+                '}';
     }
 }

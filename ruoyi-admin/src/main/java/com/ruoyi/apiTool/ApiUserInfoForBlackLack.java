@@ -18,6 +18,10 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
 
+/**
+ * 用户信息接口
+ */
+
 @Component
 public class ApiUserInfoForBlackLack {
     @Autowired

@@ -6,6 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+/**
+ * 仓库详情接口
+ */
 
 import java.io.IOException;
 @Component

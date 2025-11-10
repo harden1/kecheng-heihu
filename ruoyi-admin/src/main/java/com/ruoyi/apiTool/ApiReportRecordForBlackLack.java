@@ -11,6 +11,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 报工记录
+ */
+
 @Component
 public class ApiReportRecordForBlackLack {
     @Autowired
@@ -58,7 +62,7 @@ public class ApiReportRecordForBlackLack {
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 responseStr = response.body().string();
-                System.out.println("✅ 请求成功，响应内容：");
+                System.out.println("✅ *************************查询工序数据*******************：");
                 System.out.println(responseStr);
                 // 用 Jackson 解析为 JsonNode
                 ObjectMapper mapper = new ObjectMapper();
@@ -101,50 +105,56 @@ public class ApiReportRecordForBlackLack {
 
         JsonNode item = root.path("data").path("list").get(0);
         System.out.println( "报工记录item = " + item);
-        String processCode = item.get("processCode").asText();
-        String materialId = item.path("materialInfo").path("baseInfo").path("id").asText();
-        String workOrderId = item.path("workOrderId").asText();
-        String taskId = item.path("taskId").asText();
-        String materialCode=item.path("materialInfo").path("baseInfo").path("code").asText();
-        String batchNo =item.path("batchNo").asText();
-        String batchNoId=item.path("batchNoId").asText();
-        String workOrderCode =item.path("workOrderCode").asText();
-        String processId =item.path("processId").asText();
-        String amount =item.path("reportBaseAmountDisplay").path("amount").asText();
-        String name =item.path("materialInfo").path("baseInfo").path("name").asText();
-        String specification =item.path("materialInfo").path("baseInfo").path("specification").asText();
+        if (item != null) {
+            String processCode = item.get("processCode").asText();
+            String materialId = item.path("materialInfo").path("baseInfo").path("id").asText();
+            String workOrderId = item.path("workOrderId").asText();
+            String taskId = item.path("taskId").asText();
+            String materialCode = item.path("materialInfo").path("baseInfo").path("code").asText();
+            String batchNo = item.path("batchNo").asText();
+            String batchNoId = item.path("batchNoId").asText();
+            String workOrderCode = item.path("workOrderCode").asText();
+            String processId = item.path("processId").asText();
+            String amount = item.path("reportBaseAmountDisplay").path("amount").asText();
+            String name = item.path("materialInfo").path("baseInfo").path("name").asText();
+            String specification = item.path("materialInfo").path("baseInfo").path("specification").asText();
 
-        System.out.println("materialId = " + materialId);
-        System.out.println("workOrderId = " + workOrderId);
-        System.out.println("taskId = " + taskId);
-        System.out.println("materialCode = " + materialCode);
-        System.out.println("batchNo = " + batchNo);
-        System.out.println("batchNoId = " + batchNoId);
-        System.out.println("processId = " + processId);
-        System.out.println("amount = " + amount);
-        System.out.println("name = " + name);
-        System.out.println("specification = " + specification);
+            System.out.println("materialId = " + materialId);
+            System.out.println("workOrderId = " + workOrderId);
+            System.out.println("taskId = " + taskId);
+            System.out.println("materialCode = " + materialCode);
+            System.out.println("batchNo = " + batchNo);
+            System.out.println("batchNoId = " + batchNoId);
+            System.out.println("processId = " + processId);
+            System.out.println("amount = " + amount);
+            System.out.println("name = " + name);
+            System.out.println("specification = " + specification);
 
-        result.put("materialId", materialId);
-        result.put("workOrderId",workOrderId);
-        result.put("taskId", taskId);
-        result.put("materialCode", materialCode);
-        result.put("batchNo", batchNo);
-        result.put("batchNoId", batchNoId);
-        result.put("qrCode" , qrCode);
-        result.put("processId", processId);
-        result.put("amount", amount);
-        result.put("name", name);
-        result.put("specification", specification);
-        result.put("workOrderCode", workOrderCode);
-        result.put("processCode", processCode);
-        //打印结果
-        System.out.println("Material ID: " + result.get("materialId"));
-        System.out.println("Work Order ID: " + result.get("workOrderId"));
-        System.out.println("Task ID: " + result.get("taskId"));
-        System.out.println("✅ 获取成功");
-        // 返回前端
-        return result;
+            result.put("materialId", materialId);
+            result.put("workOrderId", workOrderId);
+            result.put("taskId", taskId);
+            result.put("materialCode", materialCode);
+            result.put("batchNo", batchNo);
+            result.put("batchNoId", batchNoId);
+            result.put("qrCode", qrCode);
+            result.put("processId", processId);
+            result.put("amount", amount);
+            result.put("name", name);
+            result.put("specification", specification);
+            result.put("workOrderCode", workOrderCode);
+            result.put("processCode", processCode);
+            //打印结果
+            System.out.println("Material ID: " + result.get("materialId"));
+            System.out.println("Work Order ID: " + result.get("workOrderId"));
+            System.out.println("Task ID: " + result.get("taskId"));
+            System.out.println("✅ 获取成功");
+            // 返回前端
+            return result;
+        }else {
+            System.out.println("❌ 获取失败");
+            return null;
+        }
+
         // 存入数据库主表json字段
     }
 }
