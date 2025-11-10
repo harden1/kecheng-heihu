@@ -80,7 +80,7 @@ public class BlacklackUserController extends BaseController {
         //报工记录
         reportRecordResult = reportRecordForBlackLack.getReportRecordDetailForBlackLack(taskCode);
         if (reportRecordResult == null){
-            return error("该条码没有报工记录");
+            return error("该条码没有查询到报工记录，请检查或者联系管理员");
         }
         //查主表记录：并返回给前端做提示
         try {
@@ -147,7 +147,7 @@ public class BlacklackUserController extends BaseController {
 //                return success(reportRecordResult);
 //            }
         }
-        return error("未找到镜检工序，请检查工序编码配置，或者联系管理员！");
+        return error("该物料未找到镜检工序，请检查物料的工序、镜检软件后台工序编码，或联系管理员！");
     }
 
     //点击开始报工，主表新增记录
