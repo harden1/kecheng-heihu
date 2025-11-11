@@ -63,10 +63,12 @@ public class ApiBatchReportForBlackLack {
         Map<String, Object> customField2 = new HashMap<>();
         customField2.put("fieldCode", "cust_field30__c");
         customField2.put("fieldValue", stopTime);
-
+// 定义 string 数组
 
         // 构造 progressReportMaterialItems
         Map<String, Object> materialItem = new HashMap<>();
+
+
         materialItem.put("reportAmount", reportAmount1);
         materialItem.put("reportUnitId", reportUnitId1);
         materialItem.put("qrCode", qrCode1);
@@ -89,6 +91,13 @@ public class ApiBatchReportForBlackLack {
 
         // 构造最终 JSON 对象
         Map<String, Object> jsonMap = new LinkedHashMap<>();
+        String[] skipWeakControlRule = {
+                "ProgressReportPreProcessMaxReportableAmountRule",
+                "ProgressReportMaxReportableAmountRule",
+                "ProgressReportMaterialPlannedAmountRule"
+        };
+// 添加到 map 中
+        jsonMap.put("skipWeakControlRule", skipWeakControlRule);
         jsonMap.put("progressReportItems", Collections.singletonList(reportItem));
         jsonMap.put("progressReportMaterial", reportMaterial);
         jsonMap.put("qcStatus", qcStatus1);
@@ -263,6 +272,13 @@ public class ApiBatchReportForBlackLack {
 
         // 构造最终 JSON 对象
         Map<String, Object> jsonMap = new LinkedHashMap<>();
+        String[] skipWeakControlRule = {
+                "ProgressReportPreProcessMaxReportableAmountRule",
+                "ProgressReportMaxReportableAmountRule",
+                "ProgressReportMaterialPlannedAmountRule"
+        };
+// 添加到 map 中
+        jsonMap.put("skipWeakControlRule", skipWeakControlRule);
         jsonMap.put("progressReportItems", Collections.singletonList(reportItem));
         jsonMap.put("progressReportMaterial", reportMaterial);
         jsonMap.put("qcStatus", qcStatus1);
