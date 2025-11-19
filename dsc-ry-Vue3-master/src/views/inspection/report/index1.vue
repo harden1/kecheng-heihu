@@ -49,7 +49,7 @@
           /> -->
           <el-select
             v-model="queryParams.successFlag"
-            placeholder="请选择下拉选择"
+            placeholder="请下拉选择"
             clearable
             :style="{ width: '100px' }">
             <el-option
@@ -120,8 +120,8 @@
         <!-- <el-table-column type="selection" width="55" align="center" /> -->
         <!-- <el-table-column label="主键ID" align="center" prop="id" />
         <el-table-column label="主表ID" align="center" prop="summaryId" /> -->
-        <el-table-column label="标识码" align="center" prop="workOrderCode" />
-        <el-table-column label="报工时间" align="center" prop="reportTime" width="180">
+        <el-table-column label="工单号" align="center" prop="workOrderCode" />
+        <el-table-column label="报工时间" align="center" prop="reportTime" width="180" sortable="true">
           <template #default="scope">
             <span>{{ parseTime(scope.row.reportTime, '{y}-{m}-{d}') }}</span>
           </template>
@@ -264,7 +264,7 @@
     form: {},
     queryParams: {
       pageNum: 1,
-      pageSize: 5,
+      pageSize: 15,
       summaryId: null,
       reportTime: null,
       reportType: null,

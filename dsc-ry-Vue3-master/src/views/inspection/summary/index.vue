@@ -6,7 +6,7 @@
       :inline="true"
       v-show="showSearch"
       label-width="68px">
-      <el-form-item label="标识码" prop="workOrderCode">
+      <el-form-item label="工单号" prop="workOrderCode">
         <el-input
           v-model="queryParams.workOrderCode"
           placeholder="请输入工单号"
@@ -71,6 +71,8 @@
       <el-table-column label="不良20" align="center" prop="defect20" />
       <el-table-column label="状态" align="center" prop="successFlag" />
       <el-table-column label="报文" align="center" prop="apiDetail" width="600px" />
+       <el-table-column label="预报api" align="center" prop="apiReport" width="600px" />
+       <el-table-column label="创建人" align="center" prop="createBy" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button

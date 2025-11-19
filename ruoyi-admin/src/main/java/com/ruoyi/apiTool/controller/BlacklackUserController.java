@@ -165,18 +165,21 @@ public class BlacklackUserController extends BaseController {
             Map<String, String> materialDetailResult1 = materialDetailForBlackLack.getMaterialDetailForBlackLack(reportRecord.getMaterialCode());
             materialDetailResult1.put("batchNo", reportRecord.getBatchNo());
             materialDetailResult1.put("batchNoId", reportRecord.getBatchNoId());
-
             Map<String, String> processResult3 =  new HashMap<>();
 //            processResult3 = processListForBlackLack.getProcessListForBlackLack(reportRecord.getWorkOrderId(), reportRecord.getProcessId());
             System.out.println("工序列表精确查询：" + processResult3);
             processResult3.put("flag", reportRecord.getFlag());
-            String mesUserId = "";
+            System.out.println("扫码用户：" + reportRecord.getMesUserName());
+            String mesUserId  =  reportRecord.getMesUserId();
             if (mesUserId == null || mesUserId.equals("")) {
-                //去用户表找id
                 mesUserId = sysUserService.getMesUserId(reportRecord.getMesUserName());
-                System.out.println("mesUserId: " + mesUserId);
             }
-            processResult3.put("mesUserId", reportRecord.getMesUserId());
+            if (mesUserId == null || mesUserId.equals("")) {
+                //mes用户不存在
+                return error("用户不存在,请重新登录");
+            }
+            System.out.println("mesUserId: " + mesUserId);
+            processResult3.put("mesUserId",mesUserId);
             processResult3.put("amount", reportRecord.getAmount());
             processResult3.put("qrCode", reportRecord.getQrCode());
             processResult3.put("color", materialDetailResult1.get("color"));
@@ -190,8 +193,8 @@ public class BlacklackUserController extends BaseController {
             processResult3.put("materialId", reportRecord.getMaterialId());
             processResult3.put("lineId", reportRecord.getLineId());
             processResult3.put("processCode", reportRecord.getProcessCode());
-
-
+            processResult3.put("degrees", reportRecord.getSpecification());
+            System.out.println("度数数据degrees: " +  reportRecord.getSpecification());
             //返回确认信息
             //新建、修改主表记录，返回给前端显示
             InspectionSummary result = blacklackUserService.addOrUpdateInspectionMain(processResult3, reportRecord);
@@ -457,7 +460,7 @@ public class BlacklackUserController extends BaseController {
         }
 
         //时间
-        String stopTime = reportJson.get("stopTime").toString();
+        String stopTime = inspectionSummary.getStopTime();
         long reportStartTime = Long.parseLong(reportJson.get("reportStartTime").toString());
         long reportEndTime = Long.parseLong(reportJson.get("reportEndTime").toString());
         //报工数量1,质量不合格，扫码报工不合格
@@ -546,7 +549,7 @@ public class BlacklackUserController extends BaseController {
         //时间
         String stopTime = "";
         if (reportJson.get("stopTime") == null) {
-            stopTime = "0";
+            stopTime =inspectionSummary.getStopTime();
         } else {
             stopTime = reportJson.get("stopTime").toString();
         }

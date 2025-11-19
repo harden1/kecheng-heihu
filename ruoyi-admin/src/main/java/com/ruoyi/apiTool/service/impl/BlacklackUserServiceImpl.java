@@ -197,6 +197,7 @@ public class BlacklackUserServiceImpl implements IBlacklackUserService {
             inspectionSummary.setQrCode(processResult3.get("qrCode"));
             inspectionSummary.setAllDefectItems(jsonString);
             inspectionSummary.setApiReport(reportjsonString);
+            inspectionSummary.setDegrees(processResult3.get("degrees"));
             System.out.println(inspectionSummary);
             inspectionSummaryMapper.insertInspectionSummary(inspectionSummary);
 

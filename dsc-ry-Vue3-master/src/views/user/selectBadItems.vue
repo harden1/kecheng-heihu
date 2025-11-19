@@ -8,7 +8,9 @@
               <th class="color-btn-top">生产批次: {{ reportJson?.batchNo }}</th>
               <th class="color-btn-top">花纹型号: {{ reportRecord?.name }}</th>
               <th class="color-btn-top">颜色: {{ reportMain?.color }}</th>
-              <th class="color-btn-top">度数: {{ reportRecord?.specification }}</th>
+              <th class="color-btn-top">度数: {{ reportRecord?.specification }}<br />
+                合格数: {{  badNum}}
+              </th>
               <th class="color-btn-top">
                 总数<br />不合格率: {{ reportRecord?.amount }}/{{
                   ((mainObject.data.defectiveTotal / reportRecord?.amount) * 100).toFixed(2)
@@ -258,6 +260,7 @@
   }
 
   import { ElMessage } from 'element-plus'
+  const badNum=ref(0)
   async function handleClickApi(color: string, No) {
     console.log(`Clicked on color: ${color}`)
     reportJson.value.stopTime = '0'
@@ -283,6 +286,7 @@
 
     //重新查询这条记录并刷新
     console.log('提交数据', response.data.summary)
+    badNum.value =Number(response.data.summary.totalQuantity)-Number(response.data.summary.defectiveTotal) 
     mainObject.value.data = response.data.summary
   }
 

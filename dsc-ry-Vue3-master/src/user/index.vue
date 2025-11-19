@@ -251,9 +251,15 @@
       ElMessage.error('您没有权限进入设置界面')
       return
     }
-  }
+  } 
 
   const goToUser = () => {
+    stopScanner()
+    //验证权限是否是管理员
+    if (userStore.roles.includes('admin')) {
+      ElMessage.error('请不要用管理员账号报工')
+      return
+    } 
     try {
       console.log('进入用户界面', resData.value.qrCode, scanResult.value)
     } catch (error) {
