@@ -319,7 +319,7 @@
       color: '',
       reportJson: reportJson.value
     }
-    // await reportBatch(parms)
+    await reportBatch(parms)
     router.push({
       path: '/submitToApiUser',
       query: {
