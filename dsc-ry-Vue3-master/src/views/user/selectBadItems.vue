@@ -265,7 +265,7 @@
   }
   import { ElMessage } from 'element-plus'
   const badNum = ref(0)
-  async function handleClickApi(color: string, No) {
+  async function handleClickApi(color: string, No: string) {
     console.log(`Clicked on color: ${color}`)
     reportJson.value.stopTime = '0'
     console.log(mainObject.value.data)
@@ -296,7 +296,13 @@
   }
 
   async function submitToApiAll() {
-    //生成一条主表数据，统计所有数量
+    ElMessageBox.confirm('确定报工吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then( async () => {
+//生成一条主表数据，统计所有数量
     //打开弹窗，显示一条详情，等待用户确认
     //扣除不良品，传给后端不良品数据，后端进行良品报工
     //跳转到报工表，统计不良品，展示报工记录和情况
@@ -313,13 +319,17 @@
       color: '',
       reportJson: reportJson.value
     }
-    await reportBatch(parms)
+    // await reportBatch(parms)
     router.push({
       path: '/submitToApiUser',
       query: {
         workOrderCode: mainObject.value.data?.workOrderCode
       }
     })
+
+      })
+      .catch(() => {})
+    
   }
 </script>
 

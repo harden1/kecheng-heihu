@@ -114,7 +114,7 @@
       <el-table-column label="状态" align="center" prop="successFlag" />
       <el-table-column label="报文" align="center" prop="apiDetail" width="600px" />
       <el-table-column label="预报api" align="center" prop="apiReport" width="600px" />
-      <el-table-column label="创建人" align="center" prop="createBy" />
+      <el-table-column label="创建时间" align="center" prop="createTime" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button

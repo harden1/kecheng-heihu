@@ -372,7 +372,7 @@
     queryParams: {
       pageNum: 1,
       pageSize: 10,
-      workOrderCode: null,
+      workOrderCode:  route.query.workOrderCode,
       qrCode: null, // 添加标识码
       degrees: null, // 添加度数
       successFlag: null // 添加成功状态
