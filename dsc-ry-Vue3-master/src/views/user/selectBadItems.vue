@@ -5,11 +5,12 @@
         <table class="color-table">
           <thead v-if="mainObject?.data">
             <tr>
-              <th class="color-btn-top">生产批次: {{ reportJson?.batchNo }}</th>
+              <th class="color-btn-top">生产批次: {{ parsedData?.batchNo }}</th>
               <th class="color-btn-top">花纹型号: {{ reportRecord?.name }}</th>
               <th class="color-btn-top">颜色: {{ reportMain?.color }}</th>
-              <th class="color-btn-top">度数: {{ reportRecord?.specification }}<br />
-                合格数: {{  badNum}}
+              <th class="color-btn-top">
+                度数: {{ reportRecord?.specification }}<br />
+                合格数: {{ badNum }}
               </th>
               <th class="color-btn-top">
                 总数<br />不合格率: {{ reportRecord?.amount }}/{{
@@ -55,7 +56,7 @@
                   type="default"
                   class="color-btn"
                   disabled>
-                  {{ countdowns[(row - 1) * 5 + (col - 1)] }}秒
+                  {{ countdowns[(row - 1) * 5 + (col - 1)].toFixed(1) }}秒
                 </el-button>
               </td>
             </tr>
@@ -144,7 +145,7 @@
     history.pushState(null, '', document.URL)
     window.addEventListener('popstate', forbidBack)
     // 处理传入的数据
-    console.log("传入的数据:", parsedData)
+    console.log('传入的数据:', parsedData)
     parsedData1.value = parsedData
     // console.log("进入用户界面1231",parsedData1.value.flag,typeof(parsedData1.value.flag))
     if (parsedData1.value.flag === '-1') {
@@ -249,18 +250,21 @@
 
     handleClickApi(name, index) // 调用 API
 
-    // 每秒更新倒计时
+    // 每 0.5 秒更新倒计时
     const timer = setInterval(() => {
-      countdowns[index]--
-      if (countdowns[index] <= 0) {
+      countdowns[index] -= 0.1 // 【修改点 1】：每次递减 0.5
+
+      // 使用 Math.max(0, ...) 确保倒计时不会显示负数，
+      // 并且使用一个微小的容差值 (e.g., 0.01) 来判断是否归零
+      if (countdowns[index] <= 0.01) {
         clearInterval(timer)
+        countdowns[index] = 0 // 确保显示为 0
         hiddenButtons[index] = false // 倒计时结束显示按钮
       }
-    }, 1000)
+    }, 100) // 【修改点 2】：时间间隔改为 500 毫秒 (0.5 秒)
   }
-
   import { ElMessage } from 'element-plus'
-  const badNum=ref(0)
+  const badNum = ref(0)
   async function handleClickApi(color: string, No) {
     console.log(`Clicked on color: ${color}`)
     reportJson.value.stopTime = '0'
@@ -281,12 +285,13 @@
         color: color,
         reportJson: reportJson.value
       }
-       response= await reportBadItemOne(parms)
+      response = await reportBadItemOne(parms)
     }
 
     //重新查询这条记录并刷新
     console.log('提交数据', response.data.summary)
-    badNum.value =Number(response.data.summary.totalQuantity)-Number(response.data.summary.defectiveTotal) 
+    badNum.value =
+      Number(response.data.summary.totalQuantity) - Number(response.data.summary.defectiveTotal)
     mainObject.value.data = response.data.summary
   }
 

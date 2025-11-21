@@ -207,6 +207,9 @@ public class BlacklackUserServiceImpl implements IBlacklackUserService {
 //        inspectionSummary = querySummaryByQrCode(processResult3.get("qrCode"));
         inspectionSummary = inspectionSummarys.get(0);
         inspectionSummary.setColor(color);
+        // 查询防抖时间
+        String debounce = sysConfigMapper.selectDebounce();
+        inspectionSummary.setDebounce(debounce);
         return inspectionSummary;
     }
 

@@ -131,7 +131,7 @@
       </el-table-column>
       <el-table-column label="报工类型" align="center" prop="reportType" />
       <el-table-column label="报工数量" align="center" prop="quantity" />
-      <!-- <el-table-column label="返回json内容" align="center" prop="resultJson" /> -->
+      <el-table-column label="返回json内容" align="center" prop="resultJson" width="600" />
       <el-table-column
         prop="tag"
         label="状态"

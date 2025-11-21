@@ -41,6 +41,7 @@ public class InspectionSummaryController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(InspectionSummary inspectionSummary)
     {
+        System.out.println("查询镜检统计主列表"+inspectionSummary);
         startPage();
         List<InspectionSummary> list = inspectionSummaryService.selectInspectionSummaryList(inspectionSummary);
         return getDataTable(list);

@@ -121,7 +121,12 @@
         <!-- <el-table-column label="主键ID" align="center" prop="id" />
         <el-table-column label="主表ID" align="center" prop="summaryId" /> -->
         <el-table-column label="工单号" align="center" prop="workOrderCode" />
-        <el-table-column label="报工时间" align="center" prop="reportTime" width="180" sortable="true">
+        <el-table-column
+          label="报工时间"
+          align="center"
+          prop="reportTime"
+          width="180"
+          sortable="true">
           <template #default="scope">
             <span>{{ parseTime(scope.row.reportTime, '{y}-{m}-{d}') }}</span>
           </template>
@@ -264,7 +269,7 @@
     form: {},
     queryParams: {
       pageNum: 1,
-      pageSize: 15,
+      pageSize: 10,
       summaryId: null,
       reportTime: null,
       reportType: null,

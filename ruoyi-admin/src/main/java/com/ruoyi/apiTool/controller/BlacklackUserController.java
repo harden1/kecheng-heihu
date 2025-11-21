@@ -20,6 +20,7 @@ import com.ruoyi.inspection.service.IInspectionRecordService;
 import com.ruoyi.inspection.service.IInspectionReportService;
 import com.ruoyi.inspection.service.IInspectionSummaryService;
 import com.ruoyi.system.domain.SysUserPost;
+import com.ruoyi.system.mapper.SysConfigMapper;
 import com.ruoyi.system.service.ISysUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,8 @@ public class BlacklackUserController extends BaseController {
     private ApiReportRecordForBlackLack apiReportRecordForBlackLack;
     @Autowired
     private ISysUserService sysUserService;
-
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
     /**
      * 扫码二维码结果
      * @param taskCode 二维码信息
@@ -160,7 +162,11 @@ public class BlacklackUserController extends BaseController {
         //判断页面刷新是否重复传了接口，使用qrcode查询，如果存在，则返回主表记录
         List<InspectionSummary> inspectionSummarys = blacklackUserService.selectInspectionMainByQrcode(reportRecord.getQrCode());
         if (inspectionSummarys != null && !inspectionSummarys.isEmpty()) {
-            return AjaxResult.success(inspectionSummarys.get(0));
+            InspectionSummary inspectionSummary = inspectionSummarys.get(0);
+            // 查询防抖时间
+            String debounce = sysConfigMapper.selectDebounce();
+            inspectionSummary.setDebounce(debounce);
+            return AjaxResult.success(inspectionSummary);
         } else {
             Map<String, String> materialDetailResult1 = materialDetailForBlackLack.getMaterialDetailForBlackLack(reportRecord.getMaterialCode());
             materialDetailResult1.put("batchNo", reportRecord.getBatchNo());
@@ -179,6 +185,7 @@ public class BlacklackUserController extends BaseController {
                 return error("用户不存在,请重新登录");
             }
             System.out.println("mesUserId: " + mesUserId);
+            processResult3.put("batchNo", reportRecord.getBatchNo());
             processResult3.put("mesUserId",mesUserId);
             processResult3.put("amount", reportRecord.getAmount());
             processResult3.put("qrCode", reportRecord.getQrCode());

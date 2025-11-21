@@ -6,38 +6,80 @@
       :inline="true"
       v-show="showSearch"
       label-width="68px">
+      <el-form-item label="标识码" prop="qrCode">
+        <el-input
+          v-model="queryParams.qrCode"
+          placeholder="请输入"
+          clearable
+          @keyup.enter="handleQuery" />
+      </el-form-item>
       <el-form-item label="工单号" prop="workOrderCode">
         <el-input
           v-model="queryParams.workOrderCode"
-          placeholder="请输入工单号"
+          placeholder="请输入"
           clearable
           @keyup.enter="handleQuery" />
+      </el-form-item>
+      <el-form-item label="度数" prop="degrees">
+        <el-input
+          v-model="queryParams.degrees"
+          placeholder="请输入"
+          clearable
+          @keyup.enter="handleQuery" />
+      </el-form-item>
+      <el-form-item label="成功状态" prop="successFlag">
+        <el-select
+          v-model="queryParams.successFlag"
+          placeholder="请下拉选择"
+          clearable
+          :style="{ width: '100px' }">
+          <el-option
+            v-for="(item, index) in options"
+            :key="index"
+            :label="item.label"
+            :value="item.value"
+            :disabled="item.disabled"
+            @keyup.enter="handleQuery"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
-    <!-- 
+
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button type="primary" plain icon="Plus" @click="handleAdd"
           v-hasPermi="['inspection:summary:add']">新增</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate"
           v-hasPermi="['inspection:summary:edit']">修改</el-button>
+      </el-col> -->
+      <el-col :span="1.5">
+        <el-button
+          type="danger"
+          plain
+          icon="Delete"
+          :disabled="multiple"
+          @click="handleDelete"
+          v-hasPermi="['inspection:summary:remove']"
+          >删除</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete"
-          v-hasPermi="['inspection:summary:remove']">删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="warning" plain icon="Download" @click="handleExport"
-          v-hasPermi="['inspection:summary:export']">导出</el-button>
+        <el-button
+          type="warning"
+          plain
+          icon="Download"
+          @click="handleExport"
+          v-hasPermi="['inspection:summary:export']"
+          >导出</el-button
+        >
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row> -->
+    </el-row>
 
     <el-table v-loading="loading" :data="summaryList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
@@ -71,8 +113,8 @@
       <el-table-column label="不良20" align="center" prop="defect20" />
       <el-table-column label="状态" align="center" prop="successFlag" />
       <el-table-column label="报文" align="center" prop="apiDetail" width="600px" />
-       <el-table-column label="预报api" align="center" prop="apiReport" width="600px" />
-       <el-table-column label="创建人" align="center" prop="createBy" />
+      <el-table-column label="预报api" align="center" prop="apiReport" width="600px" />
+      <el-table-column label="创建人" align="center" prop="createBy" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button
@@ -284,14 +326,27 @@
     queryParams: {
       pageNum: 1,
       pageSize: 10,
-      workOrderCode: null
+      workOrderCode: null,
+
+      qrCode: null, // 添加标识码
+      degrees: null, // 添加度数
+      successFlag: null // 添加成功状态
     },
     rules: {
       workOrderCode: [{ required: true, message: '工单号不能为空', trigger: 'blur' }],
       totalQuantity: [{ required: true, message: '总数量不能为空', trigger: 'blur' }]
     }
   })
-
+  const options = ref([
+    {
+      label: '成功',
+      value: 1
+    },
+    {
+      label: '失败',
+      value: 0
+    }
+  ])
   const { queryParams, form, rules } = toRefs(data)
 
   /** 查询镜检统计主列表 */

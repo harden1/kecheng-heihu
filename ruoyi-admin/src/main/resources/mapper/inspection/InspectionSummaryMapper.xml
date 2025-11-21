@@ -69,8 +69,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectInspectionSummaryList" parameterType="InspectionSummary" resultMap="InspectionSummaryResult">
         <include refid="selectInspectionSummaryVo"/>
-        <where>  
-            <if test="workOrderCode != null  and workOrderCode != ''"> and work_order_code like concat('%', #{workOrderCode}, '%')</if>
+        <where>
+            <if test="workOrderCode != null and workOrderCode != ''">
+                and work_order_code like concat('%', #{workOrderCode}, '%')
+            </if>
+            <if test="qrCode != null and qrCode != ''">
+                and qr_code like concat('%', #{qrCode}, '%')
+            </if>
+            <!-- Long 类型比较 -->
+            <if test="successFlag != null and successFlag == 0">
+                and success_flag is null
+            </if>
+            <if test="successFlag != null and successFlag != 0">
+                and success_flag like concat('%', #{successFlag}, '%')
+            </if>
+            <if test="degrees != null and degrees != ''">
+                and degrees like concat('%', #{degrees}, '%')
+            </if>
         </where>
     </select>
     <select id="selectInspectionSummaryList1"
