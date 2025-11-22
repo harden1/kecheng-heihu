@@ -294,21 +294,16 @@
       Number(response.data.summary.totalQuantity) - Number(response.data.summary.defectiveTotal)
     mainObject.value.data = response.data.summary
   }
-
-  async function submitToApiAll() {
-    ElMessageBox.confirm('确定报工吗？', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
-      .then( async () => {
-//生成一条主表数据，统计所有数量
-    //打开弹窗，显示一条详情，等待用户确认
-    //扣除不良品，传给后端不良品数据，后端进行良品报工
-    //跳转到报工表，统计不良品，展示报工记录和情况
-    //回传良品报工，填入返回数据和状态
+async function submitToApiAll() {
+  ElMessageBox.confirm('确定报工吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+  .then(async () => {
     console.log('报工所有')
-    reportJson.value.stopTime = '0'
+    // ... 参数准备代码
+     reportJson.value.stopTime = '0'
     const formattedString = mainObject.value.data.createTime.replace(/-/g, '/')
     const stimestamp = new Date(formattedString).getTime()
     reportJson.value.reportStartTime = stimestamp
@@ -319,18 +314,89 @@
       color: '',
       reportJson: reportJson.value
     }
-    await reportBatch(parms)
-    router.push({
-      path: '/submitToApiUser',
-      query: {
-        workOrderCode: mainObject.value.data?.workOrderCode
-      }
-    })
-
+    try {
+      await reportBatch(parms)
+      // 尝试自动跳转
+      const navigationResult = await router.push({
+        path: '/submitToApiUser',
+        query: {
+          workOrderCode: mainObject.value.data?.workOrderCode
+        }
       })
-      .catch(() => {})
+      
+      // 如果跳转失败，提供手动跳转选项
+      if (!navigationResult) {
+        ElMessageBox.confirm(
+          '报工成功！是否跳转到报工记录页面？',
+          '跳转提示',
+          {
+            confirmButtonText: '立即跳转',
+            cancelButtonText: '暂不跳转',
+            type: 'success'
+          }
+        ).then(() => {
+          // 手动跳转
+          window.location.href = `/submitToApiUser?workOrderCode=${mainObject.value.data?.workOrderCode}`
+        })
+      }
+      
+    } catch (error) {
+      console.error('报工失败:', error)
+      ElMessage.error('报工失败: ' + error.message)
+      // 如果跳转失败，提供手动跳转选项
+        ElMessageBox.confirm(
+          '报工成功！是否跳转到报工记录页面？',
+          '跳转提示',
+          {
+            confirmButtonText: '立即跳转',
+            cancelButtonText: '暂不跳转',
+            type: 'success'
+          }
+        ).then(() => {
+          // 手动跳转
+          window.location.href = `/submitToApiUser?workOrderCode=${mainObject.value.data?.workOrderCode}`
+        })
+      }
     
-  }
+  })
+  .catch(() => {})
+}
+//   async function submitToApiAll() {
+//     ElMessageBox.confirm('确定报工吗？', '提示', {
+//       confirmButtonText: '确定',
+//       cancelButtonText: '取消',
+//       type: 'warning'
+//     })
+//       .then( async () => {
+// //生成一条主表数据，统计所有数量
+//     //打开弹窗，显示一条详情，等待用户确认
+//     //扣除不良品，传给后端不良品数据，后端进行良品报工
+//     //跳转到报工表，统计不良品，展示报工记录和情况
+//     //回传良品报工，填入返回数据和状态
+//     console.log('报工所有')
+//     reportJson.value.stopTime = '0'
+//     const formattedString = mainObject.value.data.createTime.replace(/-/g, '/')
+//     const stimestamp = new Date(formattedString).getTime()
+//     reportJson.value.reportStartTime = stimestamp
+//     reportJson.value.reportEndTime = Date.now() //获取当前时间戳
+//     let parms = {
+//       mainId: mainObject.value.data.id,
+//       no: '',
+//       color: '',
+//       reportJson: reportJson.value
+//     }
+//     await reportBatch(parms)
+//     router.push({
+//       path: '/submitToApiUser',
+//       query: {
+//         workOrderCode: mainObject.value.data?.workOrderCode
+//       }
+//     })
+
+//       })
+//       .catch(() => {})
+    
+//   }
 </script>
 
 <style scoped></style>
