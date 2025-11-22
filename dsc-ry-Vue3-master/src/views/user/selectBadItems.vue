@@ -345,7 +345,7 @@ async function submitToApiAll() {
       ElMessage.error('报工失败: ' + error.message)
       // 如果跳转失败，提供手动跳转选项
         ElMessageBox.confirm(
-          '报工成功！是否跳转到报工记录页面？',
+          '报工失败。是否跳转到报工记录页面？',
           '跳转提示',
           {
             confirmButtonText: '立即跳转',
