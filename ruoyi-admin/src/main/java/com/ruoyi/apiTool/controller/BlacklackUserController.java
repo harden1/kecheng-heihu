@@ -1,10 +1,7 @@
 package com.ruoyi.apiTool.controller;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -134,6 +131,10 @@ public class BlacklackUserController extends BaseController {
                     reportRecordResult.put("processId", process.get("processId"));
                     reportRecordResult.put("processName", process.get("processName"));
                     reportRecordResult.put("status", process.get("status"));
+                    reportRecordResult.put("statusCode", process.get("statusCode"));
+                    if (Objects.equals(process.get("statusCode"), "4")|| Objects.equals(process.get("statusCode"), "5")){
+                        continue;
+                    }
                     reportRecordResult.put("workOrderCode", process.get("workOrderCode"));
                     reportRecordResult.put("materialId", process.get("materialId"));
                     reportRecordResult.put("lineId", process.get("lineId"));

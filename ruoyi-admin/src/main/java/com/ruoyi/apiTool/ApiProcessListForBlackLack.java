@@ -235,6 +235,7 @@ public class ApiProcessListForBlackLack {
             String processCode = task.path("processCode").asText();
             String processName = task.path("processName").asText();
             String status = task.path("taskStatus").path("message").asText();
+            String statusCode = task.path("taskStatus").path("code").asText();
             String workOrderCode = task.path("workOrderCode").asText();
 
             // 嵌套节点处理
@@ -254,6 +255,7 @@ public class ApiProcessListForBlackLack {
             System.out.printf("taskCode: %s%n", taskCode);
             System.out.printf("processName: %s%n", processName);
             System.out.printf("status: %s%n", status);
+            System.out.printf("statusCode: %s%n", statusCode);
             System.out.printf("workOrderCode: %s%n", workOrderCode);
             System.out.printf("materialId: %d%n", materialId);
             System.out.println("==================================");
@@ -264,6 +266,7 @@ public class ApiProcessListForBlackLack {
             result.put("processId", processId);
             result.put("processName", processName);
             result.put("status", status);
+            result.put("statusCode", statusCode);
             result.put("workOrderCode", workOrderCode);
             result.put("materialId", String.valueOf(materialId));
             result.put("lineId", String.valueOf(lineId));
