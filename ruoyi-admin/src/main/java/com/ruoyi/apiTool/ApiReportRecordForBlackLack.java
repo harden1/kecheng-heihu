@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,7 +35,7 @@ public class ApiReportRecordForBlackLack {
         // 1. 创建 Map 并设置参数
         Map<String, String> jsonMap = new HashMap<>();
         jsonMap.put("qrCode", qrCode);
-        jsonMap.put("size", "1");
+        jsonMap.put("size", "10");
 
         // 2. 转换成 JSON 字符串
         ObjectMapper objectMapper = new ObjectMapper();
@@ -101,10 +103,36 @@ public class ApiReportRecordForBlackLack {
         System.out.println("Code: " + code);
         System.out.println("Message: " + message);
         Map<String, String> result = new HashMap<>();
+        //找到第一个不为0的数
+        JsonNode dataNode = root.path("data");
+        JsonNode listNode = dataNode.path("list");
 
+        JsonNode firstNotZeroItem = null;
 
-        JsonNode item = root.path("data").path("list").get(0);
+        if (listNode.isArray()) {
+            for (JsonNode item : listNode) {
+
+                JsonNode amountNode = item
+                        .path("reportBaseAmount")
+                        .path("amount");
+
+                if (!amountNode.isMissingNode() && !amountNode.isNull()) {
+
+                    // 统一用 BigDecimal 处理
+                    BigDecimal amount = new BigDecimal(amountNode.asText("0"));
+
+                    if (amount.compareTo(BigDecimal.ZERO) != 0) {
+                        firstNotZeroItem = item;
+                        break;
+                    }
+                }
+            }
+        }
+//        JsonNode item = root.path("data").path("list").get(0);
+//        System.out.println( "报工记录item = " + root.path("data"));
+        JsonNode item = firstNotZeroItem;
         System.out.println( "报工记录item = " + item);
+
         if (item != null) {
             String processCode = item.get("processCode").asText();
             String materialId = item.path("materialInfo").path("baseInfo").path("id").asText();
