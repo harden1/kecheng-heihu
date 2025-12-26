@@ -55,26 +55,26 @@ public class ApiProcessListForBlackLack {
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 responseStr = response.body().string();
-                System.out.println("✅ 请求成功***********************生产任务列表：");
-                System.out.println(responseStr);
+//                System.out.println("✅ 请求成功***********************生产任务列表：");
+//                System.out.println(responseStr);
                 // 用 Jackson 解析为 JsonNode
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode jsonNode = mapper.readTree(responseStr);
                 int code = jsonNode.path("code").asInt();
                 String subCode = jsonNode.path("subCode").asText();
                 if (code !=200) {
-                    System.out.println("❌ Token 已失效，请重新登录。");
+//                    System.out.println("❌ Token 已失效，请重新登录。");
                     // 处理失效逻辑（如刷新 token、抛异常等）//间隔1s //重新获取token
                     Thread.sleep(1000);
                     // 重新请求数据
                     accessTokenService.getAccessToken(false);
                     getProcessListForBlackLack(workOrderIdList, processId);
                 } else {
-                    System.out.println("✅ Token 有效，继续处理...");
+//                    System.out.println("✅ Token 有效，继续处理...");
                 }
             } else {
-                System.err.println("❌ 请求失败，HTTP状态码: " + response.code());
-                System.err.println(response.body().string());
+//                System.err.println("❌ 请求失败，HTTP状态码: " + response.code());
+//                System.err.println(response.body().string());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -91,13 +91,13 @@ public class ApiProcessListForBlackLack {
         }
         int code = root.get("code").asInt();
         String message = root.get("message").asText();
-        System.out.println("Code: " + code);
-        System.out.println("Message: " + message);
+//        System.out.println("Code: " + code);
+//        System.out.println("Message: " + message);
 // 获取任务列表
         JsonNode taskList = root.path("data").path("list");
 
-        System.out.println("找到的任务数量: " + taskList.size());
-        System.out.println("----------------------------------");
+//        System.out.println("找到的任务数量: " + taskList.size());
+//        System.out.println("----------------------------------");
         Map<String, String> result = new HashMap<>();
         // 遍历每个任务项
         for (int i = 0; i < taskList.size(); i++) {
@@ -106,12 +106,12 @@ public class ApiProcessListForBlackLack {
             String processId1 = task.path("processId").asText();
 
             // 打印任务信息
-            System.out.println("工序ID: " + processId1);
-            System.out.println("----------------------------------");
+//            System.out.println("工序ID: " + processId1);
+//            System.out.println("----------------------------------");
             if (processId1.equals(processId)){
                 //返回下一个工序的id
                 JsonNode task1 = taskList.get(i+1);
-                System.out.println("找到的下一个工序: "+task1);
+//                System.out.println("找到的下一个工序: "+task1);
                 // 提取关键信息
                 String taskId = task1.path("taskId").asText();
                 String taskCode = task1.path("taskCode").asText();
@@ -122,16 +122,16 @@ public class ApiProcessListForBlackLack {
                 long lineId = task1.path("progressReportOpenVO").path("lineId").asLong();
                 long materialId = task1.path("progressReportOpenVO").path("materialInfo").path("baseInfo").path("id").asLong();
 
-                System.out.println("----------------------------------");
-                System.out.println("lineId: " + lineId);
-                System.out.println("taskId = " + taskId);
-                System.out.println("taskCode = " + taskCode);
-                System.out.println("processId = " + processId2);
-                System.out.println("processName = " + processName);
-                System.out.println("status = " + status);
-                System.out.println("workOrderCode = " + workOrderCode);
-                System.out.println("materialId = " + materialId);
-                System.out.println("----------------------------------");
+//                System.out.println("----------------------------------");
+//                System.out.println("lineId: " + lineId);
+//                System.out.println("taskId = " + taskId);
+//                System.out.println("taskCode = " + taskCode);
+//                System.out.println("processId = " + processId2);
+//                System.out.println("processName = " + processName);
+//                System.out.println("status = " + status);
+//                System.out.println("workOrderCode = " + workOrderCode);
+//                System.out.println("materialId = " + materialId);
+//                System.out.println("----------------------------------");
 
                 result.put("taskId", taskId);
                 result.put("taskCode", taskCode);
@@ -153,7 +153,7 @@ public class ApiProcessListForBlackLack {
 
         // Access Token 和 X-AUTH 一致
         String accessToken = accessTokenService.getAccessToken(true);
-        System.out.println("✅ Access Token: " + accessToken);
+//        System.out.println("✅ Access Token: " + accessToken);
         // access_token 作为 query 参数拼接到 URL 上
         HttpUrl url = HttpUrl.parse("https://v3-ali.blacklake.cn/api/openapi/domain/web/v1/route\n" +
                         "/mfg/open/v1/produce_task/_list")
@@ -180,26 +180,26 @@ public class ApiProcessListForBlackLack {
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 responseStr = response.body().string();
-                System.out.println("✅ 请求成功***********************生产任务列表：");
-                System.out.println(responseStr);
+//                System.out.println("✅ 请求成功***********************生产任务列表：");
+//                System.out.println(responseStr);
                 // 用 Jackson 解析为 JsonNode
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode jsonNode = mapper.readTree(responseStr);
                 int code = jsonNode.path("code").asInt();
                 String subCode = jsonNode.path("subCode").asText();
                 if (code !=200) {
-                    System.out.println("❌ Token 已失效，请重新登录。");
+//                    System.out.println("❌ Token 已失效，请重新登录。");
                     // 处理失效逻辑（如刷新 token、抛异常等）//间隔1s //重新获取token
                     Thread.sleep(1000);
                     // 重新请求数据
                     accessTokenService.getAccessToken(false);
                     getProcessListForBlackLack(workOrderIdList);
                 } else {
-                    System.out.println("✅ Token 有效，继续处理...");
+//                    System.out.println("✅ Token 有效，继续处理...");
                 }
             } else {
-                System.err.println("❌ 请求失败，HTTP状态码: " + response.code());
-                System.err.println(response.body().string());
+//                System.err.println("❌ 请求失败，HTTP状态码: " + response.code());
+//                System.err.println(response.body().string());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -216,13 +216,13 @@ public class ApiProcessListForBlackLack {
         }
         int code = root.get("code").asInt();
         String message = root.get("message").asText();
-        System.out.println("Code: " + code);
-        System.out.println("Message: " + message);
+//        System.out.println("Code: " + code);
+//        System.out.println("Message: " + message);
 // 获取任务列表
         JsonNode taskList = root.path("data").path("list");
 
-        System.out.println("找到的任务数量: " + taskList.size());
-        System.out.println("----------------------------------");
+//        System.out.println("找到的任务数量: " + taskList.size());
+//        System.out.println("----------------------------------");
         List<Map<String, String>> resultList =new ArrayList<>( );
         // 遍历每个任务项
         for (JsonNode task : taskList) {
@@ -248,17 +248,17 @@ public class ApiProcessListForBlackLack {
                     .asLong();
 
             // 打印日志（建议开发调试阶段使用 logger）
-            System.out.println("==================================");
-            System.out.printf("工序ID: %s%n", processId);
-            System.out.printf("lineId: %d%n", lineId);
-            System.out.printf("taskId: %s%n", taskId);
-            System.out.printf("taskCode: %s%n", taskCode);
-            System.out.printf("processName: %s%n", processName);
-            System.out.printf("status: %s%n", status);
-            System.out.printf("statusCode: %s%n", statusCode);
-            System.out.printf("workOrderCode: %s%n", workOrderCode);
-            System.out.printf("materialId: %d%n", materialId);
-            System.out.println("==================================");
+//            System.out.println("==================================");
+//            System.out.printf("工序ID: %s%n", processId);
+//            System.out.printf("lineId: %d%n", lineId);
+//            System.out.printf("taskId: %s%n", taskId);
+//            System.out.printf("taskCode: %s%n", taskCode);
+//            System.out.printf("processName: %s%n", processName);
+//            System.out.printf("status: %s%n", status);
+//            System.out.printf("statusCode: %s%n", statusCode);
+//            System.out.printf("workOrderCode: %s%n", workOrderCode);
+//            System.out.printf("materialId: %d%n", materialId);
+//            System.out.println("==================================");
 
             // 保存到结果列表
             result.put("taskId", taskId);

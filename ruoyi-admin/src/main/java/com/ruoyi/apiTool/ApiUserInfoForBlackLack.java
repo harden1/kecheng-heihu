@@ -32,16 +32,16 @@ public class ApiUserInfoForBlackLack {
     private BlacklackUserMapper blacklackUserMapper;
     public List<BlacklackUser> getUserApiForBlacklack(boolean tokenState) {
         if (accessTokenService == null) {
-            System.err.println("❌ accessTokenService 未初始化");
+//            System.err.println("❌ accessTokenService 未初始化");
             return  null;
         }
         // 请求地址
         String url = "https://v3-ali.blacklake.cn/api/openapi/domain/web/v1/route/user/open/v1/user/_list"; // 替换为真实接口地址
         // Access Token 和 X-AUTH 一致
         String accessToken = accessTokenService.getAccessToken(tokenState);
-        System.out.println("✅ Access Token: " + accessToken);
+//        System.out.println("✅ Access Token: " + accessToken);
         if (accessToken == null|| accessToken.isEmpty()) {
-            System.err.println(" Token 未初始化");
+//            System.err.println(" Token 未初始化");
             getUserApiForBlacklack(false);
         }
         OkHttpClient client = new OkHttpClient();
@@ -67,7 +67,7 @@ public class ApiUserInfoForBlackLack {
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 responseStr = response.body().string();
-                System.out.println("✅ 请求成功，响应内容："+responseStr);
+//                System.out.println("✅ 请求成功，响应内容："+responseStr);
 //                System.out.println(responseStr);
 
                 // 用 Jackson 解析为 JsonNode
@@ -78,7 +78,7 @@ public class ApiUserInfoForBlackLack {
                 String subCode = jsonNode.path("subCode").asText();
 
                 if (code == 400150 && "USER-DOMAIN/SSO_TOKEN_FAIL".equals(subCode)) {
-                    System.out.println("❌ Token 已失效，请重新登录。");
+//                    System.out.println("❌ Token 已失效，请重新登录。");
 
                     // 处理失效逻辑（如刷新 token、抛异常等）
                     //重新获取token
@@ -88,12 +88,12 @@ public class ApiUserInfoForBlackLack {
                     getUserApiForBlacklack(false);
 
                 } else {
-                    System.out.println("✅ Token 有效，继续处理...");
+//                    System.out.println("✅ Token 有效，继续处理...");
                     // 可读取 data 节点等 jsonNode.path("data")
                 }
             } else {
-                System.err.println("❌ 请求失败，HTTP状态码: " + response.code());
-                System.err.println(response.body().string());
+//                System.err.println("❌ 请求失败，HTTP状态码: " + response.code());
+//                System.err.println(response.body().string());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -151,7 +151,7 @@ public class ApiUserInfoForBlackLack {
         //blacklackUserService.replaceAll(blacklackUserList);
 
 
-        System.out.println("✅ 数据已插入 MySQL");
+//        System.out.println("✅ 数据已插入 MySQL");
             return blacklackUserList;
     }
 }

@@ -22,10 +22,10 @@ public class MyScheduledTask {
     // 启动后立即执行一次，以后在上一次任务执行完成后，等待 1 小时再执行
     @Scheduled(fixedDelay = 60 * 60 * 1000)
     public void executeTask() {
-        System.out.println("执行任务时间：" + java.time.LocalDateTime.now());
+//        System.out.println("执行任务时间：" + java.time.LocalDateTime.now());
         //调用token接口
         String accessToken = accessTokenService.getAccessToken(false);
-        System.out.println("accessToken: " + accessToken);
+//        System.out.println("accessToken: " + accessToken);
         //测试userinfo
 //        apiUserInfoForBlackLack.getUserApiForBlacklack();
         //调用订单二维码数据，查询订单

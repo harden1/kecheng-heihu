@@ -42,9 +42,9 @@ public class TokenUserInfoClient {
         // 发送请求
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
-                System.out.println("响应内容：" + response.body().string());
+//                System.out.println("响应内容：" + response.body().string());
             } else {
-                System.err.println("请求失败，状态码：" + response.code());
+//                System.err.println("请求失败，状态码：" + response.code());
             }
         }
     }

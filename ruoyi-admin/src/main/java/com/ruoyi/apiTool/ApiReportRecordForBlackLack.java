@@ -26,7 +26,7 @@ public class ApiReportRecordForBlackLack {
 
         // Access Token 和 X-AUTH 一致
         String accessToken = accessTokenService.getAccessToken(true);
-        System.out.println("✅ Access Token: " + accessToken);
+//        System.out.println("✅ Access Token: " + accessToken);
         // access_token 作为 query 参数拼接到 URL 上
         HttpUrl url = HttpUrl.parse("https://v3-ali.blacklake.cn/api/openapi/domain/web/v1/route/mfg/open/v1/progress_report/_list")
                 .newBuilder()
@@ -64,26 +64,26 @@ public class ApiReportRecordForBlackLack {
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 responseStr = response.body().string();
-                System.out.println("✅ *************************查询工序数据*******************：");
-                System.out.println(responseStr);
+//                System.out.println("✅ *************************查询工序数据*******************：");
+//                System.out.println(responseStr);
                 // 用 Jackson 解析为 JsonNode
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode jsonNode = mapper.readTree(responseStr);
                 int code = jsonNode.path("code").asInt();
                 String subCode = jsonNode.path("subCode").asText();
                 if (code == 400150 && "USER-DOMAIN/SSO_TOKEN_FAIL".equals(subCode)) {
-                    System.out.println("❌ Token 已失效，请重新登录。");
+//                    System.out.println("❌ Token 已失效，请重新登录。");
                     // 处理失效逻辑（如刷新 token、抛异常等）//间隔1s //重新获取token
                     Thread.sleep(1000);
                     // 重新请求数据
                     accessTokenService.getAccessToken(false);
                     getReportRecordDetailForBlackLack(qrCode);
                 } else {
-                    System.out.println("✅ Token 有效，继续处理...");
+//                    System.out.println("✅ Token 有效，继续处理...");
                 }
             } else {
-                System.err.println("❌ 请求失败，HTTP状态码: " + response.code());
-                System.err.println(response.body().string());
+//                System.err.println("❌ 请求失败，HTTP状态码: " + response.code());
+//                System.err.println(response.body().string());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -100,8 +100,8 @@ public class ApiReportRecordForBlackLack {
         }
         int code = root.get("code").asInt();
         String message = root.get("message").asText();
-        System.out.println("Code: " + code);
-        System.out.println("Message: " + message);
+//        System.out.println("Code: " + code);
+//        System.out.println("Message: " + message);
         Map<String, String> result = new HashMap<>();
         //找到第一个不为0的数
         JsonNode dataNode = root.path("data");
@@ -131,7 +131,7 @@ public class ApiReportRecordForBlackLack {
 //        JsonNode item = root.path("data").path("list").get(0);
 //        System.out.println( "报工记录item = " + root.path("data"));
         JsonNode item = firstNotZeroItem;
-        System.out.println( "报工记录item = " + item);
+//        System.out.println( "报工记录item = " + item);
 
         if (item != null) {
             String processCode = item.get("processCode").asText();
@@ -147,16 +147,16 @@ public class ApiReportRecordForBlackLack {
             String name = item.path("materialInfo").path("baseInfo").path("name").asText();
             String specification = item.path("materialInfo").path("baseInfo").path("specification").asText();
 
-            System.out.println("materialId = " + materialId);
-            System.out.println("workOrderId = " + workOrderId);
-            System.out.println("taskId = " + taskId);
-            System.out.println("materialCode = " + materialCode);
-            System.out.println("batchNo = " + batchNo);
-            System.out.println("batchNoId = " + batchNoId);
-            System.out.println("processId = " + processId);
-            System.out.println("amount = " + amount);
-            System.out.println("name = " + name);
-            System.out.println("specification = " + specification);
+//            System.out.println("materialId = " + materialId);
+//            System.out.println("workOrderId = " + workOrderId);
+//            System.out.println("taskId = " + taskId);
+//            System.out.println("materialCode = " + materialCode);
+//            System.out.println("batchNo = " + batchNo);
+//            System.out.println("batchNoId = " + batchNoId);
+//            System.out.println("processId = " + processId);
+//            System.out.println("amount = " + amount);
+//            System.out.println("name = " + name);
+//            System.out.println("specification = " + specification);
 
             result.put("materialId", materialId);
             result.put("workOrderId", workOrderId);
@@ -172,14 +172,14 @@ public class ApiReportRecordForBlackLack {
             result.put("workOrderCode", workOrderCode);
             result.put("processCode", processCode);
             //打印结果
-            System.out.println("Material ID: " + result.get("materialId"));
-            System.out.println("Work Order ID: " + result.get("workOrderId"));
-            System.out.println("Task ID: " + result.get("taskId"));
-            System.out.println("✅ 获取成功");
+//            System.out.println("Material ID: " + result.get("materialId"));
+//            System.out.println("Work Order ID: " + result.get("workOrderId"));
+//            System.out.println("Task ID: " + result.get("taskId"));
+//            System.out.println("✅ 获取成功");
             // 返回前端
             return result;
         }else {
-            System.out.println("❌ 获取失败");
+//            System.out.println("❌ 获取失败");
             return null;
         }
 
