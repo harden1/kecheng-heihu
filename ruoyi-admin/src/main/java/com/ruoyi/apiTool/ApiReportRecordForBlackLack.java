@@ -106,21 +106,15 @@ public class ApiReportRecordForBlackLack {
         //找到第一个不为0的数
         JsonNode dataNode = root.path("data");
         JsonNode listNode = dataNode.path("list");
-
         JsonNode firstNotZeroItem = null;
-
         if (listNode.isArray()) {
             for (JsonNode item : listNode) {
-
                 JsonNode amountNode = item
                         .path("reportBaseAmount")
                         .path("amount");
-
                 if (!amountNode.isMissingNode() && !amountNode.isNull()) {
-
                     // 统一用 BigDecimal 处理
                     BigDecimal amount = new BigDecimal(amountNode.asText("0"));
-
                     if (amount.compareTo(BigDecimal.ZERO) != 0) {
                         firstNotZeroItem = item;
                         break;
