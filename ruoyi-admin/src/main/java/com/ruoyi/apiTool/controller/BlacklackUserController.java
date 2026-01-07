@@ -124,6 +124,7 @@ public class BlacklackUserController extends BaseController {
 //        String processCode = reportRecordResult.get("processCode");
         for (String pName : previousProcessSettingList) {
             for (Map<String, String> process : processList) {
+                System.out.println("工序查找：" + process + " == " + pName);
                 if (pName.equals(process.get("processCode"))) {
 //                    System.out.println("找到镜检工序：" + process.get("processCode"));
                     reportRecordResult.put("taskId", process.get("taskId"));
@@ -139,18 +140,19 @@ public class BlacklackUserController extends BaseController {
                     reportRecordResult.put("materialId", process.get("materialId"));
                     reportRecordResult.put("lineId", process.get("lineId"));
                     reportRecordResult.put("processCode", process.get("processCode"));
-//                    System.out.println("扫码反返回数据：" + reportRecordResult);
+                    System.out.println("扫码反返回数据：" + reportRecordResult);
                     //返回确认信息
                     return success(reportRecordResult);
                 }
             }
+
 //            if (pName.equals(processCode)) {
 //                System.out.println("当前工序：" + processCode);
 //                //返回确认信息
 //                return success(reportRecordResult);
 //            }
         }
-        return error("该物料未找到镜检工序，请检查物料的工序、镜检软件后台工序编码，或联系管理员！");
+        return error("该物料未找到镜检工序，或镜检已完工，请检查物料的工序、镜检软件后台工序编码，或联系管理员！");
     }
 
     //点击开始报工，主表新增记录
