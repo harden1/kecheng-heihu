@@ -60,8 +60,8 @@ public class ApiMaterialDetailForBlackLack {
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 responseStr = response.body().string();
-//                System.out.println("✅ 请求成功，响应内容：");
-//                System.out.println(responseStr);
+                System.out.println("✅ ❌物料请求成功，响应内容：");
+                System.out.println(responseStr);
                 // 用 Jackson 解析为 JsonNode
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode jsonNode = mapper.readTree(responseStr);

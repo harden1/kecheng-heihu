@@ -42,7 +42,43 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
         <result property="degrees"    column="degrees"    />
     </resultMap>
-
+    <resultMap type="InspectionSummary" id="InspectionSummaryResultNoDetail">
+        <result property="id"    column="id"    />
+        <result property="workOrderCode"    column="work_order_code"    />
+        <result property="totalQuantity"    column="total_quantity"    />
+        <result property="defectiveTotal"    column="defective_total"    />
+        <result property="defect1"    column="defect_1"    />
+        <result property="defect2"    column="defect_2"    />
+        <result property="defect3"    column="defect_3"    />
+        <result property="defect4"    column="defect_4"    />
+        <result property="defect5"    column="defect_5"    />
+        <result property="defect6"    column="defect_6"    />
+        <result property="defect7"    column="defect_7"    />
+        <result property="defect8"    column="defect_8"    />
+        <result property="defect9"    column="defect_9"    />
+        <result property="defect10"    column="defect_10"    />
+        <result property="defect11"    column="defect_11"    />
+        <result property="defect12"    column="defect_12"    />
+        <result property="defect13"    column="defect_13"    />
+        <result property="defect14"    column="defect_14"    />
+        <result property="defect15"    column="defect_15"    />
+        <result property="defect16"    column="defect_16"    />
+        <result property="defect17"    column="defect_17"    />
+        <result property="defect18"    column="defect_18"    />
+        <result property="defect19"    column="defect_19"    />
+        <result property="defect20"    column="defect_20"    />
+        <result property="stopTime"    column="stop_time"    />
+        <result property="apiDetail"    column="api_detail"    />
+        <result property="apiReport"    column="api_report"    />
+        <result property="successFlag"    column="success_flag"    />
+        <result property="qrCode"    column="qr_code"    />
+        <result property="color"    column="color"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="degrees"    column="degrees"    />
+    </resultMap>
     <resultMap id="InspectionSummaryInspectionReportResult" type="InspectionSummary" extends="InspectionSummaryResult">
         <collection property="inspectionReportList" ofType="InspectionReport" column="id" select="selectInspectionReportList" />
     </resultMap>
@@ -146,6 +182,98 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select stop_time from inspection_summary
         where qr_code = #{qr_code}
     </select>
+    <select id="selectInspectionSummaryListBySchedule"
+            resultMap="InspectionSummaryResultNoDetail">
+        SELECT
+            id,
+            work_order_code,
+            total_quantity,
+            defective_total,
+            defect_1,
+            defect_2,
+            defect_3,
+            defect_4,
+            defect_5,
+            defect_6,
+            defect_7,
+            defect_8,
+            defect_9,
+            defect_10,
+            defect_11,
+            defect_12,
+            defect_13,
+            defect_14,
+            defect_15,
+            defect_16,
+            defect_17,
+            defect_18,
+            defect_19,
+            defect_20,
+            all_defect_items,
+            stop_time,
+            api_detail,
+            qr_code,
+            color,
+            api_report,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            success_flag
+        FROM inspection_summary
+        WHERE success_flag = 0
+        ORDER BY COALESCE(create_time, '1970-01-01 00:00:00') ASC
+        LIMIT #{num}
+    </select>
+    <select id="selectInspectionSummaryListByIds"  resultMap="InspectionSummaryResultNoDetail">
+        SELECT
+        id,
+        work_order_code,
+        total_quantity,
+        defective_total,
+        defect_1,
+        defect_2,
+        defect_3,
+        defect_4,
+        defect_5,
+        defect_6,
+        defect_7,
+        defect_8,
+        defect_9,
+        defect_10,
+        defect_11,
+        defect_12,
+        defect_13,
+        defect_14,
+        defect_15,
+        defect_16,
+        defect_17,
+        defect_18,
+        defect_19,
+        defect_20,
+        all_defect_items,
+        stop_time,
+        api_detail,
+        qr_code,
+        color,
+        api_report,
+        create_by,
+        create_time,
+        update_by,
+        update_time,
+        success_flag
+        FROM inspection_summary
+        WHERE id IN
+        <foreach collection="ids"
+                 item="id"
+                 open="("
+                 separator=","
+                 close=")">
+            #{id}
+        </foreach>
+    </select>
+
+
 
     <insert id="insertInspectionSummary" parameterType="InspectionSummary" useGeneratedKeys="true" keyProperty="id">
         insert into inspection_summary

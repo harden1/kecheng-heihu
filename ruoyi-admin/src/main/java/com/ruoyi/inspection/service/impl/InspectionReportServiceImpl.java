@@ -24,6 +24,11 @@ public class InspectionReportServiceImpl implements IInspectionReportService
     @Autowired
     private InspectionReportMapper inspectionReportMapper;
 
+    @Override
+    public List<InspectionReport> selectInspectionReportListForSchedule(int num) {
+        return inspectionReportMapper.selectInspectionReportListForSchedule(num);
+    }
+
     /**
      * 查询报工记录
      * 
@@ -108,12 +113,12 @@ public class InspectionReportServiceImpl implements IInspectionReportService
         long endTime = Long.parseLong(reportJson.get("reportEndTime").toString());
         Date reportTime = new Date(endTime);
         irp.setReportTime(reportTime);
-        if (res.get("code").toString().equals("200")&&res.get("message").toString().equals("成功")) {
-            irp.setSuccessFlag(1);
-        }else {
+//        if (res.get("code").toString().equals("200")&&res.get("message").toString().equals("成功")) {
+//            irp.setSuccessFlag(1);
+//        }else {
             irp.setSuccessFlag(0);
-        }
-        irp.setResultJson(res.toString());
+//        }
+//        irp.setResultJson(res.toString());
         irp.setWorkOrderCode(reportJson.get("qrCode").toString());
             inspectionReportMapper.insertInspectionReport(irp);
     }

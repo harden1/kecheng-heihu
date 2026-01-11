@@ -5,23 +5,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.apiTool.domain.ReportRecord;
+import com.ruoyi.apiTool.service.IBlacklackUserService;
 import com.ruoyi.badItem.domain.CreateBadItemsTable;
 import com.ruoyi.badItem.mapper.CreateBadItemsTableMapper;
-import com.ruoyi.badItem.service.ICreateBadItemsTableService;
 import com.ruoyi.inspection.domain.InspectionSummary;
 import com.ruoyi.inspection.mapper.InspectionSummaryMapper;
-import com.ruoyi.system.domain.SysConfig;
 import com.ruoyi.system.mapper.SysConfigMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.apiTool.mapper.BlacklackUserMapper;
 import com.ruoyi.apiTool.domain.BlacklackUser;
-import com.ruoyi.apiTool.service.IBlacklackUserService;
 import org.springframework.transaction.annotation.Transactional;
 
 /**

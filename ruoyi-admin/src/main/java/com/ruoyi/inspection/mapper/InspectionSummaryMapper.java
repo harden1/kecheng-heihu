@@ -92,4 +92,8 @@ public interface InspectionSummaryMapper
     String selectStopTime(String qrCode);
 
     int updateStopTime(@Param("id") int id, @Param("stopTime") String stopTime);
+
+    List<InspectionSummary> selectInspectionSummaryListBySchedule( @Param("num") int num);
+
+    List<InspectionSummary> selectInspectionSummaryListByIds( @Param("ids")List<Long> summaryIdList);
 }

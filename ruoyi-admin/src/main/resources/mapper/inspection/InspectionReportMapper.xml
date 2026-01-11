@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.inspection.mapper.InspectionReportMapper">
-    
+
     <resultMap type="InspectionReport" id="InspectionReportResult">
         <result property="id"    column="id"    />
         <result property="summaryId"    column="summary_id"    />
@@ -26,7 +26,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectInspectionReportList" parameterType="InspectionReport" resultMap="InspectionReportResult">
         <include refid="selectInspectionReportVo"/>
-        <where>  
+        <where>
             <if test="summaryId != null "> and summary_id = #{summaryId}</if>
             <if test="workOrderCode != null  and workOrderCode != ''"> and work_order_code = #{workOrderCode}</if>
             <if test="reportTime != null "> and report_time = #{reportTime}</if>
@@ -37,11 +37,35 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="defectRemark != null  and defectRemark != ''"> and defect_remark = #{defectRemark}</if>
         </where>
     </select>
-    
+
     <select id="selectInspectionReportById" parameterType="Long" resultMap="InspectionReportResult">
         <include refid="selectInspectionReportVo"/>
         where id = #{id}
     </select>
+
+    <select id="selectInspectionReportListForSchedule"  parameterType="int"  resultMap="InspectionReportResult">
+        SELECT
+            id,
+            summary_id,
+            work_order_code,
+            report_time,
+            report_type,
+            quantity,
+            result_json,
+            success_flag,
+            defect_remark,
+            create_by,
+            create_time,
+            update_by,
+            update_time
+        FROM inspection_report
+        WHERE success_flag = 0 OR success_flag IS NULL
+        ORDER BY create_time ASC
+        LIMIT #{num}
+    </select>
+
+
+
 
     <insert id="insertInspectionReport" parameterType="InspectionReport" useGeneratedKeys="true" keyProperty="id">
         insert into inspection_report
@@ -99,7 +123,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteInspectionReportByIds" parameterType="String">
-        delete from inspection_report where id in 
+        delete from inspection_report where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

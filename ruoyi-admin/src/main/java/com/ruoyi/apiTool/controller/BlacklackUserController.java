@@ -145,7 +145,6 @@ public class BlacklackUserController extends BaseController {
                     return success(reportRecordResult);
                 }
             }
-
 //            if (pName.equals(processCode)) {
 //                System.out.println("当前工序：" + processCode);
 //                //返回确认信息
@@ -211,6 +210,10 @@ public class BlacklackUserController extends BaseController {
             return success(result);
         }
     }
+    /**
+     * 重新批量良品报工
+     */
+
 
     @PostMapping("/reReportBadItemOne")
     public AjaxResult reReportBadItemOne(@RequestBody InspectionReport params) {
@@ -243,7 +246,6 @@ public class BlacklackUserController extends BaseController {
         if (reportJson.get("batchNo") != null) {
             batchNo = reportJson.get("batchNo").toString();
         }
-
         //时间
         String stopTime = "";
         long reportStartTime = 0;
@@ -284,10 +286,14 @@ public class BlacklackUserController extends BaseController {
 //        更新这条报工记录成功或失败
         params.setSuccessFlag(1);
         inspectionReportService.updateInspectionReport(params);
-
         return AjaxResult.success("重新报工成功");
     }
 
+    /**
+     * 正常单个不良报工
+     * @param params
+     * @return
+     */
     @PostMapping("/reportBadItemOne")
     public AjaxResult reportBadItemOne(@RequestBody Map<String, Object> params) {
         // 获取 reportJson（它是个 List）
@@ -329,33 +335,34 @@ public class BlacklackUserController extends BaseController {
 //        System.out.println("color = " + badItem);
 //        System.out.println("reportJson = " + reportJson);
 
-        Map<String, Object> res = batchReportForBlackLack.batchReportForBlackLackOne(
-                userId,
-                qrCode,
-                reportUnitId,
-                reportProcessId,
-                reportAmount,
-                lineId,
-                materialId,
-                qcStatus,
-                reportType,
-                taskId,
-                badItem,
-                stopTime,
-                batchNoId,
-                batchNo,
-                reportStartTime,
-                reportEndTime
-        );
+//        Map<String, Object> res = batchReportForBlackLack.batchReportForBlackLackOne(
+//                userId,
+//                qrCode,
+//                reportUnitId,
+//                reportProcessId,
+//                reportAmount,
+//                lineId,
+//                materialId,
+//                qcStatus,
+//                reportType,
+//                taskId,
+//                badItem,
+//                stopTime,
+//                batchNoId,
+//                batchNo,
+//                reportStartTime,
+//                reportEndTime
+//        );
 //        System.out.println("res = " + res);
         //检验成功状态
-        String message = res.get("message").toString();
-        int code = (int) res.get("code");
+//        String message = res.get("message").toString();
+//        int code = (int) res.get("code");
 //        System.out.println("消息 = " + message);
 //        System.out.println(" 代码code = " + code);
-        if (code != 200) {
-            return AjaxResult.error(message);
-        }
+//        if (code != 200) {
+//            return AjaxResult.error(message);
+//        }
+        Map<String, Object> res = new HashMap<>();
         //创建子表
         inspectionReportService.insertReportOne(res, reportJson, mainId, no, badItem);
 //        System.out.println("创建子表成功");
@@ -444,6 +451,12 @@ public class BlacklackUserController extends BaseController {
         return AjaxResult.success("继续");
     }
 
+    /**
+     * 正常批量良品报工
+     * @param params
+     * @return
+     */
+
     @PostMapping("/reportBatch")
     public AjaxResult reportBatch(@RequestBody Map<String, Object> params) {
 
@@ -478,40 +491,41 @@ public class BlacklackUserController extends BaseController {
         int qcStatus = 1;
         int reportType = 1;
 
-        Map<String, Object> res = batchReportForBlackLack.batchReportForBlackLack(
-                userId,
-                qrCode,
-                reportUnitId,
-                reportProcessId,
-                reportAmount,
-                lineId,
-                materialId,
-                qcStatus,
-                reportType,
-                taskId,
-                stopTime,
-                batchNoId,
-                batchNo,
-                reportStartTime,
-                reportEndTime
-        );
-        //检验成功状态
-        String message = res.get("message").toString();
-        int code = (int) res.get("code");
-//        System.out.println("message1 = " + message);
-//        System.out.println(" code1 = " + code);
-        if (code != 200) {
-            return AjaxResult.error(message);
-        }
-        //更新主表
-        System.out.println("报工状态：" + res.get("message"));
-        if (res.get("message").equals("成功")) {
-            inspectionSummary.setSuccessFlag(1L);
-//            System.out.println("报工状态1：" + res.get("message"));
-        } else {
+//        Map<String, Object> res = batchReportForBlackLack.batchReportForBlackLack(
+//                userId,
+//                qrCode,
+//                reportUnitId,
+//                reportProcessId,
+//                reportAmount,
+//                lineId,
+//                materialId,
+//                qcStatus,
+//                reportType,
+//                taskId,
+//                stopTime,
+//                batchNoId,
+//                batchNo,
+//                reportStartTime,
+//                reportEndTime
+//        );
+//        //检验成功状态
+//        String message = res.get("message").toString();
+//        int code = (int) res.get("code");
+////        System.out.println("message1 = " + message);
+////        System.out.println(" code1 = " + code);
+//        if (code != 200) {
+//            return AjaxResult.error(message);
+//        }
+//        //更新主表
+//        System.out.println("报工状态：" + res.get("message"));
+//        if (res.get("message").equals("成功")) {
+//            inspectionSummary.setSuccessFlag(1L);
+////            System.out.println("报工状态1：" + res.get("message"));
+//        } else {
             inspectionSummary.setSuccessFlag(0L);
 //            System.out.println("报工状态0：" + res.get("message"));
-        }
+//        }
+        Map<String, Object> res =new HashMap<>();
         inspectionSummary.setApiDetail(res.toString());
         int i = inspectionSummaryService.updateInspectionSummary(inspectionSummary);
         //查询主表记录
@@ -522,12 +536,13 @@ public class BlacklackUserController extends BaseController {
         }
         return AjaxResult.success(result1);
     }
+    /**
+     * 重试批量良品报工
+     */
+
 
     @PostMapping("/reReportBatch")
     public AjaxResult reReportBatch(@RequestBody InspectionSummary inspectionSummary) {
-//        System.out.println("重新报工所有" + inspectionSummary);
-
-
         // 获取 reportJson（它是个 List）
         ObjectMapper objectMapper = new ObjectMapper();
 

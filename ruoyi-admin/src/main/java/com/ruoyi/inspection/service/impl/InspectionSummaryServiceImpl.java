@@ -48,6 +48,12 @@ public class InspectionSummaryServiceImpl implements IInspectionSummaryService
         return inspectionSummaryMapper.selectInspectionSummaryList(inspectionSummary);
     }
 
+    @Override
+    public List<InspectionSummary> selectInspectionSummaryListBySchedule(int num) {
+        return inspectionSummaryMapper.selectInspectionSummaryListBySchedule(num);
+    }
+
+
     /**
      * 新增镜检统计主
      * 
@@ -114,6 +120,10 @@ public class InspectionSummaryServiceImpl implements IInspectionSummaryService
         return rows;
     }
 
+    @Override
+    public List<InspectionSummary> selectInspectionSummaryListByIds(List<Long> summaryIdList) {
+        return inspectionSummaryMapper.selectInspectionSummaryListByIds(summaryIdList);
+    }
 
 
     /**

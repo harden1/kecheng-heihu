@@ -15,6 +15,14 @@ public interface IInspectionReportService
 {
     /**
      * 查询报工记录
+     *
+     * @param num 报工记录主键
+     * @return 报工记录
+     */
+    public  List<InspectionReport>  selectInspectionReportListForSchedule(int num);
+
+    /**
+     * 查询报工记录
      * 
      * @param id 报工记录主键
      * @return 报工记录

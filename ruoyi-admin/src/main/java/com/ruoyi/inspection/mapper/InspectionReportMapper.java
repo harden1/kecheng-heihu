@@ -58,4 +58,6 @@ public interface InspectionReportMapper
      * @return 结果
      */
     public int deleteInspectionReportByIds(Long[] ids);
+
+    public  List<InspectionReport> selectInspectionReportListForSchedule(int num);
 }

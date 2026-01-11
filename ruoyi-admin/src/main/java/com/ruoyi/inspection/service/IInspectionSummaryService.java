@@ -28,6 +28,14 @@ public interface IInspectionSummaryService
     public List<InspectionSummary> selectInspectionSummaryList(InspectionSummary inspectionSummary);
 
     /**
+     * 查询镜检统计主列表
+     *
+     * @param num 镜检统计主
+     * @return 镜检统计主集合
+     */
+    public List<InspectionSummary> selectInspectionSummaryListBySchedule(int num);
+
+    /**
      * 新增镜检统计主
      * 
      * @param inspectionSummary 镜检统计主
@@ -61,4 +69,5 @@ public interface IInspectionSummaryService
 
     int updateStopTime(int mainId, String stopTime);
 
+    List<InspectionSummary> selectInspectionSummaryListByIds(List<Long> summaryIdList);
 }
