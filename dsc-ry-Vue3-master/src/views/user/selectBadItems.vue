@@ -10,10 +10,11 @@
               <th class="color-btn-top">颜色: {{ reportMain?.color }}</th>
               <th class="color-btn-top">
                 度数: {{ reportRecord?.specification }}<br />
-                合格数: {{ badNum }}
+                总数: {{ reportRecord?.amount }}
+                合格数：{{goodNum }}
               </th>
               <th class="color-btn-top">
-                总数<br />不合格率: {{ reportRecord?.amount }}/{{
+                不合格数:<br />不合格率: {{badNum }}/{{
                   ((mainObject.data.defectiveTotal / reportRecord?.amount) * 100).toFixed(2)
                 }}%
               </th>
@@ -265,6 +266,7 @@
   }
   import { ElMessage } from 'element-plus'
   const badNum = ref(0)
+   const goodNum = ref(0)
   async function handleClickApi(color: string, No: string) {
     console.log(`Clicked on color: ${color}`)
     reportJson.value.stopTime = '0'
@@ -279,20 +281,41 @@
       //提示：
       ElMessage.error('报工失败，用户ID缺失，请重新登陆，或者联系管理员')
     } else {
-      let parms = {
+      if(Number(mainObject.value.data.defectiveTotal)+1>Number(mainObject.value.data.totalQuantity)){
+        ElMessage.error('报工数量超出总数量')
+      }else{
+         let parms = {
         mainId: mainObject.value.data.id,
         no: No,
         color: color,
         reportJson: reportJson.value
       }
       response = await reportBadItemOne(parms)
+      }
+     
+    }
+    if (response.code === 200&&response.data === 1) {
+      // ElMessage.success('报工成功')
+        //重新查询这条记录并刷新
+        console.log('表数据',mainObject.value.data)
+        //不良项目数量+1
+        // 动态 defect 字段
+        const defectKey = `defect${No + 1}`
+        mainObject.value.data[defectKey] =
+             Number(mainObject.value.data[defectKey] || 0) + 1
+  
+        //不良总数 = 总数量
+        mainObject.value.data.defectiveTotal = Number(mainObject.value.data.defectiveTotal)+1
+          console.log('表数据1',mainObject.value.data)
+          
+        badNum.value = Number(mainObject.value.data.defectiveTotal)
+        goodNum.value =  Number(mainObject.value.data.totalQuantity) - Number(mainObject.value.data.defectiveTotal)
+        // mainObject.value.data = response.data.summary
+    } else {
+      ElMessage.error('报工失败，请稍后再试')
     }
 
-    //重新查询这条记录并刷新
-    console.log('提交数据', response.data.summary)
-    badNum.value =
-      Number(response.data.summary.totalQuantity) - Number(response.data.summary.defectiveTotal)
-    mainObject.value.data = response.data.summary
+  
   }
 async function submitToApiAll() {
   ElMessageBox.confirm('确定报工吗？', '提示', {

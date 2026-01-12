@@ -96,4 +96,17 @@ public interface InspectionSummaryMapper
     List<InspectionSummary> selectInspectionSummaryListBySchedule( @Param("num") int num);
 
     List<InspectionSummary> selectInspectionSummaryListByIds( @Param("ids")List<Long> summaryIdList);
+
+    InspectionSummary selectInspectionSummaryByIdNoDetail(long mainId);
+
+    List<InspectionReport> selectInspectionReportBySummaryId(Long id);
+
+    void deleteInspectionReportBatch(List<Long> toDelete);
+
+    void batchUpdateInspectionReport(List<InspectionReport> toUpdate);
+
+    int increaseDefectByNo(
+            @Param("summaryId") Long summaryId,
+            @Param("no") Integer no
+    );
 }

@@ -25,7 +25,7 @@ public class AccessTokenService {
     private StringRedisTemplate redisTemplate;
 
     private static final String TOKEN_KEY = "blacklake-zs:access_token";
-//    private static final String TOKEN_KEY = "blacklake-zs:access_token";
+//    private static final String TOKEN_KEY = "blacklake:access_token";
     /**
      * 获取 access_token
      *
@@ -79,5 +79,4 @@ public class AccessTokenService {
             throw new RuntimeException("获取 access_token 失败", e);
         }
     }
-
 }

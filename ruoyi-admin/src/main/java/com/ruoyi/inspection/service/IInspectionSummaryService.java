@@ -70,4 +70,8 @@ public interface IInspectionSummaryService
     int updateStopTime(int mainId, String stopTime);
 
     List<InspectionSummary> selectInspectionSummaryListByIds(List<Long> summaryIdList);
+
+    InspectionSummary selectInspectionSummaryByIdNoDetail(long mainId);
+
+    int updateInspectionSummaryForDefect(Long mainId, int no);
 }

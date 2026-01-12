@@ -40,7 +40,7 @@ public class ScheduleReport {
      *如果上一组没有报工完成，在单实例单线程中，任务计划没有执行完会跳过，直到执行完，可以手动控制，代码如下
      */
     public void goodReportBatch() {
-        List<InspectionSummary> inspectionSummarys = inspectionSummaryService.selectInspectionSummaryListBySchedule(50);
+        List<InspectionSummary> inspectionSummarys = inspectionSummaryService.selectInspectionSummaryListBySchedule(250);
 //        System.out.println("按时间降序查最早50条良品数据" + inspectionSummarys);
         for (InspectionSummary inspectionSummary : inspectionSummarys) {
             String res = scheduleReportBatch(inspectionSummary,true);
@@ -49,7 +49,7 @@ public class ScheduleReport {
             }
             //延时0.5s
             try {
-                Thread.sleep(500);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -58,7 +58,7 @@ public class ScheduleReport {
 
     //查询不良品表，按时间降序查最早50条数据
     public void badReportOne() {
-        List<InspectionReport> inspectionReports = inspectionReportService.selectInspectionReportListForSchedule(50);
+        List<InspectionReport> inspectionReports = inspectionReportService.selectInspectionReportListForSchedule(250);
 //        System.out.println("按时间降序查最早50条不良品数据" + inspectionReports);
         //批量查询50条不良品的主表
         //收集所有的summaryId
@@ -84,7 +84,7 @@ public class ScheduleReport {
                        }
                        //延时0.5s
                        try {
-                           Thread.sleep(500);
+                           Thread.sleep(50);
                        } catch (InterruptedException e) {
                            e.printStackTrace();
                        }
