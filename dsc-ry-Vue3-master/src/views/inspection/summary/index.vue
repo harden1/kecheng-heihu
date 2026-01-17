@@ -1,45 +1,19 @@
 <template>
   <div class="app-container">
-    <el-form
-      :model="queryParams"
-      ref="queryRef"
-      :inline="true"
-      v-show="showSearch"
-      label-width="68px">
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="标识码" prop="qrCode">
-        <el-input
-          v-model="queryParams.qrCode"
-          placeholder="请输入"
-          clearable
-          @keyup.enter="handleQuery" />
+        <el-input v-model="queryParams.qrCode" placeholder="请输入" clearable @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item label="工单号" prop="workOrderCode">
-        <el-input
-          v-model="queryParams.workOrderCode"
-          placeholder="请输入"
-          clearable
-          @keyup.enter="handleQuery" />
+        <el-input v-model="queryParams.workOrderCode" placeholder="请输入" clearable @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item label="度数" prop="degrees">
-        <el-input
-          v-model="queryParams.degrees"
-          placeholder="请输入"
-          clearable
-          @keyup.enter="handleQuery" />
+        <el-input v-model="queryParams.degrees" placeholder="请输入" clearable @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item label="成功状态" prop="successFlag">
-        <el-select
-          v-model="queryParams.successFlag"
-          placeholder="请下拉选择"
-          clearable
-          :style="{ width: '100px' }">
-          <el-option
-            v-for="(item, index) in options"
-            :key="index"
-            :label="item.label"
-            :value="item.value"
-            :disabled="item.disabled"
-            @keyup.enter="handleQuery"></el-option>
+        <el-select v-model="queryParams.successFlag" placeholder="请下拉选择" clearable :style="{ width: '100px' }">
+          <el-option v-for="(item, index) in options" :key="index" :label="item.label" :value="item.value"
+            :disabled="item.disabled" @keyup.enter="handleQuery"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -58,25 +32,12 @@
           v-hasPermi="['inspection:summary:edit']">修改</el-button>
       </el-col> -->
       <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['inspection:summary:remove']"
-          >删除</el-button
-        >
+        <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete"
+          v-hasPermi="['inspection:summary:remove']">删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-          v-hasPermi="['inspection:summary:export']"
-          >导出</el-button
-        >
+        <el-button type="warning" plain icon="Download" @click="handleExport"
+          v-hasPermi="['inspection:summary:export']">导出</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -89,7 +50,24 @@
       <el-table-column label="总数量" align="center" prop="totalQuantity" />
       <el-table-column label="不合格总数" align="center" prop="defectiveTotal" />
       <el-table-column label="合格数" align="center" prop="qualified" />
-
+      <!-- <el-table-column label="状态" align="center" prop="successFlag" /> -->
+        <el-table-column prop="tag" label="状态" filter-placement="bottom-end" width="60">
+          <template #default="scope">
+            <el-tag :type="{
+              1: 'success',
+              2: 'danger',
+              0: 'warning'
+            }[scope.row.successFlag]">
+              {{
+                {
+                  1: '成功',
+                  2: '失败',
+                  0: '待报工'
+              }[scope.row.successFlag]
+              }}
+            </el-tag>
+          </template>
+        </el-table-column>
       <el-table-column label="度数" align="center" prop="degrees" />
       <el-table-column label="不良1" align="center" prop="defect1" />
       <el-table-column label="不良2" align="center" prop="defect2" />
@@ -111,21 +89,15 @@
       <el-table-column label="不良18" align="center" prop="defect18" />
       <el-table-column label="不良19" align="center" prop="defect19" />
       <el-table-column label="不良20" align="center" prop="defect20" />
-      <el-table-column label="状态" align="center" prop="successFlag" />
+
       <el-table-column label="报文" align="center" prop="apiDetail" width="600px" />
       <el-table-column label="预报api" align="center" prop="apiReport" width="600px" />
-        <!-- <el-table-column label="不良项" align="center" prop="allDefectItems" width="1200px" /> -->
+      <!-- <el-table-column label="不良项" align="center" prop="allDefectItems" width="1200px" /> -->
       <el-table-column label="创建时间" align="center" prop="createTime" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            icon="Edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['inspection:summary:edit']"
-            >修改</el-button
-          >
+          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
+            v-hasPermi="['inspection:summary:edit']">修改</el-button>
           <!-- <el-button
             link
             type="primary"
@@ -134,24 +106,14 @@
             v-hasPermi="['inspection:summary:remove']"
             >删除</el-button
           > -->
-          <el-button
-            link
-            type="primary"
-            icon="Edit"
-            @click="handleUpdate1(scope.row)"
-            v-hasPermi="['inspection:summary:edit']"
-            >重新上传</el-button
-          >
+          <el-button link type="primary" icon="Edit" @click="handleUpdate1(scope.row)"
+            v-hasPermi="['inspection:summary:edit']">重新上传</el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList" />
+    <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize" @pagination="getList" />
 
     <!-- 添加或修改镜检统计主对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
@@ -228,21 +190,14 @@
         <el-divider content-position="center">报工记录信息</el-divider>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button type="primary" icon="Plus" @click="handleAddInspectionReport"
-              >添加</el-button
-            >
+            <el-button type="primary" icon="Plus" @click="handleAddInspectionReport">添加</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="danger" icon="Delete" @click="handleDeleteInspectionReport"
-              >删除</el-button
-            >
+            <el-button type="danger" icon="Delete" @click="handleDeleteInspectionReport">删除</el-button>
           </el-col>
         </el-row>
-        <el-table
-          :data="inspectionReportList"
-          :row-class-name="rowInspectionReportIndex"
-          @selection-change="handleInspectionReportSelectionChange"
-          ref="inspectionReport">
+        <el-table :data="inspectionReportList" :row-class-name="rowInspectionReportIndex"
+          @selection-change="handleInspectionReportSelectionChange" ref="inspectionReport">
           <el-table-column type="selection" width="50" align="center" />
           <el-table-column label="序号" align="center" prop="index" width="50" />
           <el-table-column label="工单号" prop="workOrderCode" width="150">
@@ -252,20 +207,14 @@
           </el-table-column>
           <el-table-column label="报工时间" prop="reportTime" width="240">
             <template #default="scope">
-              <el-date-picker
-                clearable
-                v-model="scope.row.reportTime"
-                type="date"
-                value-format="YYYY-MM-DD"
+              <el-date-picker clearable v-model="scope.row.reportTime" type="date" value-format="YYYY-MM-DD"
                 placeholder="请选择报工时间">
               </el-date-picker>
             </template>
           </el-table-column>
           <el-table-column label="报工类型，如“自动”、“手动”等" prop="reportType" width="150">
             <template #default="scope">
-              <el-select
-                v-model="scope.row.reportType"
-                placeholder="请选择报工类型，如“自动”、“手动”等">
+              <el-select v-model="scope.row.reportType" placeholder="请选择报工类型，如“自动”、“手动”等">
                 <el-option label="请选择字典生成" value="" />
               </el-select>
             </template>
@@ -277,9 +226,7 @@
           </el-table-column>
           <el-table-column label="成功状态，true表示成功" prop="successFlag" width="150">
             <template #default="scope">
-              <el-input
-                v-model="scope.row.successFlag"
-                placeholder="请输入成功状态，true表示成功" />
+              <el-input v-model="scope.row.successFlag" placeholder="请输入成功状态，true表示成功" />
             </template>
           </el-table-column>
           <el-table-column label="不良项备注" prop="defectRemark" width="150">
@@ -300,262 +247,266 @@
 </template>
 
 <script setup name="Summary">
-  import {
-    listSummary,
-    getSummary,
-    delSummary,
-    addSummary,
-    updateSummary
-  } from '@/api/inspection/summary'
+import {
+  listSummary,
+  getSummary,
+  delSummary,
+  addSummary,
+  updateSummary
+} from '@/api/inspection/summary'
 
-  const { proxy } = getCurrentInstance()
+const { proxy } = getCurrentInstance()
 
-  const summaryList = ref([])
-  const inspectionReportList = ref([])
-  const open = ref(false)
-  const loading = ref(true)
-  const showSearch = ref(true)
-  const ids = ref([])
-  const checkedInspectionReport = ref([])
-  const single = ref(true)
-  const multiple = ref(true)
-  const total = ref(0)
-  const title = ref('')
+const summaryList = ref([])
+const inspectionReportList = ref([])
+const open = ref(false)
+const loading = ref(true)
+const showSearch = ref(true)
+const ids = ref([])
+const checkedInspectionReport = ref([])
+const single = ref(true)
+const multiple = ref(true)
+const total = ref(0)
+const title = ref('')
 
-  const data = reactive({
-    form: {},
-    queryParams: {
-      pageNum: 1,
-      pageSize: 10,
-      workOrderCode: null,
+const data = reactive({
+  form: {},
+  queryParams: {
+    pageNum: 1,
+    pageSize: 10,
+    workOrderCode: null,
 
-      qrCode: null, // 添加标识码
-      degrees: null, // 添加度数
-      successFlag: null // 添加成功状态
-    },
-    rules: {
-      workOrderCode: [{ required: true, message: '工单号不能为空', trigger: 'blur' }],
-      totalQuantity: [{ required: true, message: '总数量不能为空', trigger: 'blur' }]
+    qrCode: null, // 添加标识码
+    degrees: null, // 添加度数
+    successFlag: null // 添加成功状态
+  },
+  rules: {
+    workOrderCode: [{ required: true, message: '工单号不能为空', trigger: 'blur' }],
+    totalQuantity: [{ required: true, message: '总数量不能为空', trigger: 'blur' }]
+  }
+})
+const options = ref([
+  {
+    label: '成功',
+    value: 1
+  },
+  {
+    label: '待报工',
+    value: 0
+  },
+  {
+    label: '失败',
+    value: 2
+  }
+])
+const { queryParams, form, rules } = toRefs(data)
+
+/** 查询镜检统计主列表 */
+function getList() {
+  loading.value = true
+  listSummary(queryParams.value)
+    .then((response) => {
+      // 给每条记录增加 qualified 字段
+      summaryList.value = response.rows.map((item) => ({
+        ...item,
+        qualified: (item.totalQuantity || 0) - (item.defectiveTotal || 0) // 合格数
+      }))
+      total.value = response.total
+    })
+    .catch((error) => {
+      console.error('获取列表失败', error)
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
+
+// 取消按钮
+function cancel() {
+  open.value = false
+  reset()
+}
+
+// 表单重置
+function reset() {
+  form.value = {
+    id: null,
+    workOrderCode: null,
+    totalQuantity: null,
+    defectiveTotal: null,
+    defect1: null,
+    defect2: null,
+    defect3: null,
+    defect4: null,
+    defect5: null,
+    defect6: null,
+    defect7: null,
+    defect8: null,
+    defect9: null,
+    defect10: null,
+    defect11: null,
+    defect12: null,
+    defect13: null,
+    defect14: null,
+    defect15: null,
+    defect16: null,
+    defect17: null,
+    defect18: null,
+    defect19: null,
+    defect20: null,
+    createBy: null,
+    createTime: null,
+    updateBy: null,
+    updateTime: null
+  }
+  inspectionReportList.value = []
+  proxy.resetForm('summaryRef')
+}
+
+/** 搜索按钮操作 */
+function handleQuery() {
+  queryParams.value.pageNum = 1
+  getList()
+}
+
+/** 重置按钮操作 */
+function resetQuery() {
+  proxy.resetForm('queryRef')
+  handleQuery()
+}
+
+// 多选框选中数据
+function handleSelectionChange(selection) {
+  ids.value = selection.map((item) => item.id)
+  single.value = selection.length != 1
+  multiple.value = !selection.length
+}
+
+/** 新增按钮操作 */
+function handleAdd() {
+  reset()
+  open.value = true
+  title.value = '添加镜检统计主'
+}
+
+/** 修改按钮操作 */
+function handleUpdate(row) {
+  reset()
+  const _id = row.id || ids.value
+  getSummary(_id).then((response) => {
+    form.value = response.data
+    inspectionReportList.value = response.data.inspectionReportList
+    open.value = true
+    title.value = '修改镜检统计主'
+  })
+}
+import { ElMessageBox, ElMessage } from 'element-plus'
+import { reReportBatch } from '../../../api/blackLackApi/blackLackApi'
+/** 修改按钮操作 */
+async function handleUpdate1(row) {
+  reset()
+  console.log(row.successFlag)
+  if (row.successFlag == 1) {
+    ElMessage.error('成功的报工记录不可重复报工')
+    return
+  } else {
+    await reReportBatch(row)
+    handleQuery()
+    //handleUpdate(row)
+  }
+  // const _id = row.id || ids.value
+  // getSummary(_id).then((response) => {
+  //   form.value = response.data
+  //   inspectionReportList.value = response.data.inspectionReportList
+  //   open.value = true
+  //   title.value = '修改镜检统计主'
+  // })
+}
+/** 提交按钮 */
+function submitForm() {
+  console.log('handleAdd')
+  proxy.$refs['summaryRef'].validate((valid) => {
+    if (valid) {
+      form.value.inspectionReportList = inspectionReportList.value
+      if (form.value.id != null) {
+        updateSummary(form.value).then((response) => {
+          proxy.$modal.msgSuccess('修改成功')
+          open.value = false
+          getList()
+        })
+      } else {
+        addSummary(form.value).then((response) => {
+          proxy.$modal.msgSuccess('新增成功')
+          open.value = false
+          getList()
+        })
+      }
     }
   })
-  const options = ref([
+}
+
+/** 删除按钮操作 */
+function handleDelete(row) {
+  const _ids = row.id || ids.value
+  proxy.$modal
+    .confirm('是否确认删除镜检统计主编号为"' + _ids + '"的数据项？')
+    .then(function () {
+      return delSummary(_ids)
+    })
+    .then(() => {
+      getList()
+      proxy.$modal.msgSuccess('删除成功')
+    })
+    .catch(() => { })
+}
+
+/** 报工记录序号 */
+function rowInspectionReportIndex({ row, rowIndex }) {
+  row.index = rowIndex + 1
+}
+
+/** 报工记录添加按钮操作 */
+function handleAddInspectionReport() {
+  let obj = {}
+  obj.workOrderCode = ''
+  obj.reportTime = ''
+  obj.reportType = ''
+  obj.quantity = ''
+  obj.resultJson = ''
+  obj.successFlag = ''
+  obj.defectRemark = ''
+  inspectionReportList.value.push(obj)
+}
+
+/** 报工记录删除按钮操作 */
+function handleDeleteInspectionReport() {
+  if (checkedInspectionReport.value.length == 0) {
+    proxy.$modal.msgError('请先选择要删除的报工记录数据')
+  } else {
+    const inspectionReports = inspectionReportList.value
+    const checkedInspectionReports = checkedInspectionReport.value
+    inspectionReportList.value = inspectionReports.filter(function (item) {
+      return checkedInspectionReports.indexOf(item.index) == -1
+    })
+  }
+}
+
+/** 复选框选中数据 */
+function handleInspectionReportSelectionChange(selection) {
+  checkedInspectionReport.value = selection.map((item) => item.index)
+}
+
+/** 导出按钮操作 */
+function handleExport() {
+  proxy.download(
+    'inspection/summary/export',
     {
-      label: '成功',
-      value: 1
+      ...queryParams.value
     },
-    {
-      label: '失败',
-      value: 0
-    }
-  ])
-  const { queryParams, form, rules } = toRefs(data)
+    `summary_${new Date().getTime()}.xlsx`
+  )
+}
 
-  /** 查询镜检统计主列表 */
-  function getList() {
-    loading.value = true
-    listSummary(queryParams.value)
-      .then((response) => {
-        // 给每条记录增加 qualified 字段
-        summaryList.value = response.rows.map((item) => ({
-          ...item,
-          qualified: (item.totalQuantity || 0) - (item.defectiveTotal || 0) // 合格数
-        }))
-        total.value = response.total
-      })
-      .catch((error) => {
-        console.error('获取列表失败', error)
-      })
-      .finally(() => {
-        loading.value = false
-      })
-  }
-
-  // 取消按钮
-  function cancel() {
-    open.value = false
-    reset()
-  }
-
-  // 表单重置
-  function reset() {
-    form.value = {
-      id: null,
-      workOrderCode: null,
-      totalQuantity: null,
-      defectiveTotal: null,
-      defect1: null,
-      defect2: null,
-      defect3: null,
-      defect4: null,
-      defect5: null,
-      defect6: null,
-      defect7: null,
-      defect8: null,
-      defect9: null,
-      defect10: null,
-      defect11: null,
-      defect12: null,
-      defect13: null,
-      defect14: null,
-      defect15: null,
-      defect16: null,
-      defect17: null,
-      defect18: null,
-      defect19: null,
-      defect20: null,
-      createBy: null,
-      createTime: null,
-      updateBy: null,
-      updateTime: null
-    }
-    inspectionReportList.value = []
-    proxy.resetForm('summaryRef')
-  }
-
-  /** 搜索按钮操作 */
-  function handleQuery() {
-    queryParams.value.pageNum = 1
-    getList()
-  }
-
-  /** 重置按钮操作 */
-  function resetQuery() {
-    proxy.resetForm('queryRef')
-    handleQuery()
-  }
-
-  // 多选框选中数据
-  function handleSelectionChange(selection) {
-    ids.value = selection.map((item) => item.id)
-    single.value = selection.length != 1
-    multiple.value = !selection.length
-  }
-
-  /** 新增按钮操作 */
-  function handleAdd() {
-    reset()
-    open.value = true
-    title.value = '添加镜检统计主'
-  }
-
-  /** 修改按钮操作 */
-  function handleUpdate(row) {
-    reset()
-    const _id = row.id || ids.value
-    getSummary(_id).then((response) => {
-      form.value = response.data
-      inspectionReportList.value = response.data.inspectionReportList
-      open.value = true
-      title.value = '修改镜检统计主'
-    })
-  }
-  import { ElMessageBox, ElMessage } from 'element-plus'
-  import { reReportBatch } from '../../../api/blackLackApi/blackLackApi'
-  /** 修改按钮操作 */
-  async function handleUpdate1(row) {
-    reset()
-    console.log(row.successFlag)
-    if (row.successFlag == 1) {
-      ElMessage.error('成功的报工记录不可重复报工')
-      return
-    } else {
-      await reReportBatch(row)
-      handleQuery()
-      //handleUpdate(row)
-    }
-    // const _id = row.id || ids.value
-    // getSummary(_id).then((response) => {
-    //   form.value = response.data
-    //   inspectionReportList.value = response.data.inspectionReportList
-    //   open.value = true
-    //   title.value = '修改镜检统计主'
-    // })
-  }
-  /** 提交按钮 */
-  function submitForm() {
-    console.log('handleAdd')
-    proxy.$refs['summaryRef'].validate((valid) => {
-      if (valid) {
-        form.value.inspectionReportList = inspectionReportList.value
-        if (form.value.id != null) {
-          updateSummary(form.value).then((response) => {
-            proxy.$modal.msgSuccess('修改成功')
-            open.value = false
-            getList()
-          })
-        } else {
-          addSummary(form.value).then((response) => {
-            proxy.$modal.msgSuccess('新增成功')
-            open.value = false
-            getList()
-          })
-        }
-      }
-    })
-  }
-
-  /** 删除按钮操作 */
-  function handleDelete(row) {
-    const _ids = row.id || ids.value
-    proxy.$modal
-      .confirm('是否确认删除镜检统计主编号为"' + _ids + '"的数据项？')
-      .then(function () {
-        return delSummary(_ids)
-      })
-      .then(() => {
-        getList()
-        proxy.$modal.msgSuccess('删除成功')
-      })
-      .catch(() => {})
-  }
-
-  /** 报工记录序号 */
-  function rowInspectionReportIndex({ row, rowIndex }) {
-    row.index = rowIndex + 1
-  }
-
-  /** 报工记录添加按钮操作 */
-  function handleAddInspectionReport() {
-    let obj = {}
-    obj.workOrderCode = ''
-    obj.reportTime = ''
-    obj.reportType = ''
-    obj.quantity = ''
-    obj.resultJson = ''
-    obj.successFlag = ''
-    obj.defectRemark = ''
-    inspectionReportList.value.push(obj)
-  }
-
-  /** 报工记录删除按钮操作 */
-  function handleDeleteInspectionReport() {
-    if (checkedInspectionReport.value.length == 0) {
-      proxy.$modal.msgError('请先选择要删除的报工记录数据')
-    } else {
-      const inspectionReports = inspectionReportList.value
-      const checkedInspectionReports = checkedInspectionReport.value
-      inspectionReportList.value = inspectionReports.filter(function (item) {
-        return checkedInspectionReports.indexOf(item.index) == -1
-      })
-    }
-  }
-
-  /** 复选框选中数据 */
-  function handleInspectionReportSelectionChange(selection) {
-    checkedInspectionReport.value = selection.map((item) => item.index)
-  }
-
-  /** 导出按钮操作 */
-  function handleExport() {
-    proxy.download(
-      'inspection/summary/export',
-      {
-        ...queryParams.value
-      },
-      `summary_${new Date().getTime()}.xlsx`
-    )
-  }
-
-  getList()
+getList()
 </script>
 <style scoped src="@/assets/styles/user.scss"></style>

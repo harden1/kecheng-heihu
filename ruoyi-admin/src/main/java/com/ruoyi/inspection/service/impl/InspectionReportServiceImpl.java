@@ -104,7 +104,7 @@ public class InspectionReportServiceImpl implements IInspectionReportService
     }
 
     @Override
-    public void insertReportOne(Map<String, Object> res, Map<String, Object> reportJson, int mainId,int no ,String badItem) {
+    public int insertReportOne(Map<String, Object> res, Map<String, Object> reportJson, int mainId,int no ,String badItem) {
         //创建一条报工记录
         InspectionReport irp = new InspectionReport();
         irp.setSummaryId(Long.valueOf(mainId));
@@ -120,6 +120,11 @@ public class InspectionReportServiceImpl implements IInspectionReportService
 //        }
 //        irp.setResultJson(res.toString());
         irp.setWorkOrderCode(reportJson.get("qrCode").toString());
-            inspectionReportMapper.insertInspectionReport(irp);
+        int i = inspectionReportMapper.insertInspectionReport(irp);
+        if (i==0){
+            System.out.println("不良报工错误"+irp);
+            return 0;
+        }
+        return 1;
     }
 }

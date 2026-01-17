@@ -74,7 +74,7 @@ public class ApiBatchReportForBlackLack {
         materialItem.put("qrCode", qrCode1);
 //        materialItem.put("qrCodeNum", 1);
 //        materialItem.put("batchNoId", batchNoId);
-//        materialItem.put("batchNo", batchNo);
+        materialItem.put("batchNo", batchNo);
         materialItem.put("customFields", Arrays.asList( customField2));
 
 
@@ -254,7 +254,7 @@ public class ApiBatchReportForBlackLack {
 //        materialItem.put("qrCode", qrCode1);
 //        materialItem.put("qrCodeNum", 1);
 //        materialItem.put("batchNoId", batchNoId);
-//        materialItem.put("batchNo", batchNo);
+        materialItem.put("batchNo", batchNo);
         materialItem.put("customFields", Arrays.asList(customField1, customField2));
 
 

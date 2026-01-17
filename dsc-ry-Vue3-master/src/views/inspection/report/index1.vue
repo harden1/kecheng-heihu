@@ -137,9 +137,19 @@
         <!-- <el-table-column label="成功状态" align="center" prop="successFlag" /> -->
         <el-table-column prop="tag" label="状态" filter-placement="bottom-end">
           <template #default="scope">
-            <el-tag :type="scope.row.successFlag === 1 ? 'success' : 'error'">{{
-              scope.row.successFlag === 1 ? '成功' : '失败'
-            }}</el-tag>
+             <el-tag :type="{
+              1: 'success',
+              2: 'danger',
+              0: 'warning'
+            }[scope.row.successFlag]">
+              {{
+                {
+                  1: '成功',
+                  2: '失败',
+                  0: '待报工'
+              }[scope.row.successFlag]
+              }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="不良项" align="center" prop="defectRemark" />
@@ -261,8 +271,12 @@
       value: 1
     },
     {
-      label: '失败',
+      label: '待报工',
       value: 0
+    },
+    {
+      label: '失败',
+      value: 2
     }
   ])
   const data = reactive({

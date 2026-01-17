@@ -138,24 +138,34 @@
         :filter-method="filterTag"
         filter-placement="bottom-end">
         <template #default="scope">
-          <el-tag :type="scope.row.successFlag === 1 ? 'success' : 'error'">{{
-            scope.row.successFlag === 1 ? '成功' : '失败'
-          }}</el-tag>
+           <el-tag :type="{
+              1: 'success',
+              2: 'danger',
+              0: 'warning'
+            }[scope.row.successFlag]">
+              {{
+                {
+                  1: '成功',
+                  2: '失败',
+                  0: '待报工'
+              }[scope.row.successFlag]
+              }}
+            </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="不良项" align="center" prop="defectRemark" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template #default="scope">
-          <el-button
-            link
-            style="color: #02b980; text-decoration: underline"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['inspection:report:edit']"
-            >重新提交</el-button
-          >
-          <!-- <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['inspection:report:remove']">删除</el-button> -->
-        </template>
-      </el-table-column>
+   <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <template #default="scope">
+            <el-button
+              link
+              style="color: #02b980; text-decoration: underline"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['inspection:report:edit']"
+              >重新提交</el-button
+            >
+            <!-- <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['inspection:report:remove']">删除</el-button> -->
+          </template>
+        </el-table-column>
     </el-table>
 
     <pagination
@@ -207,6 +217,7 @@
 </template>
 
 <script setup name="Report">
+  import { reReport } from '@/api/blackLackApi/blackLackApi'
   import {
     listReport,
     getReport,
@@ -234,6 +245,10 @@
     {
       label: '成功',
       value: 1
+    },
+    {
+      label: '待报工',
+      value: 0
     },
     {
       label: '失败',
@@ -347,16 +362,35 @@
   }
 
   /** 修改按钮操作 */
-  function handleUpdate(row) {
-    reset()
-    const _id = row.id || ids.value
-    getReport(_id).then((response) => {
-      form.value = response.data
-      open.value = true
-      title.value = '修改报工记录'
-    })
+  // function handleUpdate(row) {
+  //   reset()
+  //   const _id = row.id || ids.value
+  //   getReport(_id).then((response) => {
+  //     form.value = response.data
+  //     open.value = true
+  //     title.value = '修改报工记录'
+  //   })
+  // }
+  async function handleUpdate(row) {
+    console.log(row.successFlag)
+    if (row.successFlag == 1) {
+      ElMessage.error('成功的报工记录不可重复报工')
+      return
+    } else {
+      await reReport(row)
+      //handleUpdate(row)
+    }
+    //先查看不良报工记录，
+    // 再去报工总数
+    //
+    // reset()
+    // const _id = row.id || ids.value
+    // getReport(_id).then(response => {
+    //   form.value = response.data
+    //   open.value = true
+    //   title.value = "修改报工记录"
+    // })
   }
-
   /** 提交按钮 */
   function submitForm() {
     proxy.$refs['reportRef'].validate((valid) => {

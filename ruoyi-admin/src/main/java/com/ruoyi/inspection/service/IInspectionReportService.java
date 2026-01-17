@@ -69,5 +69,5 @@ public interface IInspectionReportService
      */
     public int deleteInspectionReportById(Long id);
 
-    void insertReportOne(Map<String, Object> res, Map<String, Object> reportJson, int mainId,int no,String badItem);
+    int insertReportOne(Map<String, Object> res, Map<String, Object> reportJson, int mainId,int no,String badItem);
 }

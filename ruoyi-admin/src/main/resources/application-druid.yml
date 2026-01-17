@@ -21,9 +21,9 @@ spring:
             # 初始连接数
             initialSize: 10
             # 最小连接池数量
-            minIdle: 20
+            minIdle: 10
             # 最大连接池数量
-            maxActive: 50
+            maxActive: 30
             # 配置获取连接等待超时的时间
             maxWait: 10000
             # 配置连接超时时间

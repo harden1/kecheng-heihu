@@ -19,8 +19,13 @@ import com.ruoyi.inspection.service.IInspectionSummaryService;
 import com.ruoyi.system.domain.SysUserPost;
 import com.ruoyi.system.mapper.SysConfigMapper;
 import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.web.controller.system.SysUserController;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
@@ -159,7 +164,7 @@ public class BlacklackUserController extends BaseController {
     @PostMapping("/addOrReadInspectionMain")
     public AjaxResult addOrReadInspectionMain(@RequestBody ReportRecord reportRecord) {
 //        System.out.println("-------------------------------------");
-//        System.out.println("新增或读取数据：" + reportRecord);
+        System.out.println("新增或读取数据：" + reportRecord);
 //        System.out.println("查询的数据"+blacklackUserService.querySummaryByQrCode(reportRecord.getQrCode()) );
         //判断页面刷新是否重复传了接口，使用qrcode查询，如果存在，则返回主表记录
         List<InspectionSummary> inspectionSummarys = blacklackUserService.selectInspectionMainByQrcode(reportRecord.getQrCode());
@@ -188,6 +193,7 @@ public class BlacklackUserController extends BaseController {
             }
 //            System.out.println("mesUserId: " + mesUserId);
             processResult3.put("batchNo", reportRecord.getBatchNo());
+            processResult3.put("batchNoId", reportRecord.getBatchNoId());
             processResult3.put("mesUserId",mesUserId);
             processResult3.put("amount", reportRecord.getAmount());
             processResult3.put("qrCode", reportRecord.getQrCode());
@@ -288,371 +294,100 @@ public class BlacklackUserController extends BaseController {
         inspectionReportService.updateInspectionReport(params);
         return AjaxResult.success("重新报工成功");
     }
-//    /**
-//     * 正常单个不良报工
-//     * @param params
-//     * @return
-//     */
+
+    private static final Logger log = LoggerFactory.getLogger(SysUserController.class);
+    @PostMapping("/reportBadItemOne")
+    @Transactional(rollbackFor = Exception.class) // 添加事务注解
+    public AjaxResult reportBadItemOne(@RequestBody Map<String, Object> params) {
+        System.out.println("map对象数据" + params);
+        try {
+            // 参数获取与验证
+            if (params == null) {
+                return AjaxResult.error("参数不能为空");
+            }
+
+            // 参数提取（添加类型安全转换）
+            Map<String, Object> reportJson = null;
+            if (params.get("reportJson") instanceof Map) {
+                reportJson = (Map<String, Object>) params.get("reportJson");
+            }
+
+            String badItem = params.get("color") != null ? params.get("color").toString() : null;
+
+            // 数值类型转换处理
+            int no = 0;
+            int mainId = 0;
+            try {
+                no = params.get("no") != null ? Integer.parseInt(params.get("no").toString()) : 0;
+                mainId = params.get("mainId") != null ? Integer.parseInt(params.get("mainId").toString()) : 0;
+            } catch (NumberFormatException e) {
+                return AjaxResult.error("参数格式错误：no或mainId必须为数字");
+            }
+
+            // 参数验证
+            if (reportJson == null || reportJson.isEmpty()) {
+                return AjaxResult.error("reportJson不能为空");
+            }
+            if (StringUtils.isEmpty(badItem)) {
+                return AjaxResult.error("不良项(color)不能为空");
+            }
+            if (mainId <= 0) {
+                return AjaxResult.error("mainId必须大于0");
+            }
+            if (no < 0) {
+                return AjaxResult.error("no必须大于等于0");
+            }
+
+            Map<String, Object> res = new HashMap<>();
+            System.out.println("插入子表数据" + res);
+            // 创建子表记录
+            int subformFlag = inspectionReportService.insertReportOne(res, reportJson, mainId, no, badItem);
+            if (subformFlag == 0) {
+                throw new RuntimeException("新增不良记录失败");
+                // 事务会回滚
+            }
+            System.out.println("插入结果"+subformFlag+"插入子表数据结束，更新主表数据" +  mainId+":"+ no);
+            // 更新汇总表的不良品数量
+            int updateFlag = inspectionSummaryService.updateInspectionSummaryForDefect((long) mainId, no);
+            if (updateFlag == 0) {
+                // 这里需要根据业务判断：如果记录不存在，是否需要创建？
+                // 假设更新0行也是异常情况
+                throw new RuntimeException("更新良品记录失败，可能记录不存在");
+                // 事务会回滚
+            }
+            System.out.println("更新结果"+updateFlag+"更新主表数据结束" );
+            // 返回成功，包含生成的ID等信息
+            return AjaxResult.success(1);
+
+        } catch (Exception e) {
+            // 记录日志
+            log.error("报工不良项失败", e);
+            System.out.println("报工不良项失败"+e );
+            // 事务会自动回滚
+            return AjaxResult.error("操作失败：" + e.getMessage());
+        }
+    }
+
 //    @PostMapping("/reportBadItemOne")
 //    public AjaxResult reportBadItemOne(@RequestBody Map<String, Object> params) {
 //        // 获取 reportJson（它是个 List）
 //        Map<String, Object> reportJson = (Map<String, Object>) params.get("reportJson");
-////        System.out.println("reportJson = " + reportJson + "userID");
-////        long userId = 0L;
-////        try {
-////            userId = Long.parseLong(reportJson.get("mesUserId").toString());
-////        } catch (Exception e) {
-////            return AjaxResult.error("报工失败，用户ID缺失，请重新登陆扫码，或者联系管理员");
-////        }
-////        long userId = Long.parseLong(reportJson.get("mesUserId").toString());
-////        String qrCode = "";
-////        long reportUnitId = Long.parseLong(reportJson.get("unitId").toString());
-////        long reportProcessId = Long.parseLong(reportJson.get("processId").toString());
-////        long lineId = Long.parseLong(reportJson.get("materialLineId").toString());
-////        long materialId = Long.parseLong(reportJson.get("materialId").toString());
-////        long taskId = Long.parseLong(reportJson.get("taskId").toString());
 //        String badItem = (String) params.get("color");
 //        int no = (int) params.get("no");
 //        int mainId = (int) params.get("mainId");
-////        long batchNoId = 0L;
-////        if (reportJson.get("batchNoId") != null) {
-////            batchNoId = Long.parseLong(reportJson.get("batchNoId").toString());
-////        }
-////        String batchNo = "";
-////        if (reportJson.get("batchNo") != null) {
-////            batchNo = reportJson.get("batchNo").toString();
-////        }
-////
-////        //时间
-////        String stopTime = "";
-////        long reportStartTime = Long.parseLong(reportJson.get("reportStartTime").toString());
-////        long reportEndTime = Long.parseLong(reportJson.get("reportEndTime").toString());
-//        //报工数量1,质量不合格，扫码报工不合格
-////        int reportAmount = 1;
-////        int qcStatus = 4;
-////        int reportType = 4;
-////        System.out.println("color = " + badItem);
-////        System.out.println("reportJson = " + reportJson);
-//
-////        Map<String, Object> res = batchReportForBlackLack.batchReportForBlackLackOne(
-////                userId,
-////                qrCode,
-////                reportUnitId,
-////                reportProcessId,
-////                reportAmount,
-////                lineId,
-////                materialId,
-////                qcStatus,
-////                reportType,
-////                taskId,
-////                badItem,
-////                stopTime,
-////                batchNoId,
-////                batchNo,
-////                reportStartTime,
-////                reportEndTime
-////        );
-////        System.out.println("res = " + res);
-//        //检验成功状态
-////        String message = res.get("message").toString();
-////        int code = (int) res.get("code");
-////        System.out.println("消息 = " + message);
-////        System.out.println(" 代码code = " + code);
-////        if (code != 200) {
-////            return AjaxResult.error(message);
-////        }
 //        Map<String, Object> res = new HashMap<>();
 //        //创建子表
-//        inspectionReportService.insertReportOne(res, reportJson, mainId, no, badItem);
-////        System.out.println("创建子表成功");
-//        //更新主表
-//        InspectionSummary inspectionSummary = inspectionSummaryService.selectInspectionSummaryById((long) mainId);
-//        switch (no) {
-//            case 0:
-//                inspectionSummary.setDefect1(inspectionSummary.getDefect1() + 1);
-//                break;
-//            case 1:
-//                inspectionSummary.setDefect2(inspectionSummary.getDefect2() + 1);
-//                break;
-//            case 2:
-//                inspectionSummary.setDefect3(inspectionSummary.getDefect3() + 1);
-//                break;
-//            case 3:
-//                inspectionSummary.setDefect4(inspectionSummary.getDefect4() + 1);
-//                break;
-//            case 4:
-//                inspectionSummary.setDefect5(inspectionSummary.getDefect5() + 1);
-//                break;
-//            case 5:
-//                inspectionSummary.setDefect6(inspectionSummary.getDefect6() + 1);
-//                break;
-//            case 6:
-//                inspectionSummary.setDefect7(inspectionSummary.getDefect7() + 1);
-//                break;
-//            case 7:
-//                inspectionSummary.setDefect8(inspectionSummary.getDefect8() + 1);
-//                break;
-//            case 8:
-//                inspectionSummary.setDefect9(inspectionSummary.getDefect9() + 1);
-//                break;
-//            case 9:
-//                inspectionSummary.setDefect10(inspectionSummary.getDefect10() + 1);
-//                break;
-//            case 10:
-//                inspectionSummary.setDefect11(inspectionSummary.getDefect11() + 1);
-//                break;
-//            case 11:
-//                inspectionSummary.setDefect12(inspectionSummary.getDefect12() + 1);
-//                break;
-//            case 12:
-//                inspectionSummary.setDefect13(inspectionSummary.getDefect13() + 1);
-//                break;
-//            case 13:
-//                inspectionSummary.setDefect14(inspectionSummary.getDefect14() + 1);
-//                break;
-//            case 14:
-//                inspectionSummary.setDefect15(inspectionSummary.getDefect15() + 1);
-//                break;
-//            case 15:
-//                inspectionSummary.setDefect16(inspectionSummary.getDefect16() + 1);
-//                break;
-//            case 16:
-//                inspectionSummary.setDefect17(inspectionSummary.getDefect17() + 1);
-//                break;
-//            case 17:
-//                inspectionSummary.setDefect18(inspectionSummary.getDefect18() + 1);
-//                break;
-//            case 18:
-//                inspectionSummary.setDefect19(inspectionSummary.getDefect19() + 1);
-//                break;
-//            case 19:
-//                inspectionSummary.setDefect20(inspectionSummary.getDefect20() + 1);
-//                break;
+//        int subformFlag = inspectionReportService.insertReportOne(res, reportJson, mainId, no, badItem);
+//        if (subformFlag==0){
+//            return AjaxResult.error("新增不良记录失败");
 //        }
-//        inspectionSummary.setDefectiveTotal(inspectionSummary.getDefectiveTotal() + 1);
-//        int i = inspectionSummaryService.updateInspectionSummary(inspectionSummary);
-//        //查询主表记录
-//
-//        Map<String, Object> result1 = new HashMap<>();
-//        if (i > 0) {
-//            inspectionSummary.setInspectionReportList(null);
-//            result1.put("summary", inspectionSummary);
+//        int updateFlag = inspectionSummaryService.updateInspectionSummaryForDefect((long) mainId,no);
+//        if (updateFlag == 0){
+//            return AjaxResult.error("更新良品记录失败");
+//        }else {
+//            return AjaxResult.success(1);
 //        }
-//        return AjaxResult.success(result1);
 //    }
-
-//    /**
-//     * 正常单个不良报工
-//     * @param params
-//     * @return
-//     */
-//    @PostMapping("/reportBadItemOne")
-//    public AjaxResult reportBadItemOne(@RequestBody Map<String, Object> params) {
-//        long start = System.currentTimeMillis(); // 方法开始时间
-//
-//        // 1. 获取参数
-//        long t1 = System.currentTimeMillis();
-//        Map<String, Object> reportJson = (Map<String, Object>) params.get("reportJson");
-//        String badItem = (String) params.get("color");
-//        int no = (int) params.get("no");
-//        int mainId = (int) params.get("mainId");
-//        long t2 = System.currentTimeMillis();
-//        System.out.println("参数解析耗时: " + (t2 - t1) + "ms");
-//
-//        // 2. 创建子表
-//        long t3 = System.currentTimeMillis();
-//        Map<String, Object> res = new HashMap<>();
-//        inspectionReportService.insertReportOne(res, reportJson, mainId, no, badItem);
-//        long t4 = System.currentTimeMillis();
-//        System.out.println("insertReportOne 耗时: " + (t4 - t3) + "ms");
-//
-//        // 3. 查询主表
-//        long t5 = System.currentTimeMillis();
-//        InspectionSummary inspectionSummary = inspectionSummaryService.selectInspectionSummaryByIdNoDetail((long) mainId);
-//        long t6 = System.currentTimeMillis();
-//        System.out.println("selectInspectionSummaryById 耗时: " + (t6 - t5) + "ms");
-//
-//        // 4. 更新对应 defect 字段（Java 8 传统 switch）
-//        long t7 = System.currentTimeMillis();
-//        switch (no) {
-//            case 0:
-//                inspectionSummary.setDefect1(inspectionSummary.getDefect1() + 1);
-//                break;
-//            case 1:
-//                inspectionSummary.setDefect2(inspectionSummary.getDefect2() + 1);
-//                break;
-//            case 2:
-//                inspectionSummary.setDefect3(inspectionSummary.getDefect3() + 1);
-//                break;
-//            case 3:
-//                inspectionSummary.setDefect4(inspectionSummary.getDefect4() + 1);
-//                break;
-//            case 4:
-//                inspectionSummary.setDefect5(inspectionSummary.getDefect5() + 1);
-//                break;
-//            case 5:
-//                inspectionSummary.setDefect6(inspectionSummary.getDefect6() + 1);
-//                break;
-//            case 6:
-//                inspectionSummary.setDefect7(inspectionSummary.getDefect7() + 1);
-//                break;
-//            case 7:
-//                inspectionSummary.setDefect8(inspectionSummary.getDefect8() + 1);
-//                break;
-//            case 8:
-//                inspectionSummary.setDefect9(inspectionSummary.getDefect9() + 1);
-//                break;
-//            case 9:
-//                inspectionSummary.setDefect10(inspectionSummary.getDefect10() + 1);
-//                break;
-//            case 10:
-//                inspectionSummary.setDefect11(inspectionSummary.getDefect11() + 1);
-//                break;
-//            case 11:
-//                inspectionSummary.setDefect12(inspectionSummary.getDefect12() + 1);
-//                break;
-//            case 12:
-//                inspectionSummary.setDefect13(inspectionSummary.getDefect13() + 1);
-//                break;
-//            case 13:
-//                inspectionSummary.setDefect14(inspectionSummary.getDefect14() + 1);
-//                break;
-//            case 14:
-//                inspectionSummary.setDefect15(inspectionSummary.getDefect15() + 1);
-//                break;
-//            case 15:
-//                inspectionSummary.setDefect16(inspectionSummary.getDefect16() + 1);
-//                break;
-//            case 16:
-//                inspectionSummary.setDefect17(inspectionSummary.getDefect17() + 1);
-//                break;
-//            case 17:
-//                inspectionSummary.setDefect18(inspectionSummary.getDefect18() + 1);
-//                break;
-//            case 18:
-//                inspectionSummary.setDefect19(inspectionSummary.getDefect19() + 1);
-//                break;
-//            case 19:
-//                inspectionSummary.setDefect20(inspectionSummary.getDefect20() + 1);
-//                break;
-//            default:
-//                break;
-//        }
-//        inspectionSummary.setDefectiveTotal(inspectionSummary.getDefectiveTotal() + 1);
-//        long t8 = System.currentTimeMillis();
-//        System.out.println("更新 defect 字段耗时: " + (t8 - t7) + "ms");
-//
-//        // 5. 更新主表
-//        long t9 = System.currentTimeMillis();
-//        int i = inspectionSummaryService.updateInspectionSummary(inspectionSummary);
-//        long t10 = System.currentTimeMillis();
-//        System.out.println("updateInspectionSummary 耗时: " + (t10 - t9) + "ms");
-//
-//        // 6. 组装返回结果
-//        long t11 = System.currentTimeMillis();
-//        Map<String, Object> result1 = new HashMap<>();
-//        if (i > 0) {
-//            inspectionSummary.setInspectionReportList(null);
-//            result1.put("summary", inspectionSummary);
-//        }
-//        long t12 = System.currentTimeMillis();
-//        System.out.println("组装返回结果耗时: " + (t12 - t11) + "ms");
-//
-//        long end = System.currentTimeMillis();
-//        System.out.println("整个方法总耗时: " + (end - start) + "ms");
-//
-//        return AjaxResult.success(result1);
-//    }
-
-    @PostMapping("/reportBadItemOne")
-    public AjaxResult reportBadItemOne(@RequestBody Map<String, Object> params) {
-        // 获取 reportJson（它是个 List）
-        Map<String, Object> reportJson = (Map<String, Object>) params.get("reportJson");
-        String badItem = (String) params.get("color");
-        int no = (int) params.get("no");
-        int mainId = (int) params.get("mainId");
-        Map<String, Object> res = new HashMap<>();
-        //创建子表
-        inspectionReportService.insertReportOne(res, reportJson, mainId, no, badItem);
-        int updateFlag = inspectionSummaryService.updateInspectionSummaryForDefect((long) mainId,no);
-//        //更新主表
-//        InspectionSummary inspectionSummary = inspectionSummaryService.selectInspectionSummaryById((long) mainId);
-//        switch (no) {
-//            case 0:
-//                inspectionSummary.setDefect1(inspectionSummary.getDefect1() + 1);
-//                break;
-//            case 1:
-//                inspectionSummary.setDefect2(inspectionSummary.getDefect2() + 1);
-//                break;
-//            case 2:
-//                inspectionSummary.setDefect3(inspectionSummary.getDefect3() + 1);
-//                break;
-//            case 3:
-//                inspectionSummary.setDefect4(inspectionSummary.getDefect4() + 1);
-//                break;
-//            case 4:
-//                inspectionSummary.setDefect5(inspectionSummary.getDefect5() + 1);
-//                break;
-//            case 5:
-//                inspectionSummary.setDefect6(inspectionSummary.getDefect6() + 1);
-//                break;
-//            case 6:
-//                inspectionSummary.setDefect7(inspectionSummary.getDefect7() + 1);
-//                break;
-//            case 7:
-//                inspectionSummary.setDefect8(inspectionSummary.getDefect8() + 1);
-//                break;
-//            case 8:
-//                inspectionSummary.setDefect9(inspectionSummary.getDefect9() + 1);
-//                break;
-//            case 9:
-//                inspectionSummary.setDefect10(inspectionSummary.getDefect10() + 1);
-//                break;
-//            case 10:
-//                inspectionSummary.setDefect11(inspectionSummary.getDefect11() + 1);
-//                break;
-//            case 11:
-//                inspectionSummary.setDefect12(inspectionSummary.getDefect12() + 1);
-//                break;
-//            case 12:
-//                inspectionSummary.setDefect13(inspectionSummary.getDefect13() + 1);
-//                break;
-//            case 13:
-//                inspectionSummary.setDefect14(inspectionSummary.getDefect14() + 1);
-//                break;
-//            case 14:
-//                inspectionSummary.setDefect15(inspectionSummary.getDefect15() + 1);
-//                break;
-//            case 15:
-//                inspectionSummary.setDefect16(inspectionSummary.getDefect16() + 1);
-//                break;
-//            case 16:
-//                inspectionSummary.setDefect17(inspectionSummary.getDefect17() + 1);
-//                break;
-//            case 17:
-//                inspectionSummary.setDefect18(inspectionSummary.getDefect18() + 1);
-//                break;
-//            case 18:
-//                inspectionSummary.setDefect19(inspectionSummary.getDefect19() + 1);
-//                break;
-//            case 19:
-//                inspectionSummary.setDefect20(inspectionSummary.getDefect20() + 1);
-//                break;
-//        }
-//        inspectionSummary.setDefectiveTotal(inspectionSummary.getDefectiveTotal() + 1);
-
-//        int i = inspectionSummaryService.updateInspectionSummary(inspectionSummary);
-//        Map<String, Object> result1 = new HashMap<>();
-//        if (i > 0) {
-//            inspectionSummary.setInspectionReportList(null);
-//            result1.put("summary", inspectionSummary);
-//        }
-        if (updateFlag > 0){
-            return AjaxResult.success(1);
-        }else {
-            return AjaxResult.error("新增失败");
-        }
-    }
 
     @PostMapping("/updateStopTime")
     public AjaxResult updateStopTime(@RequestBody Map<String, Object> params) {

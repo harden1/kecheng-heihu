@@ -9,6 +9,7 @@ import com.ruoyi.inspection.service.IInspectionSummaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -219,7 +220,8 @@ public class ScheduleReport {
         }
         //时间
         String stopTime = "";
-        long reportStartTime = 0;
+        Date createTime = params.getCreateTime();
+        long reportStartTime = createTime.getTime();
         long reportEndTime = 0;
         //报工数量1,质量不合格，扫码报工不合格
         int reportAmount = 1;

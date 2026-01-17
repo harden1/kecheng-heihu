@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <el-tabs v-model="activeName" class="demo-tabs" @tab-click="tabClick">
-      <el-tab-pane label="不良项报工" name="first">
+     <el-tab-pane :label="`不良项报工 ${reportMain?.qrCode}`" name="first">
         <table class="color-table">
           <thead v-if="mainObject?.data">
             <tr>
