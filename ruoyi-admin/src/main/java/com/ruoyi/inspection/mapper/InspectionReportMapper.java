@@ -60,4 +60,6 @@ public interface InspectionReportMapper
     public int deleteInspectionReportByIds(Long[] ids);
 
     public  List<InspectionReport> selectInspectionReportListForSchedule(int num);
+
+    void batchInsert(List<InspectionReport> reportList);
 }

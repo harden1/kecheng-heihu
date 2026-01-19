@@ -11,10 +11,10 @@
               <th class="color-btn-top">
                 度数: {{ reportRecord?.specification }}<br />
                 总数: {{ reportRecord?.amount }}
-                合格数：{{goodNum }}
+                合格数：{{Number(reportRecord?.amount) - Number(mainObject.data.defectiveTotal) }}
               </th>
               <th class="color-btn-top">
-                不合格数:<br />不合格率: {{badNum }}/{{
+                不合格数:<br />不合格率: {{mainObject.data.defectiveTotal }}/{{
                   ((mainObject.data.defectiveTotal / reportRecord?.amount) * 100).toFixed(2)
                 }}%
               </th>
@@ -292,30 +292,30 @@
       }
       response = await reportBadItemOne(parms)
       }
-     
+      //重新查询这条记录并刷新
+      console.log('提交数据', response.data.summary)
+      mainObject.value.data = response.data.summary
     }
-    if (response.code === 200&&response.data === 1) {
-      // ElMessage.success('报工成功')
-        //重新查询这条记录并刷新
-        console.log('表数据',mainObject.value.data)
-        //不良项目数量+1
-        // 动态 defect 字段
-        const defectKey = `defect${No + 1}`
-        mainObject.value.data[defectKey] =
-             Number(mainObject.value.data[defectKey] || 0) + 1
+    // if (response.code === 200&&response.data === 1) {
+    //   // ElMessage.success('报工成功')
+    //     //重新查询这条记录并刷新
+    //     console.log('表数据',mainObject.value.data)
+    //     //不良项目数量+1
+    //     // 动态 defect 字段
+    //     const defectKey = `defect${No + 1}`
+    //     mainObject.value.data[defectKey] =
+    //          Number(mainObject.value.data[defectKey] || 0) + 1
   
-        //不良总数 = 总数量
-        mainObject.value.data.defectiveTotal = Number(mainObject.value.data.defectiveTotal)+1
-          console.log('表数据1',mainObject.value.data)
+    //     //不良总数 = 总数量
+    //     mainObject.value.data.defectiveTotal = Number(mainObject.value.data.defectiveTotal)+1
+    //       console.log('表数据1',mainObject.value.data)
           
-        badNum.value = Number(mainObject.value.data.defectiveTotal)
-        goodNum.value =  Number(mainObject.value.data.totalQuantity) - Number(mainObject.value.data.defectiveTotal)
-        // mainObject.value.data = response.data.summary
-    } else {
-      ElMessage.error('报工失败，请稍后再试')
-    }
-
-  
+    //     badNum.value = Number(mainObject.value.data.defectiveTotal)
+    //     goodNum.value =  Number(mainObject.value.data.totalQuantity) - Number(mainObject.value.data.defectiveTotal)
+    //     // mainObject.value.data = response.data.summary
+    // } else {
+    //   ElMessage.error('报工失败，请稍后再试')
+    // }
   }
 async function submitToApiAll() {
   ElMessageBox.confirm('确定报工吗？', '提示', {

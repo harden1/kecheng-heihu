@@ -18,6 +18,13 @@ public interface IInspectionSummaryService
      * @return 镜检统计主
      */
     public InspectionSummary selectInspectionSummaryById(Long id);
+    /**
+     * 查询镜检统计主
+     *
+     * @param id 镜检统计主主键
+     * @return 镜检统计主
+     */
+    public InspectionSummary selectInspectionSummaryByIdNoDetailAndBadItems(Long id);
 
     /**
      * 查询镜检统计主列表
@@ -46,6 +53,13 @@ public interface IInspectionSummaryService
     /**
      * 修改镜检统计主
      * 
+     * @param inspectionSummary 镜检统计主
+     * @return 结果
+     */
+    public int updateInspectionSummaryNoSubfom(InspectionSummary inspectionSummary);
+    /**
+     * 修改镜检统计主
+     *
      * @param inspectionSummary 镜检统计主
      * @return 结果
      */

@@ -89,7 +89,7 @@ public class InspectionSummaryController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody InspectionSummary inspectionSummary)
     {
-        return toAjax(inspectionSummaryService.updateInspectionSummary(inspectionSummary));
+        return toAjax(inspectionSummaryService.updateInspectionSummaryNoSubfom(inspectionSummary));
     }
 
     /**

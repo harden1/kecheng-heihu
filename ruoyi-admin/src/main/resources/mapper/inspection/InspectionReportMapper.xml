@@ -98,6 +98,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">#{updateTime},</if>
          </trim>
     </insert>
+    <insert id="batchInsert">
+        INSERT INTO inspection_report
+        (summary_id, work_order_code, report_time, quantity, success_flag, defect_remark)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.summaryId},
+            #{item.workOrderCode},
+            #{item.reportTime},
+            #{item.quantity},
+            #{item.successFlag},
+            #{item.defectRemark}
+            )
+        </foreach>
+    </insert>
 
     <update id="updateInspectionReport" parameterType="InspectionReport">
         update inspection_report

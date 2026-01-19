@@ -60,7 +60,7 @@ public class ScheduleReport {
     //查询不良品表，按时间降序查最早50条数据
     public void badReportOne() {
         List<InspectionReport> inspectionReports = inspectionReportService.selectInspectionReportListForSchedule(250);
-//        System.out.println("按时间降序查最早50条不良品数据" + inspectionReports);
+        System.out.println("按时间降序查最早50条不良品数据" + inspectionReports);
         //批量查询50条不良品的主表
         //收集所有的summaryId
         List<Long> summaryIdList = inspectionReports.stream()
@@ -72,7 +72,7 @@ public class ScheduleReport {
             return;
         } else {
             List<InspectionSummary> inspectionSummaryList = inspectionSummaryService.selectInspectionSummaryListByIds(summaryIdList);
-//            System.out.println("按时间降序查最早50条不良品数据主表" + inspectionSummaryList);
+            System.out.println("按时间降序查最早50条不良品数据主表" + inspectionSummaryList);
             for (InspectionReport inspectionReport : inspectionReports) {
                 //根据工单找到主表数据querySummaryByQrCode(params.getWorkOrderCode());
                for ( InspectionSummary inspectionSummary : inspectionSummaryList){
@@ -112,13 +112,24 @@ public class ScheduleReport {
         long lineId = Long.parseLong(reportJson.get("materialLineId").toString());
         long materialId = Long.parseLong(reportJson.get("materialId").toString());
         long taskId = Long.parseLong(reportJson.get("taskId").toString());
+
+
         long batchNoId = 0L;
-        if (reportJson.get("batchNoId") != null) {
-            batchNoId = Long.parseLong(reportJson.get("batchNoId").toString());
+        Object batchNoIdObj = reportJson.get("batchNoId");
+        if (batchNoIdObj != null) {
+            String batchNoIdStr = batchNoIdObj.toString().trim();
+            if (!batchNoIdStr.isEmpty() && !"null".equalsIgnoreCase(batchNoIdStr)) {
+                batchNoId = Long.parseLong(batchNoIdStr);
+            }
         }
+        // batchNo 同理
         String batchNo = "";
-        if (reportJson.get("batchNo") != null) {
-            batchNo = reportJson.get("batchNo").toString();
+        Object batchNoObj = reportJson.get("batchNo");
+        if (batchNoObj != null) {
+            String batchNoStr = batchNoObj.toString().trim();
+            if (!"null".equalsIgnoreCase(batchNoStr)) {
+                batchNo = batchNoStr;
+            }
         }
         //时间
         String stopTime = "";
@@ -157,12 +168,12 @@ public class ScheduleReport {
             if ( flag){
                 inspectionSummary.setApiDetail(message);
                 inspectionSummary.setSuccessFlag(0L);
-                inspectionSummaryService.updateInspectionSummary(inspectionSummary);
+                inspectionSummaryService.updateInspectionSummaryNoSubfom(inspectionSummary);
                 return "-1";
             }else{
                 inspectionSummary.setApiDetail(message);
                 inspectionSummary.setSuccessFlag(2L);
-                inspectionSummaryService.updateInspectionSummary(inspectionSummary);
+                inspectionSummaryService.updateInspectionSummaryNoSubfom(inspectionSummary);
                 return "0";
             }
 
@@ -171,18 +182,18 @@ public class ScheduleReport {
             if (res.get("message").equals("成功")) {
                 inspectionSummary.setSuccessFlag(1L);
                 inspectionSummary.setApiDetail(res.toString());
-                inspectionSummaryService.updateInspectionSummary(inspectionSummary);
+                inspectionSummaryService.updateInspectionSummaryNoSubfom(inspectionSummary);
                 return "1";
             } else {
                 if ( flag){
                     inspectionSummary.setSuccessFlag(0L);
                     inspectionSummary.setApiDetail(message);
-                    inspectionSummaryService.updateInspectionSummary(inspectionSummary);
+                    inspectionSummaryService.updateInspectionSummaryNoSubfom(inspectionSummary);
                     return "-1";
                 }else{
                     inspectionSummary.setSuccessFlag(2L);
                     inspectionSummary.setApiDetail(message);
-                    inspectionSummaryService.updateInspectionSummary(inspectionSummary);
+                    inspectionSummaryService.updateInspectionSummaryNoSubfom(inspectionSummary);
                     return "0";
                 }
 
@@ -210,13 +221,24 @@ public class ScheduleReport {
         long materialId = Long.parseLong(reportJson.get("materialId").toString());
         long taskId = Long.parseLong(reportJson.get("taskId").toString());
         String badItem = params.getDefectRemark();
+
+
         long batchNoId = 0L;
-        if (reportJson.get("batchNoId") != null) {
-            batchNoId = Long.parseLong(reportJson.get("batchNoId").toString());
+        Object batchNoIdObj = reportJson.get("batchNoId");
+        if (batchNoIdObj != null) {
+            String batchNoIdStr = batchNoIdObj.toString().trim();
+            if (!batchNoIdStr.isEmpty() && !"null".equalsIgnoreCase(batchNoIdStr)) {
+                batchNoId = Long.parseLong(batchNoIdStr);
+            }
         }
+        // batchNo 同理
         String batchNo = "";
-        if (reportJson.get("batchNo") != null) {
-            batchNo = reportJson.get("batchNo").toString();
+        Object batchNoObj = reportJson.get("batchNo");
+        if (batchNoObj != null) {
+            String batchNoStr = batchNoObj.toString().trim();
+            if (!"null".equalsIgnoreCase(batchNoStr)) {
+                batchNo = batchNoStr;
+            }
         }
         //时间
         String stopTime = "";
@@ -224,7 +246,12 @@ public class ScheduleReport {
         long reportStartTime = createTime.getTime();
         long reportEndTime = 0;
         //报工数量1,质量不合格，扫码报工不合格
-        int reportAmount = 1;
+        int reportAmount = 0;
+        Object qtyObj = params.getQuantity();
+
+            if (qtyObj instanceof Number) {
+                reportAmount = ((Number) qtyObj).intValue();
+            }
         int qcStatus = 4;
         int reportType = 4;
         //报工
@@ -256,9 +283,9 @@ public class ScheduleReport {
                 inspectionReportService.updateInspectionReport(params);
                 return "-1";
             }else {
-                inspectionSummary.setApiDetail(message);
-                inspectionSummary.setSuccessFlag(2L);
-                inspectionSummaryService.updateInspectionSummary(inspectionSummary);
+                params.setResultJson(message);
+                params.setSuccessFlag(2);
+                inspectionReportService.updateInspectionReport(params);
                 return "0";
             }
 
@@ -276,9 +303,9 @@ public class ScheduleReport {
                     inspectionReportService.updateInspectionReport(params);
                     return "-1";
                 }else {
-                    inspectionSummary.setApiDetail(message);
-                    inspectionSummary.setSuccessFlag(2L);
-                    inspectionSummaryService.updateInspectionSummary(inspectionSummary);
+                    params.setResultJson(message);
+                    params.setSuccessFlag(2);
+                    inspectionReportService.updateInspectionReport(params);
                     return "0";
                 }
             }

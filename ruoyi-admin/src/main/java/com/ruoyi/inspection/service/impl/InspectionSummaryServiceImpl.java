@@ -36,7 +36,18 @@ public class InspectionSummaryServiceImpl implements IInspectionSummaryService
     @Override
     public InspectionSummary selectInspectionSummaryById(Long id)
     {
-        return inspectionSummaryMapper.selectInspectionSummaryById(id);
+        return inspectionSummaryMapper.selectInspectionSummaryByIdNoDetail(id);
+    }
+    /**
+     * 查询镜检统计主
+     *
+     * @param id 镜检统计主主键
+     * @return 镜检统计主
+     */
+    @Override
+    public InspectionSummary selectInspectionSummaryByIdNoDetailAndBadItems(Long id)
+    {
+        return inspectionSummaryMapper.selectInspectionSummaryByIdNoDetailAndBadItems(id);
     }
 
     /**
@@ -86,6 +97,18 @@ public class InspectionSummaryServiceImpl implements IInspectionSummaryService
         inspectionSummary.setUpdateTime(DateUtils.getNowDate());
         inspectionSummaryMapper.deleteInspectionReportBySummaryId(inspectionSummary.getId());
         insertInspectionReport(inspectionSummary);
+        return inspectionSummaryMapper.updateInspectionSummary(inspectionSummary);
+    }
+    /**
+     * 修改镜检统计主
+     *
+     * @param inspectionSummary 镜检统计主
+     * @return 结果
+     */
+    @Transactional
+    @Override
+    public int updateInspectionSummaryNoSubfom(InspectionSummary inspectionSummary)
+    {
         return inspectionSummaryMapper.updateInspectionSummary(inspectionSummary);
     }
 //    public int updateInspectionSummary(InspectionSummary inspectionSummary) {

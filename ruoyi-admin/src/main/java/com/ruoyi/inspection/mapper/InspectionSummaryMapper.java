@@ -99,6 +99,8 @@ public interface InspectionSummaryMapper
 
     InspectionSummary selectInspectionSummaryByIdNoDetail(long mainId);
 
+    InspectionSummary selectInspectionSummaryByIdNoDetailAndBadItems(long mainId);
+
     List<InspectionReport> selectInspectionReportBySummaryId(Long id);
 
     void deleteInspectionReportBatch(List<Long> toDelete);
