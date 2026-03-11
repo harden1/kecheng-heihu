@@ -214,7 +214,7 @@ public class ScheduleReport {
             throw new RuntimeException(e);
         }
         long userId = Long.parseLong(reportJson.get("mesUserId").toString());
-        String qrCode = "";
+        String qrCode = reportJson.get("qrCode").toString();
         long reportUnitId = Long.parseLong(reportJson.get("unitId").toString());
         long reportProcessId = Long.parseLong(reportJson.get("processId").toString());
         long lineId = Long.parseLong(reportJson.get("materialLineId").toString());

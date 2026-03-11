@@ -63,6 +63,9 @@ public class ApiBatchReportForBlackLack {
         Map<String, Object> customField2 = new HashMap<>();
         customField2.put("fieldCode", "cust_field30__c");
         customField2.put("fieldValue", stopTime);
+        Map<String, Object> customField3 = new HashMap<>();
+        customField2.put("fieldCode", "cust_field31__c");
+        customField2.put("fieldValue", qrCode1 );
 // 定义 string 数组
 
         // 构造 progressReportMaterialItems
@@ -246,6 +249,9 @@ public class ApiBatchReportForBlackLack {
         customField2.put("fieldCode", "cust_field30__c");
         customField2.put("fieldValue", stopTime);
 
+        Map<String, Object> customField3 = new HashMap<>();
+        customField2.put("fieldCode", "cust_field31__c");
+        customField2.put("fieldValue", qrCode1 );
 
         // 构造 progressReportMaterialItems
         Map<String, Object> materialItem = new HashMap<>();
