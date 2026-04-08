@@ -11,9 +11,11 @@ import com.ruoyi.apiTool.domain.ReportRecord;
 import com.ruoyi.apiTool.service.IBlacklackUserService;
 import com.ruoyi.badItem.domain.CreateBadItemsTable;
 import com.ruoyi.badItem.mapper.CreateBadItemsTableMapper;
+import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.inspection.domain.InspectionSummary;
 import com.ruoyi.inspection.mapper.InspectionSummaryMapper;
 import com.ruoyi.system.mapper.SysConfigMapper;
+import com.ruoyi.system.service.ISysConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.apiTool.mapper.BlacklackUserMapper;
@@ -39,6 +41,8 @@ public class BlacklackUserServiceImpl implements IBlacklackUserService {
     private SysConfigMapper sysConfigMapper;
     @Autowired
     private BlacklackUserServiceImpl blacklackUserService;
+    @Autowired
+    private ISysConfigService configService;
 
     @Override
     @Transactional // 添加事务保证原子性
@@ -212,7 +216,7 @@ public class BlacklackUserServiceImpl implements IBlacklackUserService {
     @Override
     public String queryPreviousProcessSetting() {
         //查询前工序配置
-        String previousProcessSetting = sysConfigMapper.selectPreviousProcessSetting();
+        String previousProcessSetting =configService.selectConfigByKey("Previous_process_setting");// sysConfigMapper.selectPreviousProcessSetting();
         return previousProcessSetting;
     }
 

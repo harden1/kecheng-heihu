@@ -2,10 +2,12 @@ package com.ruoyi.apiTool;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.inspection.domain.InspectionReport;
 import com.ruoyi.inspection.domain.InspectionSummary;
 import com.ruoyi.inspection.service.IInspectionReportService;
 import com.ruoyi.inspection.service.IInspectionSummaryService;
+import com.ruoyi.system.service.ISysConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +31,9 @@ public class ScheduleReport {
     private IInspectionReportService inspectionReportService;
     @Autowired
     private ApiBatchReportForBlackLack batchReportForBlackLack;
+
+    @Autowired
+    private ISysConfigService configService;
 
     /*
      * 改为定时执行，每1分钟执行一组报工，如果定时器失效可以按钮激活
@@ -60,7 +65,7 @@ public class ScheduleReport {
     //查询不良品表，按时间降序查最早50条数据
     public void badReportOne() {
         List<InspectionReport> inspectionReports = inspectionReportService.selectInspectionReportListForSchedule(250);
-        System.out.println("按时间降序查最早50条不良品数据" + inspectionReports);
+//        System.out.println("按时间降序查最早50条不良品数据" + inspectionReports);
         //批量查询50条不良品的主表
         //收集所有的summaryId
         List<Long> summaryIdList = inspectionReports.stream()
@@ -72,7 +77,7 @@ public class ScheduleReport {
             return;
         } else {
             List<InspectionSummary> inspectionSummaryList = inspectionSummaryService.selectInspectionSummaryListByIds(summaryIdList);
-            System.out.println("按时间降序查最早50条不良品数据主表" + inspectionSummaryList);
+//            System.out.println("按时间降序查最早50条不良品数据主表" + inspectionSummaryList);
             for (InspectionReport inspectionReport : inspectionReports) {
                 //根据工单找到主表数据querySummaryByQrCode(params.getWorkOrderCode());
                for ( InspectionSummary inspectionSummary : inspectionSummaryList){
@@ -144,6 +149,8 @@ public class ScheduleReport {
         int reportAmount = inspectionSummary.getTotalQuantity() - inspectionSummary.getDefectiveTotal();
         int qcStatus = 1;
         int reportType = 1;
+        long warehouseId =  Convert.toLong(configService.selectConfigByKey("warehouse_id"));
+
         Map<String, Object> res = batchReportForBlackLack.batchReportForBlackLack(
                 userId,
                 qrCode,
@@ -159,7 +166,8 @@ public class ScheduleReport {
                 batchNoId,
                 batchNo,
                 timestamp,
-                reportEndTime
+                reportEndTime,
+                warehouseId
         );
         //检验成功状态
         String message = res.get("message").toString();
@@ -254,6 +262,8 @@ public class ScheduleReport {
             }
         int qcStatus = 4;
         int reportType = 4;
+        long  warehouseId = Convert.toLong(configService.selectConfigByKey("warehouse_id"));
+
         //报工
         Map<String, Object> res = batchReportForBlackLack.batchReportForBlackLackOne(
                 userId,
@@ -271,7 +281,8 @@ public class ScheduleReport {
                 batchNoId,
                 batchNo,
                 reportStartTime,
-                reportEndTime
+                reportEndTime,
+                warehouseId
         );
 //        检验成功状态
         String message = res.get("message").toString();

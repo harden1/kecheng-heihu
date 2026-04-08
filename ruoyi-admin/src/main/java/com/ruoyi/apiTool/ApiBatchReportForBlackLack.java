@@ -3,8 +3,10 @@ package com.ruoyi.apiTool;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.system.domain.SysUserPost;
 import com.ruoyi.system.mapper.SysUserPostMapper;
+import com.ruoyi.system.service.ISysConfigService;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,8 @@ public class ApiBatchReportForBlackLack {
     private AccessTokenService accessTokenService;
     @Autowired
     private SysUserPostMapper sysUserPostMapper;
+    @Autowired
+    private ISysConfigService configService;
 
     public Map<String,Object> batchReportForBlackLack(long currentUserId1,
                                           String qrCode1,
@@ -39,12 +43,13 @@ public class ApiBatchReportForBlackLack {
                                           long batchNoId,
                                           String batchNo,
                                           long reportStartTime,
-                                          long reportEndTime) {
+                                          long reportEndTime,
+                                                      long warehouseId) {
         Map<String, Object>  res=new HashMap<>();
 
         // Access Token 和 X-AUTH 一致
         String accessToken = accessTokenService.getAccessToken(true);
-//        System.out.println("✅ Access Token: " + accessToken);
+//        System.out.println(" Access Token: " + accessToken);
         // access_token 作为 query 参数拼接到 URL 上
         HttpUrl url = HttpUrl.parse("\n" +
                         "https://v3-ali.blacklake.cn/api/openapi/domain/web/v1/route"+
@@ -104,6 +109,9 @@ public class ApiBatchReportForBlackLack {
         jsonMap.put("progressReportItems", Collections.singletonList(reportItem));
         jsonMap.put("progressReportMaterial", reportMaterial);
         jsonMap.put("qcStatus", qcStatus1);
+
+        jsonMap.put("storageLocationId", warehouseId);
+//        System.out.println(warehouseId);
         jsonMap.put("reportStartTime", reportStartTime);
         jsonMap.put("reportEndTime", reportEndTime);
         jsonMap.put("reportType", reportType1);
@@ -139,7 +147,7 @@ public class ApiBatchReportForBlackLack {
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 responseStr = response.body().string();
-//                System.out.println("✅ 请求成功，响应内容：");
+//                System.out.println(" 请求成功，响应内容：");
 //                System.out.println(responseStr);
                 // 用 Jackson 解析为 JsonNode
                 ObjectMapper mapper = new ObjectMapper();
@@ -147,19 +155,19 @@ public class ApiBatchReportForBlackLack {
                 int code = jsonNode.path("code").asInt();
                 String subCode = jsonNode.path("subCode").asText();
                 if (code == 400150 && "USER-DOMAIN/SSO_TOKEN_FAIL".equals(subCode)) {
-                    System.out.println("❌ Token 已失效，请重新登录。");
+                    System.out.println(" Token 已失效，请重新登录。");
                     // 处理失效逻辑（如刷新 token、抛异常等）//间隔1s //重新获取token
                     Thread.sleep(1000);
                     // 重新请求数据
                     accessTokenService.getAccessToken(false);
                     batchReportForBlackLack(currentUserId1, qrCode1, reportUnitId1, reportProcessId1, reportAmount1,
                             lineId1, materialId1, qcStatus1, reportType1, taskId1, stopTime, batchNoId,
-                            batchNo, reportStartTime, reportEndTime);
+                            batchNo, reportStartTime, reportEndTime,warehouseId);
                 } else {
-//                    System.out.println("✅ Token 有效，继续处理...");
+//                    System.out.println(" Token 有效，继续处理...");
                 }
             } else {
-                System.err.println("❌ 请求失败，HTTP状态码: " + response.code());
+                System.err.println(" 请求失败，HTTP状态码: " + response.code());
                 System.err.println(response.body().string());
             }
         } catch (IOException e) {
@@ -224,12 +232,13 @@ public class ApiBatchReportForBlackLack {
                                                       long batchNoId,
                                                       String batchNo,
                                                       long reportStartTime,
-                                                      long reportEndTime) {
+                                                      long reportEndTime,
+                                                         long warehouseId) {
         Map<String, Object>  res=new HashMap<>();
 
         // Access Token 和 X-AUTH 一致
         String accessToken = accessTokenService.getAccessToken(true);
-//        System.out.println("✅ Access Token: " + accessToken);
+//        System.out.println(" Access Token: " + accessToken);
         // access_token 作为 query 参数拼接到 URL 上
         HttpUrl url = HttpUrl.parse("\n" +
                         "https://v3-ali.blacklake.cn/api/openapi/domain/web/v1/route"+
@@ -288,6 +297,8 @@ public class ApiBatchReportForBlackLack {
         jsonMap.put("progressReportItems", Collections.singletonList(reportItem));
         jsonMap.put("progressReportMaterial", reportMaterial);
         jsonMap.put("qcStatus", qcStatus1);
+        jsonMap.put("storageLocationId", warehouseId);
+//        System.out.println(warehouseId);
         jsonMap.put("reportStartTime", reportStartTime);
         jsonMap.put("reportEndTime", reportEndTime);
         jsonMap.put("reportType", reportType1);
@@ -305,13 +316,13 @@ public class ApiBatchReportForBlackLack {
         }
 
         // 输出看看
-        // System.out.println("最终 JSON 请求体:\n" + jsonBody);
+//         System.out.println("最终 JSON 请求体:\n" + jsonBody);
         // 创建 RequestBody 对象
         RequestBody body = RequestBody.create(
                 okhttp3.MediaType.parse("application/json; charset=utf-8"),
                 jsonBody
         );
-//        System.out.println("✅ 请求体:\n" + jsonBody);
+//        System.out.println("请求体:\n" + jsonBody);
         // 构建请求
         Request request = new Request.Builder()
                 .url(url)
@@ -325,7 +336,6 @@ public class ApiBatchReportForBlackLack {
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 responseStr = response.body().string();
-//                System.out.println("✅ 请求成功，响应内容：");
 //                System.out.println(responseStr);
                 // 用 Jackson 解析为 JsonNode
                 ObjectMapper mapper = new ObjectMapper();
@@ -333,19 +343,19 @@ public class ApiBatchReportForBlackLack {
                 int code = jsonNode.path("code").asInt();
                 String subCode = jsonNode.path("subCode").asText();
                 if (code == 400150 && "USER-DOMAIN/SSO_TOKEN_FAIL".equals(subCode)) {
-                    System.out.println("❌ Token 已失效，请重新登录。");
+                    System.out.println(" Token 已失效，请重新登录。");
                     // 处理失效逻辑（如刷新 token、抛异常等）//间隔1s //重新获取token
                     Thread.sleep(1000);
                     // 重新请求数据
                     accessTokenService.getAccessToken(false);
                     batchReportForBlackLackOne(currentUserId1, qrCode1, reportUnitId1, reportProcessId1, reportAmount1,
                             lineId1, materialId1, qcStatus1, reportType1, taskId1, badItem, stopTime, batchNoId,
-                            batchNo, reportStartTime, reportEndTime);
+                            batchNo, reportStartTime, reportEndTime,warehouseId);
                 } else {
-//                    System.out.println("✅ Token 有效，继续处理...");
+//System.out.println(" Token 有效，继续处理...");
                 }
             } else {
-                System.err.println("❌ 请求失败，HTTP状态码: " + response.code());
+                System.err.println(" 请求失败，HTTP状态码: " + response.code());
                 System.err.println(response.body().string());
             }
         } catch (IOException e) {
@@ -364,8 +374,8 @@ public class ApiBatchReportForBlackLack {
 
         int code = root.get("code").asInt();
         String message = root.get("message").asText();
-//        System.out.println("Code: " + code);
-//        System.out.println("Message: " + message);
+//System.out.println("Code: " + code);
+//System.out.println("Message: " + message);
         res.put("message", message);
         res.put("code", code);
         res.put("data", root);

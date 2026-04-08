@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.apiTool.*;
 import com.ruoyi.badItem.domain.CreateBadItemsTable;
+import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.inspection.domain.InspectionReport;
 import com.ruoyi.inspection.domain.InspectionSummary;
@@ -19,6 +20,7 @@ import com.ruoyi.inspection.service.IInspectionRecordService;
 import com.ruoyi.inspection.service.IInspectionReportService;
 import com.ruoyi.inspection.service.IInspectionSummaryService;
 import com.ruoyi.system.mapper.SysConfigMapper;
+import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.web.controller.system.SysUserController;
 import org.slf4j.Logger;
@@ -73,6 +75,8 @@ public class BlacklackUserController extends BaseController {
 
     @Autowired
     private InspectionReportMapper inspectionReportMapper;
+    @Autowired
+    private ISysConfigService configService;
     /**
      * 扫码二维码结果
      * @param taskCode 二维码信息
@@ -82,6 +86,7 @@ public class BlacklackUserController extends BaseController {
     @PostMapping("/queryScanTaskResult")
     public AjaxResult checkUserToBlackLack(@RequestParam("taskCode") String taskCode) {
 //        System.out.println("收到的数据" + taskCode);
+//        System.out.println("仓库id" + configService.selectConfigByKey("warehouse_id"));
 
         Map<String, String> reportRecordResult = null;
         //报工记录
@@ -89,6 +94,7 @@ public class BlacklackUserController extends BaseController {
         if (reportRecordResult == null){
             return error("该条码没有查询到报工记录，请检查或者联系管理员");
         }
+
         //查主表记录：并返回给前端做提示
         try {
             List<InspectionSummary> list = blacklackUserService.selectInspectionMainByQrcode(taskCode);
@@ -148,7 +154,7 @@ public class BlacklackUserController extends BaseController {
                     reportRecordResult.put("materialId", process.get("materialId"));
                     reportRecordResult.put("lineId", process.get("lineId"));
                     reportRecordResult.put("processCode", process.get("processCode"));
-                    System.out.println("扫码反返回数据：" + reportRecordResult);
+//                    System.out.println("扫码反返回数据：" + reportRecordResult);
                     //返回确认信息
                     return success(reportRecordResult);
                 }
@@ -167,14 +173,14 @@ public class BlacklackUserController extends BaseController {
     @PostMapping("/addOrReadInspectionMain")
     public AjaxResult addOrReadInspectionMain(@RequestBody ReportRecord reportRecord) {
 //        System.out.println("-------------------------------------");
-        System.out.println("新增或读取数据：" + reportRecord);
+//        System.out.println("新增或读取数据：" + reportRecord);
 //        System.out.println("查询的数据"+blacklackUserService.querySummaryByQrCode(reportRecord.getQrCode()) );
         //判断页面刷新是否重复传了接口，使用qrcode查询，如果存在，则返回主表记录
         List<InspectionSummary> inspectionSummarys = blacklackUserService.selectInspectionMainByQrcode(reportRecord.getQrCode());
         if (inspectionSummarys != null && !inspectionSummarys.isEmpty()) {
             InspectionSummary inspectionSummary = inspectionSummarys.get(0);
             // 查询防抖时间
-            String debounce = sysConfigMapper.selectDebounce();
+            String debounce = configService.selectConfigByKey("debounce"); //sysConfigMapper.selectDebounce();
             inspectionSummary.setDebounce(debounce);
             return AjaxResult.success(inspectionSummary);
         } else {
@@ -265,6 +271,7 @@ public class BlacklackUserController extends BaseController {
         int reportType = 4;
 //        System.out.println("color = " + badItem);
 //        System.out.println("reportJson = " + reportJson);
+        long  warehouseId = Convert.toLong(configService.selectConfigByKey("warehouse_id") );
         //报工
         Map<String, Object> res = batchReportForBlackLack.batchReportForBlackLackOne(
                 userId,
@@ -282,7 +289,8 @@ public class BlacklackUserController extends BaseController {
                 batchNoId,
                 batchNo,
                 reportStartTime,
-                reportEndTime
+                reportEndTime,
+                warehouseId
         );
 //        检验成功状态
         String message = res.get("message").toString();
@@ -302,7 +310,7 @@ public class BlacklackUserController extends BaseController {
     @PostMapping("/reportBadItemOne")
     @Transactional(rollbackFor = Exception.class) // 添加事务注解
     public AjaxResult reportBadItemOne(@RequestBody Map<String, Object> params) {
-        System.out.println("map对象数据" + params);
+//        System.out.println("map对象数据" + params);
         //查询主表
         int mainId = (int) params.get("mainId");
         InspectionSummary inspectionSummary = inspectionSummaryService.selectInspectionSummaryById((long) mainId);
@@ -488,13 +496,13 @@ public class BlacklackUserController extends BaseController {
     @PostMapping("/reportBatch")
     @Transactional(rollbackFor = Exception.class)
     public AjaxResult reportBatch(@RequestBody Map<String, Object> params) {
-        System.out.println("正常批量良品报工"+ params);
+//        System.out.println("正常批量良品报工"+ params);
         int mainId = (int) params.get("mainId");
         InspectionSummary inspectionSummary =
                 inspectionSummaryService.selectInspectionSummaryByIdNoDetailAndBadItems((long) mainId);
         inspectionSummary.setSuccessFlag(0L);
         inspectionSummary.setApiDetail("待报工");
-        System.out.println(inspectionSummary.getAllDefectItems());
+//        System.out.println(inspectionSummary.getAllDefectItems());
         // 解析不良项定义
         String allDefectItems = inspectionSummary.getAllDefectItems();
 
@@ -612,7 +620,7 @@ public class BlacklackUserController extends BaseController {
         int reportAmount = inspectionSummary.getTotalQuantity() - inspectionSummary.getDefectiveTotal();
         int qcStatus = 1;
         int reportType = 1;
-
+        long  warehouseId = Convert.toLong(configService.selectConfigByKey("warehouse_id") );
         Map<String, Object> res = batchReportForBlackLack.batchReportForBlackLack(
                 userId,
                 qrCode,
@@ -628,7 +636,8 @@ public class BlacklackUserController extends BaseController {
                 batchNoId,
                 batchNo,
                 timestamp,
-                reportEndTime
+                reportEndTime,
+                warehouseId
         );
         //检验成功状态
         String message = res.get("message").toString();
