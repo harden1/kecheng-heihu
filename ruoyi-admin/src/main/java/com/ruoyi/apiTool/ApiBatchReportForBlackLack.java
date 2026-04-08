@@ -322,7 +322,7 @@ public class ApiBatchReportForBlackLack {
                 okhttp3.MediaType.parse("application/json; charset=utf-8"),
                 jsonBody
         );
-//        System.out.println("请求体:\n" + jsonBody);
+        System.out.println("请求体:\n" + jsonBody);
         // 构建请求
         Request request = new Request.Builder()
                 .url(url)
@@ -336,7 +336,7 @@ public class ApiBatchReportForBlackLack {
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 responseStr = response.body().string();
-//                System.out.println(responseStr);
+                System.out.println("返回体:\n" +responseStr);
                 // 用 Jackson 解析为 JsonNode
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode jsonNode = mapper.readTree(responseStr);
