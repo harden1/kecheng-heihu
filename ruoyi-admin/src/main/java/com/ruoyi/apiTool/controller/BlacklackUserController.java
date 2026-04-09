@@ -179,8 +179,8 @@ public class BlacklackUserController extends BaseController {
         List<InspectionSummary> inspectionSummarys = blacklackUserService.selectInspectionMainByQrcode(reportRecord.getQrCode());
         if (inspectionSummarys != null && !inspectionSummarys.isEmpty()) {
             InspectionSummary inspectionSummary = inspectionSummarys.get(0);
-            // 查询防抖时间
-            String debounce = configService.selectConfigByKey("debounce"); //sysConfigMapper.selectDebounce();
+            // 查询防抖时间//configService.selectConfigByKey("debounce");
+            String debounce =  sysConfigMapper.selectDebounce();
             inspectionSummary.setDebounce(debounce);
             return AjaxResult.success(inspectionSummary);
         } else {

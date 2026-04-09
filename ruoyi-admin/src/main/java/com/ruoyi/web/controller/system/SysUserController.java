@@ -52,12 +52,12 @@ public class SysUserController extends BaseController
     private ApiUserInfoForBlackLack apiUserInfoForBlackLack;
     @GetMapping("/checkUserToBlackLack")
      public AjaxResult checkUserToBlackLack( @RequestParam("username") String username) {
-        System.out.println("收到的数据" + username);
+//        System.out.println("收到的数据" + username);
         List<BlacklackUser> blacklackUserList = apiUserInfoForBlackLack.getUserApiForBlacklack(true);
         for (BlacklackUser user : blacklackUserList) {
-            System.out.println("用户名"+user.getUsername());
+//            System.out.println("用户名"+user.getUsername());
             if (username.equals(user.getUsername()) && user.getActive() == 1) {
-                System.out.println("用户存在MES中"+user.getId());
+//                System.out.println("用户存在MES中"+user.getId());
                 return success(user.getId());
             }
         }

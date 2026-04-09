@@ -78,4 +78,6 @@ public interface SysConfigMapper
     String selectDebounce();
 
     String selectPreviousProcessSetting();
+
+    String selectWarehouseIdSetting();
 }

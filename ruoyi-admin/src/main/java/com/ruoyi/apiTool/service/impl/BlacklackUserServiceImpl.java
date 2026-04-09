@@ -171,12 +171,14 @@ public class BlacklackUserServiceImpl implements IBlacklackUserService {
             reportInfo.put("unitId", processResult3.get("unitId"));
             reportInfo.put("materialLineId", processResult3.get("lineId"));
             reportInfo.put("materialId", processResult3.get("materialId"));
-            System.out.println("工序id：" + processResult3.get("processId"));
+//            System.out.println("工序id：" + processResult3.get("processId"));
             reportInfo.put("processId", processResult3.get("processId"));
             reportInfo.put("taskId", processResult3.get("taskId"));
             reportInfo.put("batchNo", processResult3.get("batchNo"));
             reportInfo.put("batchNoId", processResult3.get("batchNoId"));
             reportInfo.put("qrCode", processResult3.get("qrCode"));
+            String warehouseId =sysConfigMapper.selectWarehouseIdSetting();
+            reportInfo.put("warehouseId", warehouseId);
             //固定信息
             reportInfo.put("qrCodeNum", "1");
 
@@ -215,8 +217,8 @@ public class BlacklackUserServiceImpl implements IBlacklackUserService {
 
     @Override
     public String queryPreviousProcessSetting() {
-        //查询前工序配置
-        String previousProcessSetting =configService.selectConfigByKey("Previous_process_setting");// sysConfigMapper.selectPreviousProcessSetting();
+        //查询前工序配置//configService.selectConfigByKey("Previous_process_setting");
+        String previousProcessSetting =sysConfigMapper.selectPreviousProcessSetting();
         return previousProcessSetting;
     }
 

@@ -117,7 +117,7 @@ public class ScheduleReport {
         long lineId = Long.parseLong(reportJson.get("materialLineId").toString());
         long materialId = Long.parseLong(reportJson.get("materialId").toString());
         long taskId = Long.parseLong(reportJson.get("taskId").toString());
-
+        long  warehouseId = Long.parseLong(reportJson.get("warehouseId").toString());
 
         long batchNoId = 0L;
         Object batchNoIdObj = reportJson.get("batchNoId");
@@ -149,7 +149,7 @@ public class ScheduleReport {
         int reportAmount = inspectionSummary.getTotalQuantity() - inspectionSummary.getDefectiveTotal();
         int qcStatus = 1;
         int reportType = 1;
-        long warehouseId =  Convert.toLong(configService.selectConfigByKey("warehouse_id"));
+//        long warehouseId =  Convert.toLong(configService.selectConfigByKey("warehouse_id"));
 
         Map<String, Object> res = batchReportForBlackLack.batchReportForBlackLack(
                 userId,
@@ -228,6 +228,8 @@ public class ScheduleReport {
         long lineId = Long.parseLong(reportJson.get("materialLineId").toString());
         long materialId = Long.parseLong(reportJson.get("materialId").toString());
         long taskId = Long.parseLong(reportJson.get("taskId").toString());
+        // Convert.toLong(configService.selectConfigByKey("warehouse_id"));
+        long  warehouseId = Long.parseLong(reportJson.get("warehouseId").toString());
         String badItem = params.getDefectRemark();
 
 
@@ -262,7 +264,7 @@ public class ScheduleReport {
             }
         int qcStatus = 4;
         int reportType = 4;
-        long  warehouseId = Convert.toLong(configService.selectConfigByKey("warehouse_id"));
+
 
         //报工
         Map<String, Object> res = batchReportForBlackLack.batchReportForBlackLackOne(
