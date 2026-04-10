@@ -7,6 +7,7 @@ import com.ruoyi.inspection.domain.InspectionReport;
 import com.ruoyi.inspection.domain.InspectionSummary;
 import com.ruoyi.inspection.service.IInspectionReportService;
 import com.ruoyi.inspection.service.IInspectionSummaryService;
+import com.ruoyi.system.mapper.SysConfigMapper;
 import com.ruoyi.system.service.ISysConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,7 +32,8 @@ public class ScheduleReport {
     private IInspectionReportService inspectionReportService;
     @Autowired
     private ApiBatchReportForBlackLack batchReportForBlackLack;
-
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
     @Autowired
     private ISysConfigService configService;
 
@@ -117,8 +119,12 @@ public class ScheduleReport {
         long lineId = Long.parseLong(reportJson.get("materialLineId").toString());
         long materialId = Long.parseLong(reportJson.get("materialId").toString());
         long taskId = Long.parseLong(reportJson.get("taskId").toString());
-        long  warehouseId = Long.parseLong(reportJson.get("warehouseId").toString());
-
+        long warehouseId = 0L;
+        if (reportJson.get("warehouseId") != null) {
+            warehouseId = Long.parseLong(reportJson.get("warehouseId").toString());
+        }else {
+            warehouseId = Long.parseLong(sysConfigMapper.selectWarehouseIdSetting());
+        }
         long batchNoId = 0L;
         Object batchNoIdObj = reportJson.get("batchNoId");
         if (batchNoIdObj != null) {
@@ -229,7 +235,13 @@ public class ScheduleReport {
         long materialId = Long.parseLong(reportJson.get("materialId").toString());
         long taskId = Long.parseLong(reportJson.get("taskId").toString());
         // Convert.toLong(configService.selectConfigByKey("warehouse_id"));
-        long  warehouseId = Long.parseLong(reportJson.get("warehouseId").toString());
+
+        long warehouseId = 0L;
+        if (reportJson.get("warehouseId") != null) {
+            warehouseId = Long.parseLong(reportJson.get("warehouseId").toString());
+        }else {
+             warehouseId = Long.parseLong(sysConfigMapper.selectWarehouseIdSetting());
+        }
         String badItem = params.getDefectRemark();
 
 

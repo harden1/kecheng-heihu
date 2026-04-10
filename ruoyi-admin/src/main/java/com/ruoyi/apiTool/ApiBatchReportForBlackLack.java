@@ -69,8 +69,8 @@ public class ApiBatchReportForBlackLack {
         customField2.put("fieldCode", "cust_field30__c");
         customField2.put("fieldValue", stopTime);
         Map<String, Object> customField3 = new HashMap<>();
-        customField2.put("fieldCode", "cust_field31__c");
-        customField2.put("fieldValue", qrCode1 );
+        customField3.put("fieldCode", "cust_field31__c");
+        customField3.put("fieldValue", qrCode1);
 // 定义 string 数组
 
         // 构造 progressReportMaterialItems
@@ -83,8 +83,7 @@ public class ApiBatchReportForBlackLack {
 //        materialItem.put("qrCodeNum", 1);
 //        materialItem.put("batchNoId", batchNoId);
         materialItem.put("batchNo", batchNo);
-        materialItem.put("customFields", Arrays.asList( customField2));
-
+        materialItem.put("customFields", Arrays.asList( customField2,customField3));
 
         // 构造 progressReportItems
         Map<String, Object> reportItem = new HashMap<>();
@@ -104,6 +103,23 @@ public class ApiBatchReportForBlackLack {
                 "ProgressReportMaxReportableAmountRule",
                 "ProgressReportMaterialPlannedAmountRule"
         };
+        // 构造 materialInventoryBizKey
+        // 当前时间戳（毫秒）
+        long now = System.currentTimeMillis();
+
+// 5年后的时间（推荐用 LocalDateTime，更准确）
+        long fiveYearsLater = java.time.LocalDateTime.now()
+                .plusYears(5)
+                .atZone(java.time.ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli();
+        // 构造 materialInventoryBizKey
+        Map<String, Object> materialInventoryBizKey = new HashMap<>();
+        materialInventoryBizKey.put("productTime", now);
+        materialInventoryBizKey.put("validityPeriod", fiveYearsLater);
+// 放到 jsonMap（和 qcStatus 同级）
+        jsonMap.put("materialInventoryBizKey", materialInventoryBizKey);
+
         // 添加到 map 中
         jsonMap.put("skipWeakControlRule", skipWeakControlRule);
         jsonMap.put("progressReportItems", Collections.singletonList(reportItem));
@@ -270,7 +286,7 @@ public class ApiBatchReportForBlackLack {
 //        materialItem.put("qrCodeNum", 1);
 //        materialItem.put("batchNoId", batchNoId);
         materialItem.put("batchNo", batchNo);
-        materialItem.put("customFields", Arrays.asList(customField1, customField2));
+        materialItem.put("customFields", Arrays.asList(customField1, customField2,customField3));
 
 
         // 构造 progressReportItems
@@ -292,6 +308,20 @@ public class ApiBatchReportForBlackLack {
                 "ProgressReportMaxReportableAmountRule",
                 "ProgressReportMaterialPlannedAmountRule"
         };
+        // 当前时间戳（毫秒）
+        long now = System.currentTimeMillis();
+        // 5年后的时间（推荐用 LocalDateTime，更准确）
+        long fiveYearsLater = java.time.LocalDateTime.now()
+                .plusYears(5)
+                .atZone(java.time.ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli();
+        // 构造 materialInventoryBizKey
+        Map<String, Object> materialInventoryBizKey = new HashMap<>();
+        materialInventoryBizKey.put("productTime", now);
+        materialInventoryBizKey.put("validityPeriod", fiveYearsLater);
+// 放到 jsonMap（和 qcStatus 同级）
+        jsonMap.put("materialInventoryBizKey", materialInventoryBizKey);
         // 添加到 map 中
         jsonMap.put("skipWeakControlRule", skipWeakControlRule);
         jsonMap.put("progressReportItems", Collections.singletonList(reportItem));

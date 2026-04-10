@@ -9,8 +9,8 @@ spring:
 #                url: jdbc:mysql://localhost:3306/dsc?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
                 url: jdbc:mysql://localhost:3306/dsc_admin?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
                 username: root
-                password: 123456
-#                password: Kecheng123asd!@#
+#                password: 123456
+                password: Kecheng123asd!@#
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭
