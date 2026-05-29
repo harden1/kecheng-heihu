@@ -52,9 +52,9 @@ public class ScheduleReport {
 //        System.out.println("按时间降序查最早50条良品数据" + inspectionSummarys);
         for (InspectionSummary inspectionSummary : inspectionSummarys) {
             String res = scheduleReportBatch(inspectionSummary,true);
-            if (res.equals("-1")) {
-                String res0 = scheduleReportBatch(inspectionSummary, false);
-            }
+//            if (res.equals("-1")) {
+//                String res0 = scheduleReportBatch(inspectionSummary, false);
+//            }
             //延时0.5s
             try {
                 Thread.sleep(50);
@@ -87,9 +87,9 @@ public class ScheduleReport {
                    if (inspectionSummary.getQrCode().equals(inspectionReport.getWorkOrderCode())) {
 //                       System.out.println("匹配到工单：" + inspectionSummary.getQrCode());
                        String res = scheduleReportBadItemOne(inspectionReport, inspectionSummary, true);
-                       if (res.equals("-1")) {
-                           String res0 = scheduleReportBadItemOne(inspectionReport, inspectionSummary, false);
-                       }
+//                       if (res.equals("-1")) {
+//                           String res0 = scheduleReportBadItemOne(inspectionReport, inspectionSummary, false);
+//                       }
                        //延时0.5s
                        try {
                            Thread.sleep(50);
@@ -179,37 +179,38 @@ public class ScheduleReport {
         String message = res.get("message").toString();
         int code = (int) res.get("code");
         if (code != 200) {
-            if ( flag){
-                inspectionSummary.setApiDetail(message);
-                inspectionSummary.setSuccessFlag(0L);
-                inspectionSummaryService.updateInspectionSummaryNoSubfom(inspectionSummary);
-                return "-1";
-            }else{
+//            if ( flag){
+//                inspectionSummary.setApiDetail(message);
+//                inspectionSummary.setSuccessFlag(0L);
+//                inspectionSummaryService.updateInspectionSummaryNoSubfom(inspectionSummary);
+//                return "-1";
+//            }else{
                 inspectionSummary.setApiDetail(message);
                 inspectionSummary.setSuccessFlag(2L);
                 inspectionSummaryService.updateInspectionSummaryNoSubfom(inspectionSummary);
                 return "0";
-            }
+//            }
 
         }else{
             //更新主表
-            if (res.get("message").equals("成功")) {
+            if ("成功".equals(res.get("message"))){
                 inspectionSummary.setSuccessFlag(1L);
                 inspectionSummary.setApiDetail(res.toString());
                 inspectionSummaryService.updateInspectionSummaryNoSubfom(inspectionSummary);
                 return "1";
-            } else {
-                if ( flag){
-                    inspectionSummary.setSuccessFlag(0L);
-                    inspectionSummary.setApiDetail(message);
-                    inspectionSummaryService.updateInspectionSummaryNoSubfom(inspectionSummary);
-                    return "-1";
-                }else{
+            }
+            else {
+//                if ( flag){
+//                    inspectionSummary.setSuccessFlag(0L);
+//                    inspectionSummary.setApiDetail(message);
+//                    inspectionSummaryService.updateInspectionSummaryNoSubfom(inspectionSummary);
+//                    return "-1";
+//                }else{
                     inspectionSummary.setSuccessFlag(2L);
                     inspectionSummary.setApiDetail(message);
                     inspectionSummaryService.updateInspectionSummaryNoSubfom(inspectionSummary);
                     return "0";
-                }
+//                }
 
             }
         }
@@ -302,38 +303,39 @@ public class ScheduleReport {
         String message = res.get("message").toString();
         int code = (int) res.get("code");
         if (code != 200) {
-            if ( flag){
-                params.setResultJson(message);
-                params.setSuccessFlag(0);
-                inspectionReportService.updateInspectionReport(params);
-                return "-1";
-            }else {
+//            if ( flag){
+//                params.setResultJson(message);
+//                params.setSuccessFlag(0);
+//                inspectionReportService.updateInspectionReport(params);
+//                return "-1";
+//            }else {
                 params.setResultJson(message);
                 params.setSuccessFlag(2);
                 inspectionReportService.updateInspectionReport(params);
                 return "0";
-            }
+//            }
 
         }else{
             //更新主表
-            if (res.get("message").equals("成功")) {
+            if ("成功".equals(res.get("message"))){
                 params.setSuccessFlag(1);
                 params.setResultJson(res.toString());
                 inspectionReportService.updateInspectionReport(params);
                 return "1";
             } else {
-                if ( flag){
-                    params.setResultJson(message);
-                    params.setSuccessFlag(0);
-                    inspectionReportService.updateInspectionReport(params);
-                    return "-1";
-                }else {
+//                if ( flag){
+//                    params.setResultJson(message);
+//                    params.setSuccessFlag(0);
+//                    inspectionReportService.updateInspectionReport(params);
+//                    return "-1";
+//                }else {
                     params.setResultJson(message);
                     params.setSuccessFlag(2);
                     inspectionReportService.updateInspectionReport(params);
                     return "0";
-                }
+//                }
             }
         }
     }
 }
+//TODO 去掉重复报工，过滤重复查询记录（报工失败请自己手动重试）
