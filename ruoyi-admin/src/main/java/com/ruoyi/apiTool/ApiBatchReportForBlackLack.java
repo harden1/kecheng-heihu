@@ -176,9 +176,9 @@ public class ApiBatchReportForBlackLack {
                     Thread.sleep(1000);
                     // 重新请求数据
                     accessTokenService.getAccessToken(false);
-                    batchReportForBlackLack(currentUserId1, qrCode1, reportUnitId1, reportProcessId1, reportAmount1,
-                            lineId1, materialId1, qcStatus1, reportType1, taskId1, stopTime, batchNoId,
-                            batchNo, reportStartTime, reportEndTime,warehouseId);
+//                    batchReportForBlackLack(currentUserId1, qrCode1, reportUnitId1, reportProcessId1, reportAmount1,
+//                            lineId1, materialId1, qcStatus1, reportType1, taskId1, stopTime, batchNoId,
+//                            batchNo, reportStartTime, reportEndTime,warehouseId);
                 } else {
 //                    System.out.println(" Token 有效，继续处理...");
                 }
@@ -378,9 +378,9 @@ public class ApiBatchReportForBlackLack {
                     Thread.sleep(1000);
                     // 重新请求数据
                     accessTokenService.getAccessToken(false);
-                    batchReportForBlackLackOne(currentUserId1, qrCode1, reportUnitId1, reportProcessId1, reportAmount1,
-                            lineId1, materialId1, qcStatus1, reportType1, taskId1, badItem, stopTime, batchNoId,
-                            batchNo, reportStartTime, reportEndTime,warehouseId);
+//                    batchReportForBlackLackOne(currentUserId1, qrCode1, reportUnitId1, reportProcessId1, reportAmount1,
+//                            lineId1, materialId1, qcStatus1, reportType1, taskId1, badItem, stopTime, batchNoId,
+//                            batchNo, reportStartTime, reportEndTime,warehouseId);
                 } else {
 //System.out.println(" Token 有效，继续处理...");
                 }
