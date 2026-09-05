@@ -77,6 +77,7 @@ CREATE TABLE `create_bad_items_table` (
   `id` int NOT NULL AUTO_INCREMENT COMMENT '编号',
   `bad_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '不良项名称',
   `bad_color` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '不良项颜色',
+  `font_color` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '不良字体颜色',
   `no` int DEFAULT NULL COMMENT '顺序',
   `state` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '启用状态',
   `create_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '创建人',
@@ -387,6 +388,7 @@ CREATE TABLE `inspection_summary` (
   `stop_time` text COMMENT '暂停时间',
   `api_detail` text COMMENT 'api反馈',
   `qr_code` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '二维码',
+  `color` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '颜色',
   `api_report` text,
   `success_flag` int DEFAULT NULL,
   PRIMARY KEY (`id`,`qr_code`) USING BTREE

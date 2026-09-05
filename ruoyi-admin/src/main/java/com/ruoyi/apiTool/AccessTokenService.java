@@ -24,8 +24,8 @@ public class AccessTokenService {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
-    private static final String TOKEN_KEY = "blacklake-zs:access_token";
-//    private static final String TOKEN_KEY = "blacklake:access_token";
+//    private static final String TOKEN_KEY = "blacklake-zs:access_token";
+    private static final String TOKEN_KEY = "blacklake:access_token";
     /**
      * 获取 access_token
      *
@@ -53,10 +53,10 @@ public class AccessTokenService {
         RestTemplate restTemplate = new RestTemplate();
 
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("appKey", "cli_1757299485943603");
-        requestBody.put("appSecret", "d264188820584a67a9e644e48058b905");
-//        requestBody.put("appKey", "cli_1749190336089356");
-//        requestBody.put("appSecret", "34d5153660bf47f9ba61031123577ac5");
+//        requestBody.put("appKey", "cli_1757299485943603");
+//        requestBody.put("appSecret", "d264188820584a67a9e644e48058b905");
+        requestBody.put("appKey", "cli_1749190336089356");
+        requestBody.put("appSecret", "34d5153660bf47f9ba61031123577ac5");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
