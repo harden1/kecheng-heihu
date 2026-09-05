@@ -1,0 +1,48 @@
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "list": [
+      {
+        "id": 1787795331084000,
+        "material": {
+          "id": 1787651959776000
+        },
+        "storageLocationId": 1783078034914000,
+        "qcStatus": {
+          "code": 1
+        },
+        "bizKeyAttr": {
+          "batchNo": "OTHER-BATCH"
+        },
+        "amount": {
+          "amount": "8.5",
+          "unit": {
+            "id": 1749025381704000
+          }
+        },
+        "qrCode": "QR-OTHER"
+      },
+      {
+        "id": 1787795331084898,
+        "material": {
+          "id": 1787651959776809
+        },
+        "storageLocationId": 1783078034914734,
+        "qcStatus": {
+          "code": 1
+        },
+        "bizKeyAttr": {
+          "batchNo": "CS0824001"
+        },
+        "amount": {
+          "amount": "3",
+          "unit": {
+            "id": 1749025381704132
+          }
+        },
+        "qrCode": "QR-INSPECTION-001"
+      }
+    ]
+  }
+}
