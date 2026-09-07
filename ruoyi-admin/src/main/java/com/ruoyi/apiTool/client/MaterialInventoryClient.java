@@ -24,18 +24,23 @@ public class MaterialInventoryClient {
     }
 
     /**
-     * 查询与输入二维码精确匹配的唯一可用库存。
+     * 查询与输入二维码和物料编号精确匹配的唯一可用库存。
      *
-     * @param qrCode 当前工单扫码二维码
+     * @param qrCode       当前工单扫码二维码
+     * @param materialCode 物料编号（来自投料关系查询响应 data.materialCode）
      * @return 唯一匹配且数量大于零的库存明细
      */
-    public InventoryDetail queryByQrCode(String qrCode) {
+    public InventoryDetail queryByQrCode(String qrCode, String materialCode) {
         if (qrCode == null || qrCode.trim().isEmpty()) {
             throw new IllegalArgumentException("库存查询二维码不能为空");
+        }
+        if (materialCode == null || materialCode.trim().isEmpty()) {
+            throw new IllegalArgumentException("库存查询物料编号不能为空");
         }
 
         Map<String, Object> body = new HashMap<>();
         body.put("qrCodes", Collections.singletonList(qrCode));
+        body.put("materialCodes", Collections.singletonList(materialCode));
         JsonNode response = apiClient.post(INVENTORY_PATH, body);
         JsonNode list = response.path("data").path("list");
         if (!list.isArray()) {

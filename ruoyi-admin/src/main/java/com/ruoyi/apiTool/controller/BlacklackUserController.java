@@ -7,10 +7,8 @@ import java.util.*;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.apiTool.*;
-import com.ruoyi.badItem.domain.CreateBadItemsTable;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.inspection.domain.InspectionReport;
@@ -38,6 +36,10 @@ import com.ruoyi.apiTool.service.IBlacklackUserService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.apiTool.domain.ReportRecord;
+import com.ruoyi.apiTool.domain.feed.InspectionFeedRecord;
+import com.ruoyi.apiTool.domain.feed.ReportBatchResult;
+import com.ruoyi.apiTool.service.FeedUploadService;
+import com.ruoyi.apiTool.service.ReportBatchEnqueueService;
 
 /**
  * 黑湖用户信息Controller
@@ -77,6 +79,10 @@ public class BlacklackUserController extends BaseController {
     private InspectionReportMapper inspectionReportMapper;
     @Autowired
     private ISysConfigService configService;
+    @Autowired
+    private FeedUploadService feedUploadService;
+    @Autowired
+    private ReportBatchEnqueueService reportBatchEnqueueService;
     /**
      * 扫码二维码结果
      * @param taskCode 二维码信息
@@ -490,75 +496,41 @@ public class BlacklackUserController extends BaseController {
 
     /**
      * 正常批量良品报工
-     * @param params
-     * @return
+     * <p>
+     * 保留原有入队逻辑（提取到 ReportBatchEnqueueService），入队事务成功提交后触发自动投料编排。
+     * 投料失败不回滚、不阻断报工入队，投料状态通过附加字段返回前端。
+     *
+     * @param params 前端传入的报工参数，包含 mainId
+     * @return 报工结果，包含 summary、feedStatus、feedRecordId、feedMessage
      */
     @PostMapping("/reportBatch")
-    @Transactional(rollbackFor = Exception.class)
     public AjaxResult reportBatch(@RequestBody Map<String, Object> params) {
-//        System.out.println("正常批量良品报工"+ params);
-        int mainId = (int) params.get("mainId");
-        InspectionSummary inspectionSummary =
-                inspectionSummaryService.selectInspectionSummaryByIdNoDetailAndBadItems((long) mainId);
-        inspectionSummary.setSuccessFlag(0L);
-        inspectionSummary.setApiDetail("待报工");
-//        System.out.println(inspectionSummary.getAllDefectItems());
-        // 解析不良项定义
-        String allDefectItems = inspectionSummary.getAllDefectItems();
+        // 1. 报工入队（独立事务）
+        ReportBatchResult reportResult = reportBatchEnqueueService.enqueue(params);
 
-        // 1️⃣ 检查是否为空
-        if (allDefectItems == null || allDefectItems.trim().isEmpty()) {
-            log.error("不良项数据为空，summaryId={}", inspectionSummary.getId());
-            throw new RuntimeException("不良项数据为空，无法生成报工明细");
-        }
-        // 2️⃣ 解析 JSON
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-        List<CreateBadItemsTable> badItemList;
+        // 2. 入队成功后触发自动投料（投料异常不阻断报工）
+        InspectionFeedRecord feedRecord = null;
+        String feedMessage = null;
         try {
-            badItemList = objectMapper.readValue(
-                    allDefectItems,
-                    new TypeReference<List<CreateBadItemsTable>>() {}
-            );
-        } catch (JsonProcessingException e) {
-            log.error("解析 allDefectItems 失败，原始值：{}", allDefectItems, e);
-            throw new RuntimeException("不良项数据解析失败");
+            feedRecord = feedUploadService.autoUpload(reportResult.getSummaryId());
+        } catch (Exception e) {
+            feedMessage = e.getMessage();
+            log.error("自动投料异常，summaryId={}", reportResult.getSummaryId(), e);
         }
 
-        List<InspectionReport> reportList = new ArrayList<>();
-        for (int i = 1; i <= 20; i++) {
-            BigDecimal qty = getDefectQty(inspectionSummary, i);
-            if (qty.compareTo(BigDecimal.ZERO) <= 0) {
-                continue;
-            }
-            if (i > badItemList.size()) {
-                log.warn("defect_{} 数量为 {}，但未定义对应不良项", i, qty);
-                continue;
-            }
-            CreateBadItemsTable badItem = badItemList.get(i - 1);
-            InspectionReport report = new InspectionReport();
-            report.setSummaryId(inspectionSummary.getId());
-            report.setWorkOrderCode(inspectionSummary.getQrCode());
-            report.setReportTime(inspectionSummary.getUpdateTime());
-            report.setQuantity(qty);
-            report.setSuccessFlag(0);
-            report.setDefectRemark(badItem.getBadName());
-            reportList.add(report);
-        }
-        if (!reportList.isEmpty()) {
-            inspectionReportMapper.batchInsert(reportList);
-        }
+        // 3. 组装返回结果，保留原 summary，新增投料状态字段
         Map<String, Object> result = new HashMap<>();
-        int updateFlag =
-                inspectionSummaryService.updateInspectionSummaryNoSubfom(inspectionSummary);
-        if (updateFlag > 0) {
-            inspectionSummary.setInspectionReportList(null);
-            result.put("summary", inspectionSummary);
-            return AjaxResult.success(result);
-        }else {
-            return error("更新汇总表失败");
+        result.put("summary", reportResult.getSummary());
+        if (feedRecord != null) {
+            result.put("feedStatus", feedRecord.getUploadStatus());
+            result.put("feedRecordId", feedRecord.getId());
+            result.put("feedMessage", feedRecord.getErrorMessage());
+        } else {
+            result.put("feedStatus", "FAILED");
+            result.put("feedRecordId", null);
+            result.put("feedMessage", feedMessage);
         }
-
+        return AjaxResult.success(result);
     }
 
     private BigDecimal getDefectQty(InspectionSummary summary, int index) {

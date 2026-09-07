@@ -180,7 +180,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectInspectionSummaryByIdNoDetailAndBadItems"
             resultMap="InspectionSummaryResult">
-        select id, work_order_code, total_quantity, defective_total, defect_1, defect_2, defect_3, defect_4, defect_5, defect_6, defect_7, defect_8, defect_9, defect_10, defect_11, defect_12, defect_13, defect_14, defect_15, defect_16, defect_17, defect_18, defect_19, defect_20,all_defect_items, stop_time, qr_code,color, create_by, create_time, update_by, update_time,stop_time,success_flag
+        select id, work_order_code, total_quantity, defective_total, defect_1, defect_2, defect_3, defect_4, defect_5, defect_6, defect_7, defect_8, defect_9, defect_10, defect_11, defect_12, defect_13, defect_14, defect_15, defect_16, defect_17, defect_18, defect_19, defect_20,all_defect_items, stop_time, qr_code,color, api_report, create_by, create_time, update_by, update_time,stop_time,success_flag
         from inspection_summary
         where id = #{id}
     </select>

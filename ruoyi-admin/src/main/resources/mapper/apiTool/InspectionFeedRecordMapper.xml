@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.apiTool.mapper.InspectionFeedRecordMapper">
+
+    <resultMap type="com.ruoyi.apiTool.domain.feed.InspectionFeedRecord" id="InspectionFeedRecordResult">
+        <result property="id"                 column="id"                 />
+        <result property="summaryId"          column="summary_id"         />
+        <result property="qrCode"             column="qr_code"            />
+        <result property="workOrderCode"      column="work_order_code"    />
+        <result property="taskId"             column="task_id"            />
+        <result property="materialId"         column="material_id"        />
+        <result property="inventoryElementId" column="inventory_element_id" />
+        <result property="feedAmount"         column="feed_amount"        />
+        <result property="unitId"             column="unit_id"            />
+        <result property="requestJson"        column="request_json"       />
+        <result property="responseJson"       column="response_json"      />
+        <result property="uploadStatus"       column="upload_status"      />
+        <result property="errorMessage"       column="error_message"      />
+        <result property="failType"           column="fail_type"           />
+        <result property="retryCount"         column="retry_count"        />
+        <result property="feedTime"           column="feed_time"          />
+        <result property="createBy"           column="create_by"          />
+        <result property="createTime"         column="create_time"        />
+        <result property="updateBy"           column="update_by"          />
+        <result property="updateTime"         column="update_time"        />
+    </resultMap>
+
+    <!-- 查询字段 -->
+    <sql id="selectFeedRecordVo">
+        SELECT id, summary_id, qr_code, work_order_code, task_id, material_id,
+               inventory_element_id, feed_amount, unit_id, request_json, response_json,
+               upload_status, error_message, fail_type, retry_count, feed_time,
+               create_by, create_time, update_by, update_time
+          FROM inspection_feed_record
+    </sql>
+
+    <!-- 根据主键查询 -->
+    <select id="selectById" parameterType="Long" resultMap="InspectionFeedRecordResult">
+        <include refid="selectFeedRecordVo"/>
+        WHERE id = #{id}
+    </select>
+
+    <!-- 根据业务键查询唯一投料记录 -->
+    <select id="selectByBusinessKey" resultMap="InspectionFeedRecordResult">
+        <include refid="selectFeedRecordVo"/>
+        WHERE summary_id = #{summaryId}
+          AND task_id = #{taskId}
+          AND qr_code = #{qrCode}
+        LIMIT 1
+    </select>
+
+    <!-- 按条件查询列表 -->
+    <select id="selectList" parameterType="com.ruoyi.apiTool.domain.feed.InspectionFeedRecord" resultMap="InspectionFeedRecordResult">
+        <include refid="selectFeedRecordVo"/>
+        <where>
+            <if test="qrCode != null and qrCode != ''">
+                AND qr_code LIKE CONCAT('%', #{qrCode}, '%')
+            </if>
+            <if test="workOrderCode != null and workOrderCode != ''">
+                AND work_order_code LIKE CONCAT('%', #{workOrderCode}, '%')
+            </if>
+            <if test="taskId != null">
+                AND task_id = #{taskId}
+            </if>
+            <if test="uploadStatus != null and uploadStatus != ''">
+                AND upload_status = #{uploadStatus}
+            </if>
+            <if test="params.beginTime != null and params.beginTime != ''">
+                AND date_format(create_time,'%Y-%m-%d') &gt;= #{params.beginTime}
+            </if>
+            <if test="params.endTime != null and params.endTime != ''">
+                AND date_format(create_time,'%Y-%m-%d') &lt;= #{params.endTime}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 新增投料记录 -->
+    <insert id="insert" parameterType="com.ruoyi.apiTool.domain.feed.InspectionFeedRecord" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO inspection_feed_record (
+            summary_id, qr_code, work_order_code, task_id, material_id,
+            inventory_element_id, feed_amount, unit_id, request_json, response_json,
+            upload_status, error_message, fail_type, retry_count, feed_time,
+            create_by, create_time, update_by, update_time
+        ) VALUES (
+            #{summaryId}, #{qrCode}, #{workOrderCode}, #{taskId}, #{materialId},
+            #{inventoryElementId}, #{feedAmount}, #{unitId}, #{requestJson}, #{responseJson},
+            #{uploadStatus}, #{errorMessage}, #{failType}, #{retryCount}, #{feedTime},
+            #{createBy}, sysdate(), #{updateBy}, sysdate()
+        )
+    </insert>
+
+    <!-- 自动上传抢占：仅 PENDING 可抢占 -->
+    <update id="claimAutoUpload" parameterType="Long">
+        UPDATE inspection_feed_record
+           SET upload_status = 'PROCESSING', error_message = NULL, fail_type = NULL, update_time = sysdate()
+         WHERE id = #{id} AND upload_status = 'PENDING'
+    </update>
+
+    <!-- 手动重传抢占：仅 PENDING/FAILED 可抢占，并增加重传次数 -->
+    <update id="claimManualRetry" parameterType="Long">
+        UPDATE inspection_feed_record
+           SET upload_status = 'PROCESSING', retry_count = retry_count + 1, error_message = NULL, fail_type = NULL, update_time = sysdate()
+         WHERE id = #{id} AND upload_status IN ('PENDING', 'FAILED')
+    </update>
+
+    <!-- 标记投料成功 -->
+    <update id="markSuccess" parameterType="map">
+        UPDATE inspection_feed_record
+           SET upload_status = 'SUCCESS',
+               request_json = #{requestJson},
+               response_json = #{responseJson},
+               error_message = NULL,
+               fail_type = NULL,
+               feed_time = #{feedTime},
+               update_time = sysdate()
+         WHERE id = #{id}
+    </update>
+
+    <!-- 标记投料失败 -->
+    <update id="markFailed" parameterType="map">
+        UPDATE inspection_feed_record
+           SET upload_status = 'FAILED',
+               request_json = #{requestJson},
+               response_json = #{responseJson},
+               error_message = #{errorMessage},
+               fail_type = #{failType},
+               feed_time = NULL,
+               update_time = sysdate()
+         WHERE id = #{id}
+    </update>
+
+    <!-- 标记投料结果未知 -->
+    <update id="markUnknown" parameterType="map">
+        UPDATE inspection_feed_record
+           SET upload_status = 'UNKNOWN',
+               request_json = #{requestJson},
+               response_json = #{responseJson},
+               error_message = #{errorMessage},
+               fail_type = #{failType},
+               feed_time = NULL,
+               update_time = sysdate()
+         WHERE id = #{id}
+    </update>
+
+</mapper>

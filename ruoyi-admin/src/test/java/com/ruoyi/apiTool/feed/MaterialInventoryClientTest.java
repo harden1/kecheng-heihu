@@ -31,6 +31,7 @@ import static org.mockito.Mockito.when;
 class MaterialInventoryClientTest {
 
     private static final String QR_CODE = "QR-INSPECTION-001";
+    private static final String MATERIAL_CODE = "ZZP-SH06";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private BlackLakeApiClient apiClient;
@@ -47,7 +48,7 @@ class MaterialInventoryClientTest {
         when(apiClient.post(eq("/inventory/open/v1/material_inventory/_list"), any()))
                 .thenReturn(readFixture("inventory-success.json"));
 
-        InventoryDetail result = client.queryByQrCode(QR_CODE);
+        InventoryDetail result = client.queryByQrCode(QR_CODE, MATERIAL_CODE);
 
         assertEquals(Long.valueOf(1787795331084898L), result.getInventoryElementId());
         assertEquals(Long.valueOf(1787651959776809L), result.getMaterialId());
@@ -61,7 +62,7 @@ class MaterialInventoryClientTest {
         ArgumentCaptor<Object> bodyCaptor = ArgumentCaptor.forClass(Object.class);
         verify(apiClient).post(eq("/inventory/open/v1/material_inventory/_list"), bodyCaptor.capture());
         JsonNode body = objectMapper.valueToTree(bodyCaptor.getValue());
-        assertEquals(objectMapper.readTree("{\"qrCodes\":[\"" + QR_CODE + "\"]}"), body);
+        assertEquals(objectMapper.readTree("{\"qrCodes\":[\"" + QR_CODE + "\"],\"materialCodes\":[\"" + MATERIAL_CODE + "\"]}"), body);
     }
 
     @Test
@@ -70,7 +71,7 @@ class MaterialInventoryClientTest {
         matchingItem(response).with("bizKeyAttr").putNull("batchNo");
         when(apiClient.post(any(), any())).thenReturn(response);
 
-        InventoryDetail result = client.queryByQrCode(QR_CODE);
+        InventoryDetail result = client.queryByQrCode(QR_CODE, MATERIAL_CODE);
 
         assertNull(result.getBatchNo());
     }
@@ -81,7 +82,7 @@ class MaterialInventoryClientTest {
         matchingItem(response).with("bizKeyAttr").put("batchNo", "");
         when(apiClient.post(any(), any())).thenReturn(response);
 
-        InventoryDetail result = client.queryByQrCode(QR_CODE);
+        InventoryDetail result = client.queryByQrCode(QR_CODE, MATERIAL_CODE);
 
         assertNull(result.getBatchNo());
     }
@@ -89,9 +90,17 @@ class MaterialInventoryClientTest {
     @Test
     void shouldRejectBlankQrCodeWithoutCallingApi() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> client.queryByQrCode(" "));
+                () -> client.queryByQrCode(" ", MATERIAL_CODE));
 
         assertTrue(exception.getMessage().contains("二维码不能为空"));
+    }
+
+    @Test
+    void shouldRejectBlankMaterialCodeWithoutCallingApi() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> client.queryByQrCode(QR_CODE, " "));
+
+        assertTrue(exception.getMessage().contains("物料编号不能为空"));
     }
 
     @Test
@@ -99,7 +108,7 @@ class MaterialInventoryClientTest {
         when(apiClient.post(any(), any())).thenReturn(readFixture("inventory-empty.json"));
 
         IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> client.queryByQrCode(QR_CODE));
+                () -> client.queryByQrCode(QR_CODE, MATERIAL_CODE));
 
         assertTrue(exception.getMessage().contains("未找到与二维码精确匹配的库存"));
     }
@@ -111,7 +120,7 @@ class MaterialInventoryClientTest {
         when(apiClient.post(any(), any())).thenReturn(response);
 
         IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> client.queryByQrCode(QR_CODE));
+                () -> client.queryByQrCode(QR_CODE, MATERIAL_CODE));
 
         assertTrue(exception.getMessage().contains("未找到与二维码精确匹配的库存"));
     }
@@ -124,7 +133,7 @@ class MaterialInventoryClientTest {
         when(apiClient.post(any(), any())).thenReturn(response);
 
         IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> client.queryByQrCode(QR_CODE));
+                () -> client.queryByQrCode(QR_CODE, MATERIAL_CODE));
 
         assertTrue(exception.getMessage().contains("匹配到多条库存"));
     }
@@ -136,7 +145,7 @@ class MaterialInventoryClientTest {
         when(apiClient.post(any(), any())).thenReturn(response);
 
         IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> client.queryByQrCode(QR_CODE));
+                () -> client.queryByQrCode(QR_CODE, MATERIAL_CODE));
 
         assertTrue(exception.getMessage().contains("库存数量必须大于零"));
     }
@@ -153,7 +162,7 @@ class MaterialInventoryClientTest {
             when(apiClient.post(any(), any())).thenReturn(response);
 
             IllegalStateException exception = assertThrows(IllegalStateException.class,
-                    () -> client.queryByQrCode(QR_CODE), fieldPath);
+                    () -> client.queryByQrCode(QR_CODE, MATERIAL_CODE), fieldPath);
 
             assertTrue(exception.getMessage().contains(fieldPath), fieldPath);
         }

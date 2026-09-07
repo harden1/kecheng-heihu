@@ -4,19 +4,19 @@
 
 **Goal:** 操作员点击现有“报工/完工”时，保留当前报工记录入队流程，同时为该条码和生产任务创建一条独立投料记录并自动上传黑湖；待上传或明确失败的投料记录可在新增“投料记录”页面手动重传。
 
-**Architecture:** 使用当前工单扫码二维码查询库存，从库存响应取得原料、库存范围、数量和单位；使用库存物料 ID 与当前生产任务 ID 查询投料关系；组装并同步调用 `_bulk_feed`。投料记录独立保存在 `inspection_feed_record`，与 `inspection_summary` 关联；自动投料失败不阻断现有 `reportBatch` 入队和定时 `_progress_report`，成功记录禁止重复上传，网络超时等结果不确定场景标记为 `UNKNOWN` 并禁止直接重传。
+**Architecture:** 使用 `api_report` 中的原料物料 ID 与当前生产任务 ID 查询投料关系；使用当前工单扫码二维码查询库存，从库存响应取得库存范围、数量和单位；组装并同步调用 `_bulk_feed`。投料记录独立保存在 `inspection_feed_record`，与 `inspection_summary` 关联；自动投料失败不阻断现有 `reportBatch` 入队和定时 `_progress_report`，成功记录禁止重复上传，网络超时等结果不确定场景标记为 `UNKNOWN` 并禁止直接重传。
 
 **Tech Stack:** Java 8、Spring Boot 2.5.15、MyBatis、MySQL、OkHttp、Jackson、JUnit 5、Mockito、现有 Vue 3 前端。
 
 ## Global Constraints
 
 - Excel 中第一个 `_bulk_feed` 是写接口；第二个库存接口和第三个投料关系接口是读接口。
-- 固定调用顺序：创建待上传投料记录 → 库存查询 → 投料关系查询 → 批量投料 → 更新投料记录状态。
+- 固定调用顺序：创建待上传投料记录 → 投料关系查询 → 库存查询 → 批量投料 → 更新投料记录状态。
 - 点击报工时，投料自动上传与现有 `reportBatch` 入队互不阻断；投料失败仍必须继续原报工入队流程。
 - 库存查询的 `qrCodes` 使用当前工单扫码二维码，即 `inspection_summary.api_report.qrCode`。
 - 投料数量 `opeAmount` 使用库存响应 `data.list[].amount.amount`，不让操作员手工填写。
 - 投料单位 `opeUnitId` 使用库存响应 `data.list[].amount.unit.id`。
-- 投料关系的 `materialId` 使用库存响应中的原料物料 ID；`taskId` 使用 `api_report.taskId`。
+- 投料关系的 `materialId` 使用 `api_report.materialId`（即扫码时从黑湖报工记录中获取的物料ID）；`taskId` 使用 `api_report.taskId`。
 - 黑湖成功仅以业务响应 `code == 200` 判断，不依赖中文 `message`。
 - Java 代码必须兼容 Java 8，数量统一使用 `BigDecimal`。
 - 保留现有定时报工机制，不改成点击后同步调用 `_progress_report`。
@@ -43,8 +43,8 @@
     → inspection_summary.success_flag=0
 → 同一次点击触发投料编排服务（投料结果不回滚、不阻断上述报工入队）
     → 按 summaryId + taskId + qrCode 创建或读取唯一投料记录，初始状态 PENDING
+    → 第三个接口：用 api_report.materialId + api_report.taskId 查询投料关系
     → 第二个接口：用 api_report.qrCode 查询库存
-    → 第三个接口：用库存 materialId + api_report.taskId 查询投料关系
     → 保存本次 bulk_feed 请求快照
     → 第一个接口：把两个读接口的数据组装后写入 bulk_feed
     → code=200：投料记录更新为 SUCCESS
@@ -112,7 +112,7 @@ POST /mfg/open/v1/feed/_get_feed_relation
 }
 ```
 
-`materialId` 来自第二个库存接口，`taskId` 来自当前镜检主记录。读取完整的：
+`materialId` 来自 `api_report.materialId`（扫码时从黑湖报工记录获取），`taskId` 来自当前镜检主记录。读取完整的：
 
 ```text
 data.originalAlternativeMaterial.alternativeFeedKey
@@ -132,10 +132,10 @@ data.originalAlternativeMaterial.alternativeFeedKey
 
 | 字段 | Excel 必填 | 数据来源 | 是否纳入 |
 |---|---|---|---|
-| `materialId` | 是 | 第二个接口匹配库存明细中的原料物料 ID | 是 |
+| `materialId` | 是 | `api_report.materialId`（扫码时从黑湖报工记录获取） | 是 |
 | `taskId` | 是 | `inspection_summary.api_report.taskId` | 是 |
 
-库存响应中原料物料 ID 的精确 JSON 路径在 Excel 中没有给出，只能确定它来自 `data.list[]` 的物料信息。Task 9 联调时必须用真实脱敏响应确认路径，不能把当前镜检成品的 `api_report.materialId` 当成原料 `materialId`。
+投料关系查询的 `materialId` 直接使用 `api_report.materialId`，即扫码时从黑湖报工记录中获取的物料ID，无需依赖库存接口返回。
 
 ### 第一个接口：批量投料入参
 
