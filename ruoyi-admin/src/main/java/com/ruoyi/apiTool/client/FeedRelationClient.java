@@ -47,24 +47,36 @@ public class FeedRelationClient {
 
         JsonNode response = apiClient.post(FEED_RELATION_PATH, body);
         JsonNode data = response.path("data");
-
-        JsonNode alternativeFeedKey = data.path("originalAlternativeMaterial")
-                .path("alternativeFeedKey");
-
-        if (alternativeFeedKey.isMissingNode() || alternativeFeedKey.isNull()) {
+        if (!data.isArray() || data.isEmpty()) {
             throw new IllegalStateException(
                     "当前库存物料与镜检生产任务不存在投料关系，materialId=" + materialId + "，taskId=" + taskId);
         }
 
-        // 提取物料编号，用于后续库存查询入参 materialCodes
-        String materialCode = data.path("materialCode").asText(null);
-        if (materialCode == null || materialCode.isEmpty()) {
-            throw new IllegalStateException(
-                    "投料关系响应缺少物料编号 data.materialCode，materialId=" + materialId + "，taskId=" + taskId);
+        for (JsonNode relation : data) {
+            JsonNode originalAlternativeMaterial = relation.path("originalAlternativeMaterial");
+            JsonNode alternativeFeedKey = originalAlternativeMaterial.path("alternativeFeedKey");
+            if (alternativeFeedKey.isMissingNode() || alternativeFeedKey.isNull()) {
+                continue;
+            }
+
+            // 提取物料编号，用于后续库存查询入参 materialCodes
+            String materialCode = originalAlternativeMaterial
+                    .path("materialInfo")
+                    .path("baseInfo")
+                    .path("code")
+                    .asText(null);
+            if (materialCode == null || materialCode.isEmpty()) {
+                throw new IllegalStateException(
+                        "投料关系响应缺少物料编号 data[].originalAlternativeMaterial.materialInfo.baseInfo.code，"
+                                + "materialId=" + materialId + "，taskId=" + taskId);
+            }
+
+            // 返回 feedKey 和 materialCode
+            return new FeedRelationResult(alternativeFeedKey, materialCode);
         }
 
-        // 返回 feedKey 和 materialCode
-        return new FeedRelationResult(alternativeFeedKey, materialCode);
+        throw new IllegalStateException(
+                "当前库存物料与镜检生产任务不存在投料关系，materialId=" + materialId + "，taskId=" + taskId);
     }
 
     /**
