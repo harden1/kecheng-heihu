@@ -126,8 +126,8 @@ public class FeedUploadService {
         String requestJson = null;
         String responseJson = null;
         try {
-            // 1. 临时测试：固定投料关系查询物料ID，验证完成后恢复为 record.getMaterialId()
-            FeedRelationClient.FeedRelationResult feedRelation = feedRelationClient.getFeedRelation(1787204304660640L, record.getTaskId());
+            // 1. 固定投料关系查询物料ID
+            FeedRelationClient.FeedRelationResult feedRelation = feedRelationClient.getFeedRelation(1787200480054357L, record.getTaskId());
 
             // 2. 库存查询（用二维码 + 投料关系返回的物料编号查库存明细）
             InventoryDetail inventory = materialInventoryClient.queryByQrCode(record.getQrCode(), feedRelation.getMaterialCode());

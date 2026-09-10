@@ -36,8 +36,16 @@
     <el-table v-loading="loading" :data="feedRecordList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="记录ID" align="center" prop="id" width="80" />
-      <el-table-column label="二维码" align="center" prop="qrCode" show-overflow-tooltip />
-      <el-table-column label="工单号" align="center" prop="workOrderCode" show-overflow-tooltip />
+      <el-table-column label="二维码" align="center" prop="qrCode" width="180">
+        <template #default="scope">
+          <span class="wrap-cell">{{ scope.row.qrCode }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="工单号" align="center" prop="workOrderCode" width="150">
+        <template #default="scope">
+          <span class="wrap-cell">{{ scope.row.workOrderCode }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="任务ID" align="center" prop="taskId" width="120" />
       <el-table-column label="原料ID" align="center" prop="materialId" width="120" />
       <el-table-column label="投料数量" align="center" prop="feedAmount" width="100" />
@@ -57,8 +65,16 @@
         </template>
       </el-table-column>
       <el-table-column label="失败原因" align="center" prop="errorMessage" show-overflow-tooltip />
-      <el-table-column label="创建时间" align="center" prop="createTime" width="160" />
-      <el-table-column label="成功时间" align="center" prop="feedTime" width="160" />
+      <el-table-column label="创建时间" align="center" prop="createTime" width="165">
+        <template #default="scope">
+          <span>{{ parseTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="成功时间" align="center" prop="feedTime" width="165">
+        <template #default="scope">
+          <span>{{ parseTime(scope.row.feedTime) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" width="160">
         <template #default="scope">
           <el-button link type="primary" icon="View" @click="handleDetail(scope.row)">详情</el-button>
@@ -93,8 +109,8 @@
           </el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="失败原因">{{ detailData.errorMessage }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ detailData.createTime }}</el-descriptions-item>
-        <el-descriptions-item label="成功时间">{{ detailData.feedTime }}</el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ parseTime(detailData.createTime) }}</el-descriptions-item>
+        <el-descriptions-item label="成功时间">{{ parseTime(detailData.feedTime) }}</el-descriptions-item>
         <el-descriptions-item label="请求JSON">
           <pre class="json-preview">{{ formatJson(detailData.requestJson) }}</pre>
         </el-descriptions-item>
@@ -243,6 +259,15 @@ getList()
 </script>
 
 <style scoped>
+.wrap-cell {
+  display: inline-block;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  line-height: 1.4;
+}
+
 .json-preview {
   max-height: 300px;
   overflow: auto;
